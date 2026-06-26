@@ -5,6 +5,11 @@ import 'package:luxestay/src/features/onboarding/presentation/onboarding_screen.
 import 'package:luxestay/src/features/auth/presentation/login_screen.dart';
 import 'package:luxestay/src/features/auth/presentation/register_screen.dart';
 import 'package:luxestay/src/features/home/presentation/home_screen.dart';
+import 'package:luxestay/src/features/explore/presentation/explore_screen.dart';
+import 'package:luxestay/src/features/bookings/presentation/bookings_screen.dart';
+import 'package:luxestay/src/features/favorites/presentation/favorites_screen.dart';
+import 'package:luxestay/src/features/search/presentation/search_screen.dart';
+import 'package:luxestay/src/features/notifications/presentation/notifications_screen.dart';
 import 'package:luxestay/src/features/placeholder/placeholder_screen.dart';
 import 'package:luxestay/src/core/widgets/navigation/navigation_shell.dart';
 import 'package:luxestay/src/features/hotel_details/presentation/hotel_details_screen.dart';
@@ -43,6 +48,18 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/register',
       builder: (context, state) => const RegisterScreen(),
+    ),
+
+    // ─── PHASE 3 SECONDARY ROUTES ──────────────────────────────────
+    GoRoute(
+      path: '/search',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const SearchScreen(),
+    ),
+    GoRoute(
+      path: '/notifications',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const NotificationsScreen(),
     ),
     
     // ─── PHASE 2 ROUTES (Full Screen / No Bottom Nav) ───────────────────
@@ -105,7 +122,7 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/explore',
-              builder: (context, state) => const PlaceholderScreen(title: 'Explore'),
+              builder: (context, state) => const ExploreScreen(),
             ),
           ],
         ),
@@ -114,7 +131,7 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/bookings',
-              builder: (context, state) => const PlaceholderScreen(title: 'My Bookings'),
+              builder: (context, state) => const BookingsScreen(),
             ),
           ],
         ),
@@ -123,7 +140,7 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/favorites',
-              builder: (context, state) => const PlaceholderScreen(title: 'Favorites'),
+              builder: (context, state) => const FavoritesScreen(),
             ),
           ],
         ),

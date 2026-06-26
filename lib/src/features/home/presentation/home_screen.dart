@@ -84,7 +84,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     child: IconButton(
                       icon: const Icon(Icons.notifications_outlined),
                       color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-                      onPressed: () {},
+                      onPressed: () => context.push('/notifications'),
                     ),
                   ),
                 ],
@@ -102,7 +102,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingScreen),
                       child: SearchField(
                         readOnly: true,
-                        onTap: () {},
+                        onTap: () => context.push('/search'),
                         onFilterTap: () {},
                         onVoiceTap: () {},
                       ),
