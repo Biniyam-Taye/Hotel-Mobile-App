@@ -8,6 +8,9 @@ import 'package:luxestay/src/core/widgets/inputs/search_field.dart';
 import 'package:luxestay/src/core/widgets/cards/category_chip.dart';
 import 'package:luxestay/src/core/widgets/cards/hotel_card.dart';
 import 'package:luxestay/src/core/widgets/cards/offer_card.dart';
+import 'package:luxestay/src/core/widgets/cards/review_card.dart';
+import 'package:luxestay/src/core/widgets/cards/inspiration_card.dart';
+import 'package:luxestay/src/core/widgets/cards/featured_room_card.dart';
 import 'package:luxestay/src/data/mock/mock_data.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -210,12 +213,93 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                     ),
                     const SizedBox(height: AppDimensions.xxxl),
-                    
-                    // ─── EXPLORE CITIES ─────────────────────────────────
+
+                    // ─── FEATURED DESTINATIONS (ROOMS) ──────────────────
+                    Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: AppColors.accent.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: AppColors.accent.withValues(alpha: 0.2)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.diamond_rounded, size: 12, color: AppColors.accent),
+                              const SizedBox(width: 6),
+                              Text(
+                                'Handpicked For You',
+                                style: AppTypography.captionMedium(color: AppColors.accent).copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 11,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Icon(Icons.diamond_rounded, size: 12, color: AppColors.accent),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: AppDimensions.lg),
+                        Text(
+                          'Featured Destinations',
+                          style: AppTypography.h2(
+                            color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                          ).copyWith(fontWeight: FontWeight.w800),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: AppDimensions.md),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(width: 30, height: 1, color: AppColors.accent),
+                            const SizedBox(width: 8),
+                            CircleAvatar(radius: 4, backgroundColor: AppColors.accent),
+                            const SizedBox(width: 8),
+                            Container(width: 30, height: 1, color: AppColors.accent),
+                          ],
+                        ),
+                        const SizedBox(height: AppDimensions.lg),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: AppDimensions.xl),
+                          child: Text(
+                            'Discover our handpicked selection of exceptional properties around the world, offering unparalleled luxury and unforgettable experiences.',
+                            style: AppTypography.captionMedium(
+                              color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                            ).copyWith(height: 1.5),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppDimensions.xl),
+                    SizedBox(
+                      height: 420,
+                      child: ListView.separated(
+                        padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingScreen, vertical: AppDimensions.md),
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: MockData.hotels.length,
+                        separatorBuilder: (context, index) => const SizedBox(width: AppDimensions.xl),
+                        itemBuilder: (context, index) {
+                          final hotel = MockData.hotels[index];
+                          final room = hotel.rooms.isNotEmpty ? hotel.rooms.first : MockData.hotels[0].rooms[0];
+                          return FeaturedRoomCard(
+                            room: room,
+                            hotel: hotel,
+                            onTap: () => context.push('/hotel/${hotel.id}'),
+                            onBookNow: () => context.push('/rooms/${hotel.id}'),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: AppDimensions.xxxl),
+                    // ─── WHAT OUR GUESTS SAY ───────────────────────────────
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingScreen),
                       child: Text(
-                        'Explore Destinations',
+                        'What Our Guests Say',
                         style: AppTypography.sectionTitle(
                           color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                         ),
@@ -223,20 +307,50 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                     const SizedBox(height: AppDimensions.lg),
                     SizedBox(
-                      height: AppDimensions.cityChipSize + 40, // padding for text below
+                      height: 180,
                       child: ListView.separated(
                         padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingScreen),
                         scrollDirection: Axis.horizontal,
                         physics: const BouncingScrollPhysics(),
-                        itemCount: MockData.cities.length,
-                        separatorBuilder: (context, index) => const SizedBox(width: AppDimensions.base),
+                        itemCount: MockData.hotels[0].reviews.length,
+                        separatorBuilder: (context, index) => const SizedBox(width: AppDimensions.lg),
                         itemBuilder: (context, index) {
-                          final city = MockData.cities[index];
-                          return CityChip(
-                            name: city.name,
-                            imageUrl: city.image,
-                            hotelCount: city.hotelCount,
-                            onTap: () {},
+                          return ReviewCard(review: MockData.hotels[0].reviews[index]);
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: AppDimensions.xxxl),
+
+                    // ─── STAY INSPIRED ───────────────────────────────────
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingScreen),
+                      child: Text(
+                        'Stay Inspired',
+                        style: AppTypography.sectionTitle(
+                          color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: AppDimensions.lg),
+                    SizedBox(
+                      height: 280,
+                      child: ListView.separated(
+                        padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingScreen),
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: 3,
+                        separatorBuilder: (context, index) => const SizedBox(width: AppDimensions.lg),
+                        itemBuilder: (context, index) {
+                          final inspirations = [
+                            {'title': '10 Best Beachfront Villas in Bali', 'cat': 'Travel Guide', 'img': 'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?w=800&fit=crop'},
+                            {'title': 'A Weekend Guide to Paris', 'cat': 'City Breaks', 'img': 'https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?w=800&fit=crop'},
+                            {'title': 'Top 5 Eco-Friendly Lodges', 'cat': 'Sustainable', 'img': 'https://images.unsplash.com/photo-1510798831971-661eb04b3739?w=800&fit=crop'},
+                          ];
+                          final item = inspirations[index];
+                          return InspirationCard(
+                            title: item['title']!,
+                            category: item['cat']!,
+                            imageUrl: item['img']!,
                           );
                         },
                       ),
