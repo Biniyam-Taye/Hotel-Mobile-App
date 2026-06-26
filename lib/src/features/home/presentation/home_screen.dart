@@ -1634,10 +1634,6 @@ class _HomeCtaSectionState extends State<_HomeCtaSection>
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: AppColors.accent.withOpacity(0.1),
-                    filter: ColorFilter.mode(
-                      AppColors.accent.withOpacity(0.2),
-                      BlendMode.srcATop,
-                    ),
                   ),
                 ),
               ),
@@ -1675,7 +1671,7 @@ class _HomeCtaSectionState extends State<_HomeCtaSection>
                     const SizedBox(height: 20),
                     Text(
                       'LuxeStay Rewards',
-                      style: AppTypography.h2(color: Colors.white).copyWith(fontSize: 24),
+                      style: AppTypography.pageTitle(color: Colors.white).copyWith(fontSize: 24),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 12),

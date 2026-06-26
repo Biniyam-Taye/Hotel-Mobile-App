@@ -10,14 +10,17 @@ import 'package:luxestay/src/features/bookings/presentation/bookings_screen.dart
 import 'package:luxestay/src/features/favorites/presentation/favorites_screen.dart';
 import 'package:luxestay/src/features/search/presentation/search_screen.dart';
 import 'package:luxestay/src/features/notifications/presentation/notifications_screen.dart';
-import 'package:luxestay/src/features/placeholder/placeholder_screen.dart';
 import 'package:luxestay/src/core/widgets/navigation/navigation_shell.dart';
 import 'package:luxestay/src/features/hotel_details/presentation/hotel_details_screen.dart';
 import 'package:luxestay/src/features/room_selection/presentation/room_selection_screen.dart';
 import 'package:luxestay/src/features/booking/presentation/booking_screen.dart';
 import 'package:luxestay/src/features/payment/presentation/payment_screen.dart';
 import 'package:luxestay/src/features/booking_success/presentation/booking_success_screen.dart';
-
+import 'package:luxestay/src/features/profile/presentation/profile_screen.dart';
+import 'package:luxestay/src/features/profile/presentation/personal_info_screen.dart';
+import 'package:luxestay/src/features/profile/presentation/payment_methods_screen.dart';
+import 'package:luxestay/src/features/profile/presentation/settings_screen.dart';
+import 'package:luxestay/src/features/profile/presentation/support_screen.dart';
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 final GlobalKey<NavigatorState> _shellNavigatorHomeKey = GlobalKey<NavigatorState>(debugLabel: 'shellHome');
 final GlobalKey<NavigatorState> _shellNavigatorExploreKey = GlobalKey<NavigatorState>(debugLabel: 'shellExplore');
@@ -101,6 +104,26 @@ final appRouter = GoRouter(
         roomId: state.pathParameters['roomId']!,
       ),
     ),
+    GoRoute(
+      path: '/profile/personal-info',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const PersonalInfoScreen(),
+    ),
+    GoRoute(
+      path: '/profile/payment-methods',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const PaymentMethodsScreen(),
+    ),
+    GoRoute(
+      path: '/profile/settings',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const SettingsScreen(),
+    ),
+    GoRoute(
+      path: '/profile/support',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const SupportScreen(),
+    ),
 
     // ─── BOTTOM NAVIGATION SHELL ───────────────────────────────────────
     StatefulShellRoute.indexedStack(
@@ -149,7 +172,7 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/profile',
-              builder: (context, state) => const PlaceholderScreen(title: 'Profile'),
+              builder: (context, state) => const ProfileScreen(),
             ),
           ],
         ),
