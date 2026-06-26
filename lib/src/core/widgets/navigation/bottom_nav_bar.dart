@@ -95,42 +95,64 @@ class _NavBarItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: SizedBox(
-        width: 64,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: AppDimensions.animFast),
-              curve: Curves.easeInOut,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? AppColors.accent.withValues(alpha: 0.15)
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(AppDimensions.radiusChip),
+      child: AnimatedScale(
+        scale: isSelected ? 1.08 : 1.0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutBack,
+        child: SizedBox(
+          width: 64,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: AppDimensions.animFast),
+                curve: Curves.easeInOut,
+                padding: EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: isSelected ? 8 : 6,
+                ),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? AppColors.accent.withValues(alpha: 0.15)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusChip),
+                ),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  transitionBuilder: (child, animation) {
+                    return ScaleTransition(
+                      scale: animation,
+                      child: FadeTransition(
+                        opacity: animation,
+                        child: child,
+                      ),
+                    );
+                  },
+                  child: Icon(
+                    isSelected ? item.activeIcon : item.icon,
+                    key: ValueKey<bool>(isSelected),
+                    size: 24,
+                    color: isSelected
+                        ? (isDark ? AppColors.accent : AppColors.textPrimary)
+                        : (isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
+                  ),
+                ),
               ),
-              child: Icon(
-                isSelected ? item.activeIcon : item.icon,
-                size: 24,
-                color: isSelected
-                    ? (isDark ? AppColors.accent : AppColors.textPrimary)
-                    : (isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
+              const SizedBox(height: 4),
+              AnimatedDefaultTextStyle(
+                duration: const Duration(milliseconds: AppDimensions.animFast),
+                curve: Curves.easeInOut,
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                  color: isSelected
+                      ? (isDark ? AppColors.darkTextPrimary : AppColors.textPrimary)
+                      : (isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
+                ),
+                child: Text(item.label),
               ),
-            ),
-            const SizedBox(height: 2),
-            AnimatedDefaultTextStyle(
-              duration: const Duration(milliseconds: AppDimensions.animFast),
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                color: isSelected
-                    ? (isDark ? AppColors.darkTextPrimary : AppColors.textPrimary)
-                    : (isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
-              ),
-              child: Text(item.label),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

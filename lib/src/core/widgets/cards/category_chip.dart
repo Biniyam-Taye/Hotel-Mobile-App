@@ -25,47 +25,58 @@ class CategoryChip extends StatelessWidget {
 
     return GestureDetector(
       onTap: onTap,
-      child: AnimatedContainer(
+      child: AnimatedScale(
+        scale: isSelected ? 1.05 : 1.0,
         duration: const Duration(milliseconds: AppDimensions.animFast),
-        curve: Curves.easeInOut,
-        height: AppDimensions.categoryChipHeight,
-        padding: EdgeInsets.symmetric(
-          horizontal: icon != null ? 16 : 20,
-        ),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.accent
-              : (isDark ? AppColors.darkSurfaceVariant : AppColors.backgroundSecondary),
-          borderRadius: BorderRadius.circular(AppDimensions.radiusChip),
-          border: isSelected
-              ? null
-              : Border.all(
-                  color: isDark ? AppColors.darkBorder : AppColors.border,
-                  width: 1,
+        curve: Curves.easeOutBack,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: AppDimensions.animFast),
+          curve: Curves.easeInOut,
+          height: AppDimensions.categoryChipHeight,
+          padding: EdgeInsets.symmetric(
+            horizontal: icon != null ? 16 : 20,
+          ),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? AppColors.accent
+                : (isDark ? AppColors.darkSurfaceVariant : AppColors.backgroundSecondary),
+            borderRadius: BorderRadius.circular(AppDimensions.radiusChip),
+            border: isSelected
+                ? null
+                : Border.all(
+                    color: isDark ? AppColors.darkBorder : AppColors.border,
+                    width: 1,
+                  ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (icon != null) ...[
+                TweenAnimationBuilder<Color?>(
+                  tween: ColorTween(
+                    begin: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                    end: isSelected
+                        ? AppColors.textOnAccent
+                        : (isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
+                  ),
+                  duration: const Duration(milliseconds: AppDimensions.animFast),
+                  builder: (context, color, child) {
+                    return Icon(icon, size: 18, color: color);
+                  },
                 ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (icon != null) ...[
-              Icon(
-                icon,
-                size: 18,
-                color: isSelected
-                    ? AppColors.textOnAccent
-                    : (isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
+                const SizedBox(width: 6),
+              ],
+              AnimatedDefaultTextStyle(
+                duration: const Duration(milliseconds: AppDimensions.animFast),
+                style: AppTypography.captionMedium(
+                  color: isSelected
+                      ? AppColors.textOnAccent
+                      : (isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
+                ),
+                child: Text(label),
               ),
-              const SizedBox(width: 6),
             ],
-            Text(
-              label,
-              style: AppTypography.captionMedium(
-                color: isSelected
-                    ? AppColors.textOnAccent
-                    : (isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
