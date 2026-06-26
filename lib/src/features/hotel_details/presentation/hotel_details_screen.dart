@@ -21,11 +21,34 @@ class HotelDetailsScreen extends StatefulWidget {
 
 class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
   late final Hotel hotel;
+  late final ScrollController _scrollController;
+  double _contentRadius = 0;
+
+  static const double _maxRadius = 36.0;
+  /// After this many pixels of scroll, radius reaches its max.
+  static const double _scrollThreshold = 60.0;
 
   @override
   void initState() {
     super.initState();
     hotel = MockData.hotels.firstWhere((h) => h.id == widget.hotelId, orElse: () => MockData.hotels.first);
+    _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    final offset = _scrollController.offset;
+    final newRadius = (offset / _scrollThreshold).clamp(0.0, 1.0) * _maxRadius;
+    if ((newRadius - _contentRadius).abs() > 0.5) {
+      setState(() => _contentRadius = newRadius);
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -34,6 +57,7 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
 
     return Scaffold(
       body: CustomScrollView(
+        controller: _scrollController,
         physics: const BouncingScrollPhysics(),
         slivers: [
           // ─── HERO APP BAR ───────────────────────────────────────────
@@ -98,11 +122,15 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
 
           // ─── HOTEL INFO ─────────────────────────────────────────────
           SliverToBoxAdapter(
-            child: Container(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 40),
+              curve: Curves.easeOut,
               padding: const EdgeInsets.all(AppDimensions.paddingScreen),
               decoration: BoxDecoration(
                 color: isDark ? AppColors.darkBackground : AppColors.background,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(AppDimensions.radiusXxl)),
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(_contentRadius),
+                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
