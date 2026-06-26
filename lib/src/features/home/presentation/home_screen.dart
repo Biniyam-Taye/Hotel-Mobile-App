@@ -117,7 +117,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                           return GestureDetector(
                             onTap: () {
                               HapticFeedback.selectionClick();
-                              setState(() => _selectedCategoryIndex = index);
+                              if (index == 0) {
+                                setState(() => _selectedCategoryIndex = 0);
+                              } else {
+                                context.push('/category/$category');
+                              }
                             },
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 250),

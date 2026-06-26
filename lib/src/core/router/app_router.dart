@@ -21,6 +21,7 @@ import 'package:luxestay/src/features/profile/presentation/personal_info_screen.
 import 'package:luxestay/src/features/profile/presentation/payment_methods_screen.dart';
 import 'package:luxestay/src/features/profile/presentation/settings_screen.dart';
 import 'package:luxestay/src/features/profile/presentation/support_screen.dart';
+import 'package:luxestay/src/features/explore/presentation/category_screen.dart';
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 final GlobalKey<NavigatorState> _shellNavigatorHomeKey = GlobalKey<NavigatorState>(debugLabel: 'shellHome');
 final GlobalKey<NavigatorState> _shellNavigatorExploreKey = GlobalKey<NavigatorState>(debugLabel: 'shellExplore');
@@ -66,6 +67,13 @@ final appRouter = GoRouter(
     ),
     
     // ─── PHASE 2 ROUTES (Full Screen / No Bottom Nav) ───────────────────
+    GoRoute(
+      path: '/category/:name',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => CategoryScreen(
+        categoryName: state.pathParameters['name']!,
+      ),
+    ),
     GoRoute(
       path: '/hotel/:id',
       parentNavigatorKey: _rootNavigatorKey,

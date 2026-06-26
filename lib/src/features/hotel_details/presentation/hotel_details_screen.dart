@@ -91,12 +91,25 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
-          // ─── BACKGROUND IMAGE (fixed behind everything) ──────────────
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            height: _imageHeight + 40,
+          // ─── BACKGROUND IMAGE (Parallax) ──────────────
+          AnimatedBuilder(
+            animation: _scrollController,
+            builder: (context, child) {
+              double offset = 0.0;
+              if (_scrollController.hasClients) {
+                offset = _scrollController.offset;
+              }
+              // Parallax effect: image scrolls up at half the speed of the content
+              final topOffset = offset > 0 ? -offset * 0.5 : 0.0;
+              
+              return Positioned(
+                top: topOffset,
+                left: 0,
+                right: 0,
+                height: _imageHeight + 40,
+                child: child!,
+              );
+            },
             child: Hero(
               tag: 'hotel_image_${hotel.id}',
               child: ImageCarousel(
