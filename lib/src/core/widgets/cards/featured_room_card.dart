@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:luxestay/src/core/theme/app_colors.dart';
 import 'package:luxestay/src/core/theme/app_dimensions.dart';
 import 'package:luxestay/src/core/theme/app_typography.dart';
@@ -42,18 +43,18 @@ class _FeaturedRoomCardState extends State<FeaturedRoomCard> with SingleTickerPr
     super.dispose();
   }
 
-  void _onPointerDown(_) {
+  void _onTapDown(TapDownDetails details) {
     setState(() => _isPressed = true);
     _controller.forward();
   }
 
-  void _onPointerUp(_) {
+  void _onTapUp(TapUpDetails details) {
     setState(() => _isPressed = false);
     _controller.reverse();
     widget.onTap();
   }
 
-  void _onPointerCancel(_) {
+  void _onTapCancel() {
     setState(() => _isPressed = false);
     _controller.reverse();
   }
@@ -62,10 +63,10 @@ class _FeaturedRoomCardState extends State<FeaturedRoomCard> with SingleTickerPr
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Listener(
-      onPointerDown: _onPointerDown,
-      onPointerUp: _onPointerUp,
-      onPointerCancel: _onPointerCancel,
+    return GestureDetector(
+      onTapDown: _onTapDown,
+      onTapUp: _onTapUp,
+      onTapCancel: _onTapCancel,
       child: AnimatedBuilder(
         animation: _scaleAnimation,
         builder: (context, child) => Transform.scale(
@@ -82,7 +83,7 @@ class _FeaturedRoomCardState extends State<FeaturedRoomCard> with SingleTickerPr
                 ? []
                 : [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
+                      color: Colors.black.withOpacity(0.05),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),
@@ -91,7 +92,9 @@ class _FeaturedRoomCardState extends State<FeaturedRoomCard> with SingleTickerPr
               color: isDark ? AppColors.darkBorder : AppColors.border,
             ),
           ),
-          child: Column(
+          child: Material(
+            color: Colors.transparent,
+            child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Image Section
@@ -102,7 +105,7 @@ class _FeaturedRoomCardState extends State<FeaturedRoomCard> with SingleTickerPr
                   decoration: BoxDecoration(
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(AppDimensions.radiusCard)),
                     image: DecorationImage(
-                      image: NetworkImage(widget.room.images.first),
+                      image: CachedNetworkImageProvider(widget.room.images.first),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -133,8 +136,8 @@ class _FeaturedRoomCardState extends State<FeaturedRoomCard> with SingleTickerPr
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: AppColors.warning.withValues(alpha: 0.1),
-                            border: Border.all(color: AppColors.warning.withValues(alpha: 0.5)),
+                            color: AppColors.warning.withOpacity(0.1),
+                            border: Border.all(color: AppColors.warning.withOpacity(0.5)),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Row(
@@ -197,7 +200,7 @@ class _FeaturedRoomCardState extends State<FeaturedRoomCard> with SingleTickerPr
                           children: [
                             Text(
                               '\$${widget.room.pricePerNight.toInt()}',
-                              style: AppTypography.h3(
+                              style: AppTypography.price(
                                 color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                               ),
                             ),
@@ -239,6 +242,7 @@ class _FeaturedRoomCardState extends State<FeaturedRoomCard> with SingleTickerPr
               ),
             ],
           ),
+        ),
         ),
       ),
     );

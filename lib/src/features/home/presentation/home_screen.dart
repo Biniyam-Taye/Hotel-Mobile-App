@@ -220,9 +220,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                           decoration: BoxDecoration(
-                            color: AppColors.accent.withValues(alpha: 0.1),
+                            color: AppColors.accent.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: AppColors.accent.withValues(alpha: 0.2)),
+                            border: Border.all(color: AppColors.accent.withOpacity(0.2)),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -244,7 +244,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         const SizedBox(height: AppDimensions.lg),
                         Text(
                           'Featured Destinations',
-                          style: AppTypography.h2(
+                          style: AppTypography.pageTitle(
                             color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                           ).copyWith(fontWeight: FontWeight.w800),
                           textAlign: TextAlign.center,
