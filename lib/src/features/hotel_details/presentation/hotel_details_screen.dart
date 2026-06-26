@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luxestay/src/core/theme/app_colors.dart';
 import 'package:luxestay/src/core/theme/app_dimensions.dart';
@@ -22,25 +23,52 @@ class HotelDetailsScreen extends StatefulWidget {
 class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
   late final Hotel hotel;
   late final ScrollController _scrollController;
-  double _contentRadius = 0;
 
-  static const double _maxRadius = 36.0;
-  /// After this many pixels of scroll, radius reaches its max.
-  static const double _scrollThreshold = 60.0;
+  // How much the card is initially pushed below the image
+  static const double _imageHeight = 320.0;
+  // How far the card overlaps the image at rest
+  static const double _cardOverlap = 32.0;
+
+  double _cardRadius = 32.0; // starts fully rounded
+  double _headerOpacity = 0.0; // back-button bg opacity
 
   @override
   void initState() {
     super.initState();
-    hotel = MockData.hotels.firstWhere((h) => h.id == widget.hotelId, orElse: () => MockData.hotels.first);
-    _scrollController = ScrollController();
-    _scrollController.addListener(_onScroll);
+    hotel = MockData.hotels.firstWhere(
+      (h) => h.id == widget.hotelId,
+      orElse: () => MockData.hotels.first,
+    );
+    _scrollController = ScrollController()..addListener(_onScroll);
   }
 
   void _onScroll() {
     final offset = _scrollController.offset;
-    final newRadius = (offset / _scrollThreshold).clamp(0.0, 1.0) * _maxRadius;
-    if ((newRadius - _contentRadius).abs() > 0.5) {
-      setState(() => _contentRadius = newRadius);
+
+    // Phase 1 (0 → imageHeight): card slides up over image.
+    // Radius stays at max (32), opacity of back-button bg grows.
+    // Phase 2 (imageHeight → imageHeight+80): card has cleared the image,
+    // radius animates DOWN to 0 (sharp card filling full screen).
+    const double phase2Start = _imageHeight - _cardOverlap;
+    const double phase2End = phase2Start + 80;
+
+    final double newRadius;
+    if (offset < phase2Start) {
+      newRadius = 32.0; // fully rounded while image is still behind
+    } else {
+      // animate from 32 → 0 once card has fully passed the image
+      final t = ((offset - phase2Start) / (phase2End - phase2Start)).clamp(0.0, 1.0);
+      newRadius = 32.0 * (1.0 - t);
+    }
+
+    // Header overlay fades in as image scrolls away
+    final double newOpacity = (offset / (_imageHeight - 56)).clamp(0.0, 1.0);
+
+    if ((newRadius - _cardRadius).abs() > 0.1 || (newOpacity - _headerOpacity).abs() > 0.01) {
+      setState(() {
+        _cardRadius = newRadius;
+        _headerOpacity = newOpacity;
+      });
     }
   }
 
@@ -54,203 +82,240 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? AppColors.darkBackground : AppColors.background;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.textPrimary;
+    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.textSecondary;
 
     return Scaffold(
-      body: CustomScrollView(
-        controller: _scrollController,
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          // ─── HERO APP BAR ───────────────────────────────────────────
-          SliverAppBar(
-            expandedHeight: 350,
-            pinned: true,
-            leading: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.3),
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
-                  onPressed: () => context.pop(),
-                ),
-              ),
-            ),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.3),
-                    shape: BoxShape.circle,
-                  ),
-                  child: IconButton(
-                    icon: Icon(
-                      hotel.isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                      color: hotel.isFavorite ? AppColors.error : Colors.white,
-                    ),
-                    onPressed: () {},
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.3),
-                    shape: BoxShape.circle,
-                  ),
-                  child: IconButton(
-                    icon: const Icon(Icons.share_rounded, color: Colors.white),
-                    onPressed: () {},
-                  ),
-                ),
-              ),
-            ],
-            flexibleSpace: FlexibleSpaceBar(
-              background: Hero(
-                tag: 'hotel_image_${hotel.id}',
-                child: ImageCarousel(
-                  imageUrls: hotel.images,
-                  height: 400,
-                  borderRadius: 0,
-                ),
+      backgroundColor: bg,
+      extendBodyBehindAppBar: true,
+      body: Stack(
+        children: [
+          // ─── BACKGROUND IMAGE (fixed behind everything) ──────────────
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: _imageHeight + 40,
+            child: Hero(
+              tag: 'hotel_image_${hotel.id}',
+              child: ImageCarousel(
+                imageUrls: hotel.images,
+                height: _imageHeight + 40,
+                borderRadius: 0,
               ),
             ),
           ),
 
-          // ─── HOTEL INFO ─────────────────────────────────────────────
-          SliverToBoxAdapter(
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 40),
-              curve: Curves.easeOut,
-              padding: const EdgeInsets.all(AppDimensions.paddingScreen),
-              decoration: BoxDecoration(
-                color: isDark ? AppColors.darkBackground : AppColors.background,
-                borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(_contentRadius),
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Hero(
-                    tag: 'hotel_name_${hotel.id}',
-                    child: Material(
-                      color: Colors.transparent,
-                      child: Text(
-                        hotel.name,
-                        style: AppTypography.pageTitle(
-                          color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+          // ─── SCROLLABLE CONTENT ──────────────────────────────────────
+          SingleChildScrollView(
+            controller: _scrollController,
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              children: [
+                // Spacer so that the card starts at the bottom of the image
+                SizedBox(height: _imageHeight - _cardOverlap),
+
+                // ─── CONTENT CARD (animated radius) ───────────────────
+                Container(
+                  decoration: BoxDecoration(
+                    color: bg,
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(_cardRadius),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.12),
+                        blurRadius: 24,
+                        offset: const Offset(0, -4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // ── Drag handle ──────────────────────────────────
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 12, bottom: 8),
+                          child: Container(
+                            width: 40,
+                            height: 4,
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? Colors.white.withOpacity(0.2)
+                                  : Colors.black.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: AppDimensions.sm),
-                  Row(
-                    children: [
-                      RatingWidget(rating: hotel.rating, reviewCount: hotel.reviewCount),
-                      const SizedBox(width: AppDimensions.md),
-                      Icon(Icons.location_on_outlined, size: 16, color: AppColors.textTertiary),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          hotel.location,
-                          style: AppTypography.body(color: AppColors.textTertiary),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          AppDimensions.paddingScreen,
+                          8,
+                          AppDimensions.paddingScreen,
+                          0,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // ── Hotel name ───────────────────────────────
+                            Hero(
+                              tag: 'hotel_name_${hotel.id}',
+                              child: Material(
+                                color: Colors.transparent,
+                                child: Text(
+                                  hotel.name,
+                                  style: AppTypography.pageTitle(color: textPrimary),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: AppDimensions.sm),
+                            Row(
+                              children: [
+                                RatingWidget(rating: hotel.rating, reviewCount: hotel.reviewCount),
+                                const SizedBox(width: AppDimensions.md),
+                                Icon(Icons.location_on_outlined, size: 16, color: AppColors.textTertiary),
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    hotel.location,
+                                    style: AppTypography.body(color: AppColors.textTertiary),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: AppDimensions.xl),
+                            const Divider(),
+                            const SizedBox(height: AppDimensions.xl),
+
+                            // ── About ────────────────────────────────────
+                            Text('About this hotel', style: AppTypography.sectionTitle(color: textPrimary)),
+                            const SizedBox(height: AppDimensions.sm),
+                            Text(hotel.description, style: AppTypography.body(color: textSecondary)),
+                            const SizedBox(height: AppDimensions.xxl),
+
+                            // ── Amenities ────────────────────────────────
+                            Text('Amenities', style: AppTypography.sectionTitle(color: textPrimary)),
+                            const SizedBox(height: AppDimensions.md),
+                            Wrap(
+                              spacing: 12,
+                              runSpacing: 12,
+                              children: hotel.amenities.take(6).map((amenity) {
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                                  decoration: BoxDecoration(
+                                    color: isDark ? AppColors.darkSurfaceVariant : AppColors.backgroundSecondary,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        IconData(
+                                          MockData.amenityIcons[amenity] ?? Icons.check_circle_outline.codePoint,
+                                          fontFamily: 'MaterialIcons',
+                                        ),
+                                        size: 16,
+                                        color: textPrimary,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(amenity, style: AppTypography.captionMedium(color: textPrimary)),
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                            const SizedBox(height: AppDimensions.sm),
+                            TextButton(
+                              onPressed: () {},
+                              child: Text(
+                                'View all ${hotel.amenities.length} amenities',
+                                style: AppTypography.bodySemiBold(color: AppColors.accent),
+                              ),
+                            ),
+                            const SizedBox(height: AppDimensions.xxl),
+
+                            // ── Nearby ───────────────────────────────────
+                            if (hotel.nearbyPlaces != null && hotel.nearbyPlaces!.isNotEmpty) ...[
+                              Text('Nearby Attractions', style: AppTypography.sectionTitle(color: textPrimary)),
+                              const SizedBox(height: AppDimensions.md),
+                              ...hotel.nearbyPlaces!.map((place) => Padding(
+                                    padding: const EdgeInsets.only(bottom: AppDimensions.sm),
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.place_outlined, size: 20, color: AppColors.textTertiary),
+                                        const SizedBox(width: AppDimensions.md),
+                                        Expanded(
+                                          child: Text(
+                                            place.name,
+                                            style: AppTypography.body(color: textPrimary),
+                                          ),
+                                        ),
+                                        Text(
+                                          '${place.distance} km',
+                                          style: AppTypography.captionMedium(color: AppColors.textTertiary),
+                                        ),
+                                      ],
+                                    ),
+                                  )),
+                              const SizedBox(height: AppDimensions.xxl),
+                            ],
+
+                            // Bottom padding for the booking bar
+                            const SizedBox(height: 120),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: AppDimensions.xl),
-                  const Divider(),
-                  const SizedBox(height: AppDimensions.xl),
+                ),
+              ],
+            ),
+          ),
 
-                  // ─── DESCRIPTION ────────────────────────────────────────
-                  Text(
-                    'About this hotel',
-                    style: AppTypography.sectionTitle(
-                      color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+          // ─── FLOATING OVERLAY BUTTONS (back / fav / share) ──────────
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _OverlayButton(
+                    opacity: _headerOpacity,
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                      onPressed: () => context.pop(),
                     ),
                   ),
-                  const SizedBox(height: AppDimensions.sm),
-                  Text(
-                    hotel.description,
-                    style: AppTypography.body(
-                      color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: AppDimensions.xxl),
-
-                  // ─── AMENITIES ──────────────────────────────────────────
-                  Text(
-                    'Amenities',
-                    style: AppTypography.sectionTitle(
-                      color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: AppDimensions.md),
-                  Wrap(
-                    spacing: 12,
-                    runSpacing: 12,
-                    children: hotel.amenities.take(6).map((amenity) {
-                      return Chip(
-                        label: Text(amenity),
-                        avatar: Icon(
-                          IconData(
-                            MockData.amenityIcons[amenity] ?? Icons.check_circle_outline.codePoint,
-                            fontFamily: 'MaterialIcons',
+                  Row(
+                    children: [
+                      _OverlayButton(
+                        opacity: _headerOpacity,
+                        child: IconButton(
+                          icon: Icon(
+                            hotel.isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                            color: hotel.isFavorite ? AppColors.error : Colors.white,
                           ),
-                          size: 16,
-                          color: AppColors.textPrimary,
+                          onPressed: () {
+                            HapticFeedback.lightImpact();
+                          },
                         ),
-                        backgroundColor: isDark ? AppColors.darkSurfaceVariant : AppColors.backgroundSecondary,
-                        side: BorderSide.none,
-                      );
-                    }).toList(),
-                  ),
-                  const SizedBox(height: AppDimensions.sm),
-                  TextButton(
-                    onPressed: () {},
-                    child: Text('View all ${hotel.amenities.length} amenities', style: AppTypography.bodySemiBold(color: AppColors.accent)),
-                  ),
-                  const SizedBox(height: AppDimensions.xxl),
-
-                  // ─── NEARBY ATTRACTIONS ─────────────────────────────────
-                  if (hotel.nearbyPlaces != null && hotel.nearbyPlaces!.isNotEmpty) ...[
-                    Text(
-                      'Nearby Attractions',
-                      style: AppTypography.sectionTitle(
-                        color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                       ),
-                    ),
-                    const SizedBox(height: AppDimensions.md),
-                    ...hotel.nearbyPlaces!.map((place) => Padding(
-                          padding: const EdgeInsets.only(bottom: AppDimensions.sm),
-                          child: Row(
-                            children: [
-                              Icon(Icons.place_outlined, size: 20, color: AppColors.textTertiary),
-                              const SizedBox(width: AppDimensions.md),
-                              Expanded(
-                                child: Text(
-                                  place.name,
-                                  style: AppTypography.body(color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
-                                ),
-                              ),
-                              Text(
-                                '${place.distance} km',
-                                style: AppTypography.captionMedium(color: AppColors.textTertiary),
-                              ),
-                            ],
-                          ),
-                        )),
-                    const SizedBox(height: AppDimensions.xxl),
-                  ],
-                  
-                  // Empty space for bottom bar
-                  const SizedBox(height: 100),
+                      const SizedBox(width: 4),
+                      _OverlayButton(
+                        opacity: _headerOpacity,
+                        child: IconButton(
+                          icon: const Icon(Icons.share_rounded, color: Colors.white),
+                          onPressed: () {},
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -258,6 +323,25 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
         ],
       ),
       bottomNavigationBar: _BottomBookingBar(hotel: hotel),
+    );
+  }
+}
+
+/// A floating button that always has a dark tinted circle bg.
+class _OverlayButton extends StatelessWidget {
+  final Widget child;
+  final double opacity;
+
+  const _OverlayButton({required this.child, required this.opacity});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.28 + opacity * 0.22),
+        shape: BoxShape.circle,
+      ),
+      child: child,
     );
   }
 }
@@ -307,9 +391,7 @@ class _BottomBookingBar extends StatelessWidget {
             Expanded(
               child: PrimaryButton(
                 text: 'Select Room',
-                onPressed: () {
-                  context.push('/rooms/${hotel.id}');
-                },
+                onPressed: () => context.push('/rooms/${hotel.id}'),
               ),
             ),
           ],
