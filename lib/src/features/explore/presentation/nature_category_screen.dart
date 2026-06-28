@@ -1,5 +1,5 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:luxestay/src/core/theme/app_colors.dart';
@@ -7,121 +7,240 @@ import 'package:luxestay/src/core/theme/app_typography.dart';
 import 'package:luxestay/src/data/mock/mock_data.dart';
 import 'package:luxestay/src/data/models/models.dart';
 
-/// Nature & Adventure Theme (Cabins, Eco Lodge, Camping, Mountain Hotels)
-class NatureCategoryScreen extends StatefulWidget {
+/// Interactive Explorer Theme — Split-screen with overlapping cards carousel.
+/// Used for: Apartments, Cabins, Eco Lodge, Camping, Mountain Hotels
+class ExplorerCategoryScreen extends StatefulWidget {
   final String categoryName;
-  const NatureCategoryScreen({super.key, required this.categoryName});
+  const ExplorerCategoryScreen({super.key, required this.categoryName});
 
   @override
-  State<NatureCategoryScreen> createState() => _NatureCategoryScreenState();
+  State<ExplorerCategoryScreen> createState() => _ExplorerCategoryScreenState();
 }
 
-class _NatureCategoryScreenState extends State<NatureCategoryScreen> {
-  final List<Hotel> _properties = MockData.hotels.where((h) => true).toList()..shuffle();
+class _ExplorerCategoryScreenState extends State<ExplorerCategoryScreen> {
+  late final PageController _cardController;
+  final List<Hotel> _properties = MockData.hotels.toList()..shuffle();
+  int _currentCard = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _cardController = PageController(viewportFraction: 0.82);
+  }
+
+  @override
+  void dispose() {
+    _cardController.dispose();
+    super.dispose();
+  }
+
+  // Dynamic icon per category
+  IconData get _categoryIcon {
+    if (widget.categoryName.contains('Apartment')) return Icons.apartment_rounded;
+    if (widget.categoryName.contains('Cabin')) return Icons.cabin_rounded;
+    if (widget.categoryName.contains('Eco')) return Icons.eco_rounded;
+    if (widget.categoryName.contains('Camp')) return Icons.terrain_rounded;
+    if (widget.categoryName.contains('Mountain')) return Icons.landscape_rounded;
+    return Icons.explore_rounded;
+  }
+
+  // Dynamic accent color per category
+  Color get _accentColor {
+    if (widget.categoryName.contains('Apartment')) return const Color(0xFF5B7FFF);
+    if (widget.categoryName.contains('Cabin')) return const Color(0xFF8B6F47);
+    if (widget.categoryName.contains('Eco')) return const Color(0xFF4CAF50);
+    if (widget.categoryName.contains('Camp')) return const Color(0xFFFF8A65);
+    if (widget.categoryName.contains('Mountain')) return const Color(0xFF78909C);
+    return AppColors.accent;
+  }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bg = isDark ? AppColors.darkBackground : AppColors.backgroundSecondary;
-    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.textPrimary;
-    
-    // Determine icon based on name
-    IconData icon = Icons.nature_people_rounded;
-    if (widget.categoryName.contains('Cabin')) icon = Icons.cabin_rounded;
-    if (widget.categoryName.contains('Eco')) icon = Icons.eco_rounded;
-    if (widget.categoryName.contains('Mountain')) icon = Icons.landscape_rounded;
-    if (widget.categoryName.contains('Camp')) icon = Icons.fireplace_rounded;
+    final bg = isDark ? const Color(0xFF0D0D0D) : const Color(0xFFF5F5F7);
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1A1A1A);
+    final hotel = _properties.isNotEmpty ? _properties[_currentCard.clamp(0, _properties.length - 1)] : null;
 
     return Scaffold(
       backgroundColor: bg,
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          // ─── HERO HEADER ──────────────────────────────────────────
-          SliverAppBar(
-            expandedHeight: 300,
-            pinned: true,
-            backgroundColor: const Color(0xFF2E4631), // Earthy green
-            leading: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                decoration: BoxDecoration(color: Colors.black45, shape: BoxShape.circle),
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
-                  onPressed: () => context.pop(),
+      body: Column(
+        children: [
+          // ─── TOP HERO SECTION (40%) ───────────────────────────────
+          Expanded(
+            flex: 4,
+            child: Stack(
+              children: [
+                // Background image of the active card
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 500),
+                  child: hotel != null
+                      ? CachedNetworkImage(
+                          key: ValueKey(hotel.id),
+                          imageUrl: hotel.images.first,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: double.infinity,
+                        )
+                      : const SizedBox.expand(),
                 ),
-              ),
-            ),
-            flexibleSpace: FlexibleSpaceBar(
-              titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
-              title: Text(widget.categoryName, style: AppTypography.pageTitle(color: Colors.white)),
-              background: Stack(
-                fit: StackFit.expand,
-                children: [
-                  CachedNetworkImage(
-                    imageUrl: 'https://images.unsplash.com/photo-1510312305653-8ed496efae75?w=800&q=80', // Forest/Cabin vibe
-                    fit: BoxFit.cover,
-                  ),
-                  Container(
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Colors.transparent, Colors.black87],
-                      ),
+
+                // Overlay with gradient
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withOpacity(0.5),
+                        Colors.black.withOpacity(0.2),
+                        bg.withOpacity(0.0),
+                        bg,
+                      ],
+                      stops: const [0.0, 0.3, 0.7, 1.0],
                     ),
                   ),
-                  Positioned(
-                    right: -20,
-                    bottom: -20,
-                    child: Icon(icon, size: 180, color: Colors.white.withOpacity(0.1)),
+                ),
+
+                // Top bar
+                SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GestureDetector(
+                          onTap: () => context.pop(),
+                          child: Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.3),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.arrow_back_rounded, color: Colors.white, size: 20),
+                          ),
+                        ),
+                        // Category title + icon
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(_categoryIcon, color: Colors.white, size: 22),
+                            const SizedBox(width: 8),
+                            Text(widget.categoryName, style: AppTypography.cardTitle(color: Colors.white)),
+                          ],
+                        ),
+                        GestureDetector(
+                          onTap: () {},
+                          child: Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.3),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.bookmark_border_rounded, color: Colors.white, size: 20),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
+                ),
+
+                // Big dynamic title on the hero
+                Positioned(
+                  left: 24,
+                  bottom: 20,
+                  right: 24,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        hotel?.name ?? '',
+                        style: AppTypography.heroLarge(color: textPrimary).copyWith(
+                          fontSize: 26,
+                          shadows: isDark
+                              ? null
+                              : [Shadow(color: Colors.black.withOpacity(0.1), blurRadius: 10)],
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(Icons.location_on_outlined, size: 14, color: _accentColor),
+                          const SizedBox(width: 4),
+                          Text(
+                            hotel?.location ?? '',
+                            style: AppTypography.caption(color: isDark ? Colors.white60 : AppColors.textTertiary),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
 
-          // ─── ACTIVITIES ─────────────────────────────────────────────
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
-              child: Text('Popular Activities', style: AppTypography.sectionTitle(color: textPrimary)),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: SizedBox(
-              height: 100,
-              child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                children: [
-                  _ActivityCard(title: 'Hiking', icon: Icons.directions_walk_rounded, isDark: isDark),
-                  const SizedBox(width: 12),
-                  _ActivityCard(title: 'Stargazing', icon: Icons.nights_stay_rounded, isDark: isDark),
-                  const SizedBox(width: 12),
-                  _ActivityCard(title: 'Fishing', icon: Icons.phishing_rounded, isDark: isDark),
-                  const SizedBox(width: 12),
-                  _ActivityCard(title: 'Campfire', icon: Icons.local_fire_department_rounded, isDark: isDark),
-                ],
-              ),
-            ),
-          ),
+          // ─── BOTTOM CARD CAROUSEL (60%) ───────────────────────────
+          Expanded(
+            flex: 6,
+            child: Column(
+              children: [
+                // Quick stats row
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _StatPill(icon: Icons.hotel_rounded, value: '${_properties.length}', label: 'Properties', color: _accentColor, isDark: isDark),
+                      _StatPill(icon: Icons.star_rounded, value: '4.7+', label: 'Avg Rating', color: _accentColor, isDark: isDark),
+                      _StatPill(icon: Icons.location_city_rounded, value: '${MockData.cities.length}', label: 'Cities', color: _accentColor, isDark: isDark),
+                    ],
+                  ),
+                ),
 
-          // ─── LISTINGS ───────────────────────────────────────────────
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(20, 32, 20, 40),
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final prop = _properties[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 24),
-                    child: _NatureCard(property: prop, isDark: isDark, onTap: () => context.push('/hotel/${prop.id}')),
-                  );
-                },
-                childCount: _properties.length,
-              ),
+                // Cards carousel
+                Expanded(
+                  child: PageView.builder(
+                    controller: _cardController,
+                    physics: const BouncingScrollPhysics(),
+                    onPageChanged: (i) => setState(() => _currentCard = i),
+                    itemCount: _properties.length,
+                    itemBuilder: (context, index) {
+                      final prop = _properties[index];
+                      return _ExplorerCard(
+                        property: prop,
+                        isDark: isDark,
+                        accentColor: _accentColor,
+                        onTap: () => context.push('/hotel/${prop.id}'),
+                      );
+                    },
+                  ),
+                ),
+
+                // Page indicator
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(_properties.length.clamp(0, 8), (i) {
+                      final isActive = i == _currentCard;
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 250),
+                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                        width: isActive ? 20 : 6,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: isActive ? _accentColor : _accentColor.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -130,95 +249,186 @@ class _NatureCategoryScreenState extends State<NatureCategoryScreen> {
   }
 }
 
-class _ActivityCard extends StatelessWidget {
-  final String title;
+class _StatPill extends StatelessWidget {
   final IconData icon;
+  final String value;
+  final String label;
+  final Color color;
   final bool isDark;
 
-  const _ActivityCard({required this.title, required this.icon, required this.isDark});
+  const _StatPill({
+    required this.icon,
+    required this.value,
+    required this.label,
+    required this.color,
+    required this.isDark,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 90,
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.darkCard : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 4))],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 28, color: const Color(0xFF2E4631)),
-          const SizedBox(height: 8),
-          Text(title, style: AppTypography.captionMedium(color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary)),
-        ],
-      ),
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, size: 18, color: color),
+        ),
+        const SizedBox(height: 6),
+        Text(value, style: AppTypography.bodySemiBold(color: isDark ? Colors.white : Colors.black)),
+        Text(label, style: AppTypography.label(color: AppColors.textTertiary)),
+      ],
     );
   }
 }
 
-class _NatureCard extends StatelessWidget {
+class _ExplorerCard extends StatelessWidget {
   final Hotel property;
   final bool isDark;
+  final Color accentColor;
   final VoidCallback onTap;
 
-  const _NatureCard({required this.property, required this.isDark, required this.onTap});
+  const _ExplorerCard({
+    required this.property,
+    required this.isDark,
+    required this.accentColor,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
+        margin: const EdgeInsets.fromLTRB(8, 0, 8, 8),
         decoration: BoxDecoration(
-          color: isDark ? AppColors.darkCard : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 12, offset: const Offset(0, 6))],
+          color: isDark ? const Color(0xFF1A1A1A) : Colors.white,
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+              blurRadius: 24,
+              offset: const Offset(0, 8),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-              child: CachedNetworkImage(
-                imageUrl: property.images.first,
-                height: 180,
-                width: double.infinity,
-                fit: BoxFit.cover,
+            // Image
+            Expanded(
+              flex: 5,
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    CachedNetworkImage(
+                      imageUrl: property.images.first,
+                      fit: BoxFit.cover,
+                      placeholder: (_, __) => Container(color: isDark ? Colors.grey[900] : Colors.grey[200]),
+                    ),
+                    // Rating badge
+                    Positioned(
+                      top: 16,
+                      right: 16,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.star_rounded, size: 14, color: AppColors.accent),
+                            const SizedBox(width: 3),
+                            Text('${property.rating}', style: AppTypography.labelBold(color: Colors.white)),
+                          ],
+                        ),
+                      ),
+                    ),
+                    if (property.discount != null)
+                      Positioned(
+                        top: 16,
+                        left: 16,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(color: accentColor, borderRadius: BorderRadius.circular(8)),
+                          child: Text(property.discount!, style: AppTypography.labelBold(color: Colors.white)),
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(child: Text(property.name, style: AppTypography.cardTitle(color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary))),
-                      Row(
-                        children: [
-                          const Icon(Icons.star_rounded, size: 16, color: AppColors.warning),
-                          const SizedBox(width: 4),
-                          Text('${property.rating}', style: AppTypography.bodySemiBold(color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary)),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  Text(property.location, style: AppTypography.caption(color: AppColors.textTertiary)),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      const Icon(Icons.nature_rounded, size: 16, color: Color(0xFF2E4631)),
-                      const SizedBox(width: 4),
-                      Text('Immersive Nature', style: AppTypography.captionMedium(color: const Color(0xFF2E4631))),
-                      const Spacer(),
-                      Text('\$${property.pricePerNight.toInt()}', style: AppTypography.bodySemiBold(color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary)),
-                      Text('/night', style: AppTypography.caption(color: AppColors.textTertiary)),
-                    ],
-                  ),
-                ],
+
+            // Info section
+            Expanded(
+              flex: 4,
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      property.name,
+                      style: AppTypography.cardTitle(color: isDark ? Colors.white : Colors.black),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Icon(Icons.location_on_outlined, size: 13, color: accentColor),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(property.location, style: AppTypography.caption(color: AppColors.textTertiary), maxLines: 1, overflow: TextOverflow.ellipsis),
+                        ),
+                      ],
+                    ),
+                    const Spacer(),
+                    // Amenities
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 4,
+                      children: property.amenities.take(3).map((a) {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: accentColor.withOpacity(0.08),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(a, style: AppTypography.label(color: accentColor)),
+                        );
+                      }).toList(),
+                    ),
+                    const Spacer(),
+                    // Price row
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text('\$${property.pricePerNight.toInt()}', style: AppTypography.priceSmall(color: isDark ? Colors.white : Colors.black)),
+                            Text(' /night', style: AppTypography.caption(color: AppColors.textTertiary)),
+                          ],
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: accentColor,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text('Book', style: AppTypography.buttonSmall(color: Colors.white)),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
