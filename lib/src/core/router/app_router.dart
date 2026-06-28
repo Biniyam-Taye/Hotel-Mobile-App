@@ -25,6 +25,9 @@ import 'package:luxestay/src/features/explore/presentation/category_screen.dart'
 import 'package:luxestay/src/features/explore/presentation/hotels_category_screen.dart';
 import 'package:luxestay/src/features/explore/presentation/resorts_category_screen.dart';
 import 'package:luxestay/src/features/explore/presentation/apartments_category_screen.dart';
+import 'package:luxestay/src/features/explore/presentation/nature_category_screen.dart';
+import 'package:luxestay/src/features/explore/presentation/luxury_category_screen.dart';
+import 'package:luxestay/src/features/explore/presentation/functional_category_screen.dart';
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 final GlobalKey<NavigatorState> _shellNavigatorHomeKey = GlobalKey<NavigatorState>(debugLabel: 'shellHome');
 final GlobalKey<NavigatorState> _shellNavigatorExploreKey = GlobalKey<NavigatorState>(debugLabel: 'shellExplore');
@@ -78,6 +81,15 @@ final appRouter = GoRouter(
         if (name == 'Hotels') return const HotelsCategoryScreen();
         if (name == 'Resorts') return const ResortsCategoryScreen();
         if (name == 'Apartments') return const ApartmentsCategoryScreen();
+        if (['Cabins', 'Eco Lodge', 'Camping', 'Mountain Hotels'].contains(name)) {
+          return NatureCategoryScreen(categoryName: name);
+        }
+        if (['Luxury Villas', 'Spa Resorts', 'Beach Hotels'].contains(name)) {
+          return LuxuryCategoryScreen(categoryName: name);
+        }
+        if (['Business Hotels', 'Family Hotels', 'Pet Friendly'].contains(name)) {
+          return FunctionalCategoryScreen(categoryName: name);
+        }
         return CategoryScreen(categoryName: name);
       },
     ),
