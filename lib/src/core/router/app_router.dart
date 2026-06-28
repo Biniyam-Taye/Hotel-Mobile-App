@@ -22,6 +22,9 @@ import 'package:luxestay/src/features/profile/presentation/payment_methods_scree
 import 'package:luxestay/src/features/profile/presentation/settings_screen.dart';
 import 'package:luxestay/src/features/profile/presentation/support_screen.dart';
 import 'package:luxestay/src/features/explore/presentation/category_screen.dart';
+import 'package:luxestay/src/features/explore/presentation/hotels_category_screen.dart';
+import 'package:luxestay/src/features/explore/presentation/resorts_category_screen.dart';
+import 'package:luxestay/src/features/explore/presentation/apartments_category_screen.dart';
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 final GlobalKey<NavigatorState> _shellNavigatorHomeKey = GlobalKey<NavigatorState>(debugLabel: 'shellHome');
 final GlobalKey<NavigatorState> _shellNavigatorExploreKey = GlobalKey<NavigatorState>(debugLabel: 'shellExplore');
@@ -70,9 +73,13 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/category/:name',
       parentNavigatorKey: _rootNavigatorKey,
-      builder: (context, state) => CategoryScreen(
-        categoryName: state.pathParameters['name']!,
-      ),
+      builder: (context, state) {
+        final name = state.pathParameters['name']!;
+        if (name == 'Hotels') return const HotelsCategoryScreen();
+        if (name == 'Resorts') return const ResortsCategoryScreen();
+        if (name == 'Apartments') return const ApartmentsCategoryScreen();
+        return CategoryScreen(categoryName: name);
+      },
     ),
     GoRoute(
       path: '/hotel/:id',
