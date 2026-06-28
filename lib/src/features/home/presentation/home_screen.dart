@@ -471,7 +471,7 @@ class _HeroHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '$_greeting, ${user.name} 👋',
+                '$_greeting, ${user.name}',
                 style: AppTypography.body(
                   color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                 ).copyWith(fontSize: 13),
