@@ -82,7 +82,7 @@ final appRouter = GoRouter(
         if (name == 'Resorts') return const ResortsCategoryScreen();
         if (name == 'Apartments') return const ApartmentsCategoryScreen();
         if (['Cabins', 'Eco Lodge', 'Camping', 'Mountain Hotels'].contains(name)) {
-          return NatureCategoryScreen(categoryName: name);
+          return ExplorerCategoryScreen(categoryName: name);
         }
         if (['Luxury Villas', 'Spa Resorts', 'Beach Hotels'].contains(name)) {
           return LuxuryCategoryScreen(categoryName: name);

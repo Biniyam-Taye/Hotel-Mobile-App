@@ -231,7 +231,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                             actionText: 'View All',
                             onAction: () {},
                             isDark: isDark,
-                            badge: '🔥 Hot',
+                            badge: 'Hot',
                           ),
                         ),
                         const SizedBox(height: 20),
