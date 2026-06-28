@@ -150,9 +150,9 @@ class _HotelsCategoryScreenState extends State<HotelsCategoryScreen> {
                     spacing: 8,
                     children: [
                       _FilterChip(label: 'All', isSelected: _selectedStarFilter == 0, onTap: () => setState(() => _selectedStarFilter = 0), isDark: isDark),
-                      _FilterChip(label: '⭐ 3+', isSelected: _selectedStarFilter == 3, onTap: () => setState(() => _selectedStarFilter = 3), isDark: isDark),
-                      _FilterChip(label: '⭐ 4+', isSelected: _selectedStarFilter == 4, onTap: () => setState(() => _selectedStarFilter = 4), isDark: isDark),
-                      _FilterChip(label: '⭐ 4.5+', isSelected: _selectedStarFilter == 4.5.toInt(), onTap: () => setState(() => _selectedStarFilter = 5), isDark: isDark),
+                      _FilterChip(label: '3+', icon: Icons.star_rounded, isSelected: _selectedStarFilter == 3, onTap: () => setState(() => _selectedStarFilter = 3), isDark: isDark),
+                      _FilterChip(label: '4+', icon: Icons.star_rounded, isSelected: _selectedStarFilter == 4, onTap: () => setState(() => _selectedStarFilter = 4), isDark: isDark),
+                      _FilterChip(label: '4.5+', icon: Icons.star_rounded, isSelected: _selectedStarFilter == 4.5.toInt(), onTap: () => setState(() => _selectedStarFilter = 5), isDark: isDark),
                     ],
                   ),
                 ],
@@ -430,11 +430,12 @@ class _StatItem extends StatelessWidget {
 
 class _FilterChip extends StatelessWidget {
   final String label;
+  final IconData? icon;
   final bool isSelected;
   final VoidCallback onTap;
   final bool isDark;
 
-  const _FilterChip({required this.label, required this.isSelected, required this.onTap, required this.isDark});
+  const _FilterChip({required this.label, this.icon, required this.isSelected, required this.onTap, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
@@ -447,7 +448,16 @@ class _FilterChip extends StatelessWidget {
           color: isSelected ? const Color(0xFF0F3460) : (isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant),
           borderRadius: BorderRadius.circular(20),
         ),
-        child: Text(label, style: AppTypography.captionMedium(color: isSelected ? Colors.white : (isDark ? AppColors.darkTextPrimary : AppColors.textPrimary))),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Icon(icon, size: 14, color: isSelected ? Colors.white : (isDark ? AppColors.darkTextPrimary : AppColors.textPrimary)),
+              const SizedBox(width: 4),
+            ],
+            Text(label, style: AppTypography.captionMedium(color: isSelected ? Colors.white : (isDark ? AppColors.darkTextPrimary : AppColors.textPrimary))),
+          ],
+        ),
       ),
     );
   }
