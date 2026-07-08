@@ -257,10 +257,5 @@ class RevenuePage extends StatelessWidget {
         ),
       ),
     );
-  }            ),
-          ),
-        ),
-      ],
-    );
   }
 }
