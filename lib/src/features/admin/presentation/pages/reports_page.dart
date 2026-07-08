@@ -15,61 +15,74 @@ class ReportsPage extends StatelessWidget {
         const AdminAppBar(title: 'Reports & Analytics'),
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            padding: const EdgeInsets.all(16),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final width = constraints.maxWidth;
+                final crossAxisCount = width > 1200 ? 3 : (width > 800 ? 2 : 1);
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Available Reports',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-                      ),
-                    ),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        OutlinedButton.icon(
-                          onPressed: () {},
-                          icon: const Icon(Icons.calendar_today_rounded, size: 16),
-                          label: const Text('Last 30 Days'),
+                        Text(
+                          'Available Reports',
+                          style: TextStyle(
+                            fontSize: width > 600 ? 18 : 16,
+                            fontWeight: FontWeight.w600,
+                            color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                          ),
                         ),
-                        const SizedBox(width: 12),
-                        ElevatedButton.icon(
-                          onPressed: () {},
-                          icon: const Icon(Icons.download_rounded, size: 16),
-                          label: const Text('Export All'),
-                        ),
+                        if (width > 600)
+                          Row(
+                            children: [
+                              OutlinedButton.icon(
+                                onPressed: () {},
+                                icon: const Icon(Icons.calendar_today_rounded, size: 16),
+                                label: const Text('Last 30 Days'),
+                              ),
+                              const SizedBox(width: 12),
+                              ElevatedButton.icon(
+                                onPressed: () {},
+                                icon: const Icon(Icons.download_rounded, size: 16),
+                                label: const Text('Export All'),
+                              ),
+                            ],
+                          )
+                        else
+                          IconButton(
+                            onPressed: () {},
+                            icon: const Icon(Icons.more_vert_rounded),
+                          ),
                       ],
                     ),
+                    const SizedBox(height: 24),
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                        mainAxisExtent: 200, // Fixed height to prevent overflow
+                      ),
+                      itemCount: AdminMockData.reportCards.length,
+                      itemBuilder: (context, index) {
+                        final report = AdminMockData.reportCards[index];
+                        return _ReportCard(
+                          title: report['title'],
+                          description: report['description'],
+                          iconName: report['icon'],
+                          lastGenerated: report['lastGenerated'],
+                          trend: report['trend'],
+                        );
+                      },
+                    ),
                   ],
-                ),
-                const SizedBox(height: 24),
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: MediaQuery.of(context).size.width > 1200 ? 3 : 2,
-                    crossAxisSpacing: 24,
-                    mainAxisSpacing: 24,
-                    childAspectRatio: 1.5,
-                  ),
-                  itemCount: AdminMockData.reportCards.length,
-                  itemBuilder: (context, index) {
-                    final report = AdminMockData.reportCards[index];
-                    return _ReportCard(
-                      title: report['title'],
-                      description: report['description'],
-                      iconName: report['icon'],
-                      lastGenerated: report['lastGenerated'],
-                      trend: report['trend'],
-                    );
-                  },
-                ),
-              ],
+                );
+              }
             ),
           ),
         ),
@@ -110,7 +123,7 @@ class _ReportCard extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkCard : AppColors.card,
         borderRadius: BorderRadius.circular(16),
@@ -151,26 +164,36 @@ class _ReportCard extends StatelessWidget {
               ),
             ],
           ),
-          const Spacer(),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            description,
-            style: TextStyle(
-              fontSize: 13,
-              color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
           const SizedBox(height: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  description,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
           Row(
             children: [
               Icon(
@@ -179,14 +202,17 @@ class _ReportCard extends StatelessWidget {
                 color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
               ),
               const SizedBox(width: 4),
-              Text(
-                'Generated $lastGenerated',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
+              Expanded(
+                child: Text(
+                  'Gen: $lastGenerated',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const Spacer(),
               Icon(
                 trend == 'up' ? Icons.trending_up_rounded : 
                 (trend == 'down' ? Icons.trending_down_rounded : Icons.trending_flat_rounded),
