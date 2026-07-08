@@ -5,8 +5,9 @@ import 'package:luxestay/src/features/admin/presentation/widgets/admin_status_ba
 /// Reusable styled DataTable for admin pages.
 /// Supports sorting, pagination hint, search bar, and action buttons.
 class AdminDataTable extends StatelessWidget {
-  final List<String> columns;
-  final List<List<dynamic>> rows;
+  final List<String>? columns;
+  final List<List<dynamic>>? rows;
+  final Widget? customContent;
   final String? searchHint;
   final String? addButtonLabel;
   final VoidCallback? onAdd;
@@ -16,8 +17,9 @@ class AdminDataTable extends StatelessWidget {
 
   const AdminDataTable({
     super.key,
-    required this.columns,
-    required this.rows,
+    this.columns,
+    this.rows,
+    this.customContent,
     this.searchHint,
     this.addButtonLabel,
     this.onAdd,
@@ -113,48 +115,50 @@ class AdminDataTable extends StatelessWidget {
             ),
           ),
 
-          // ─── TABLE ────────────────────────────────────────────────
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width - 330),
-              child: DataTable(
-                headingRowColor: WidgetStateProperty.all(
-                  isDark ? AppColors.darkSurfaceVariant.withValues(alpha: 0.5) : AppColors.backgroundSecondary,
+          // ─── TABLE OR CUSTOM CONTENT ──────────────────────────────────────
+          if (customContent != null)
+            customContent!
+          else if (columns != null && rows != null)
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width - 330),
+                child: DataTable(
+                  headingRowColor: WidgetStateProperty.all(
+                    isDark ? AppColors.darkSurfaceVariant.withValues(alpha: 0.5) : AppColors.backgroundSecondary,
+                  ),
+                  headingTextStyle: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                    letterSpacing: 0.5,
+                  ),
+                  dataTextStyle: TextStyle(
+                    fontSize: 13,
+                    color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                  ),
+                  columnSpacing: 24,
+                  horizontalMargin: 16,
+                  columns: columns!
+                      .map((c) => DataColumn(label: Text(c.toUpperCase())))
+                      .toList(),
+                  rows: rows!.map((row) {
+                    return DataRow(
+                      cells: row.map((cell) {
+                        if (cell is Widget) {
+                          return DataCell(cell);
+                        }
+                        final str = cell.toString();
+                        if (_isStatusString(str)) {
+                          return DataCell(AdminStatusBadge(status: str));
+                        }
+                        return DataCell(Text(str));
+                      }).toList(),
+                    );
+                  }).toList(),
                 ),
-                headingTextStyle: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-                  letterSpacing: 0.5,
-                ),
-                dataTextStyle: TextStyle(
-                  fontSize: 13,
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-                ),
-                columnSpacing: 24,
-                horizontalMargin: 16,
-                columns: columns
-                    .map((c) => DataColumn(label: Text(c.toUpperCase())))
-                    .toList(),
-                rows: rows.map((row) {
-                  return DataRow(
-                    cells: row.map((cell) {
-                      if (cell is Widget) {
-                        return DataCell(cell);
-                      }
-                      // Auto-detect status strings
-                      final str = cell.toString();
-                      if (_isStatusString(str)) {
-                        return DataCell(AdminStatusBadge(status: str));
-                      }
-                      return DataCell(Text(str));
-                    }).toList(),
-                  );
-                }).toList(),
               ),
             ),
-          ),
           const SizedBox(height: 8),
         ],
       ),
