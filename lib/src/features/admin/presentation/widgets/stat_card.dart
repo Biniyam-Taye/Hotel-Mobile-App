@@ -41,12 +41,24 @@ class StatCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                  ),
+                ),
+              ),
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: (iconBgColor ?? AppColors.accent).withValues(alpha: isDark ? 0.15 : 0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
                   icon,
@@ -54,56 +66,54 @@ class StatCard extends StatelessWidget {
                   color: iconColor ?? AppColors.accent,
                 ),
               ),
-              const Spacer(),
-              if (trendPercentage != null)
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: (isPositive ? AppColors.success : AppColors.error)
-                        .withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        isPositive ? Icons.trending_up_rounded : Icons.trending_down_rounded,
-                        size: 14,
-                        color: isPositive ? AppColors.success : AppColors.error,
-                      ),
-                      const SizedBox(width: 2),
-                      Text(
-                        '${isPositive ? '+' : ''}${trendPercentage!.toStringAsFixed(1)}%',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: isPositive ? AppColors.success : AppColors.error,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Text(
             value,
             style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w700,
+              fontSize: 32,
+              fontWeight: FontWeight.w800,
               color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-              letterSpacing: -0.5,
+              letterSpacing: -1,
             ),
           ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+          const SizedBox(height: 12),
+          if (trendPercentage != null)
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: (isPositive ? AppColors.success : AppColors.error).withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    isPositive ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded,
+                    size: 12,
+                    color: isPositive ? AppColors.success : AppColors.error,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  '${trendPercentage!.abs().toStringAsFixed(1)}%',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: isPositive ? AppColors.success : AppColors.error,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  'vs last month',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
+                  ),
+                ),
+              ],
             ),
-          ),
         ],
       ),
     );

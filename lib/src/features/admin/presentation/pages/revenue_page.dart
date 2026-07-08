@@ -39,7 +39,7 @@ class RevenuePage extends StatelessWidget {
                         crossAxisCount: isMobile ? 1 : (isTablet ? 2 : 4),
                         crossAxisSpacing: 16,
                         mainAxisSpacing: 16,
-                        mainAxisExtent: 140, // Fixed height instead of aspect ratio
+                        mainAxisExtent: 164, // Updated height to fit new design
                       ),
                       itemCount: 4,
                       itemBuilder: (context, index) {
