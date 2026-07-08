@@ -35,14 +35,16 @@ class AdminSidebar extends StatelessWidget {
         children: [
           // Logo & Toggle
           Padding(
-            padding: EdgeInsets.all(isExpanded ? 20.0 : 16.0),
-            child: Row(
-              mainAxisAlignment: isExpanded ? MainAxisAlignment.spaceBetween : MainAxisAlignment.center,
-              children: [
-                if (isExpanded)
-                  Row(
-                    children: [
-                      Container(
+            padding: const EdgeInsets.symmetric(vertical: 20.0),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              physics: const NeverScrollableScrollPhysics(),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: isExpanded ? 64 : 80,
+                    child: Center(
+                      child: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: AppColors.accent,
@@ -50,27 +52,19 @@ class AdminSidebar extends StatelessWidget {
                         ),
                         child: const Icon(Icons.apartment_rounded, color: AppColors.textPrimary, size: 24),
                       ),
-                      const SizedBox(width: 12),
-                      Text(
-                        'LuxeAdmin',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-                        ),
-                      ),
-                    ],
-                  ),
-                if (!isExpanded)
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppColors.accent,
-                      borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(Icons.apartment_rounded, color: AppColors.textPrimary, size: 24),
                   ),
-              ],
+                  if (isExpanded)
+                    Text(
+                      'LuxeAdmin',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
           
@@ -210,7 +204,7 @@ class AdminSidebar extends StatelessWidget {
           
           // User Profile Section at bottom
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(vertical: 16),
             decoration: BoxDecoration(
               border: Border(
                 top: BorderSide(
@@ -218,72 +212,63 @@ class AdminSidebar extends StatelessWidget {
                 ),
               ),
             ),
-            child: isExpanded
-                ? Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 20,
-                        backgroundColor: AppColors.accent,
-                        child: Text(
-                          'BT',
-                          style: TextStyle(
-                            color: AppColors.textPrimary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Biniyam Taye',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              physics: const NeverScrollableScrollPhysics(),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: isExpanded ? 64 : 80,
+                    child: Center(
+                      child: InkWell(
+                        onTap: () => context.go('/dev-launcher'),
+                        child: CircleAvatar(
+                          radius: 20,
+                          backgroundColor: AppColors.accent,
+                          child: Text(
+                            'BT',
+                            style: TextStyle(
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.bold,
                             ),
-                            Text(
-                              'Super Admin',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.logout_rounded, size: 20),
-                        color: AppColors.error,
-                        onPressed: () {
-                          // TODO: Logout logic
-                          context.go('/dev-launcher');
-                        },
-                      ),
-                    ],
-                  )
-                : Tooltip(
-                    message: 'Logout',
-                    child: InkWell(
-                      onTap: () => context.go('/dev-launcher'),
-                      child: CircleAvatar(
-                        radius: 20,
-                        backgroundColor: AppColors.accent,
-                        child: Text(
-                          'BT',
-                          style: TextStyle(
-                            color: AppColors.textPrimary,
-                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
                     ),
                   ),
+                  if (isExpanded) ...[
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Biniyam Taye',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                          ),
+                        ),
+                        Text(
+                          'Super Admin',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(width: 24),
+                    IconButton(
+                      icon: const Icon(Icons.logout_rounded, size: 20),
+                      color: AppColors.error,
+                      onPressed: () {
+                        context.go('/dev-launcher');
+                      },
+                    ),
+                  ],
+                ],
+              ),
+            ),
           ),
         ],
       ),
@@ -345,7 +330,6 @@ class _NavItem extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           child: Container(
             padding: EdgeInsets.symmetric(
-              horizontal: isExpanded ? 16 : 0,
               vertical: 12,
             ),
             decoration: BoxDecoration(
@@ -354,18 +338,27 @@ class _NavItem extends StatelessWidget {
                   ? (isDark ? AppColors.accent.withValues(alpha: 0.1) : AppColors.accent.withValues(alpha: 0.15))
                   : Colors.transparent,
             ),
-            child: isExpanded
-                ? Row(
-                    children: [
-                      Icon(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              physics: const NeverScrollableScrollPhysics(),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: isExpanded ? 54 : 56,
+                    child: Center(
+                      child: Icon(
                         icon,
-                        size: 22,
+                        size: isExpanded ? 22 : 24,
                         color: isSelected
                             ? AppColors.accent
                             : (isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
                       ),
-                      const SizedBox(width: 16),
-                      Text(
+                    ),
+                  ),
+                  if (isExpanded)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 16),
+                      child: Text(
                         label,
                         style: TextStyle(
                           fontSize: 14,
@@ -375,17 +368,10 @@ class _NavItem extends StatelessWidget {
                               : (isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
                         ),
                       ),
-                    ],
-                  )
-                : Center(
-                    child: Icon(
-                      icon,
-                      size: 24,
-                      color: isSelected
-                          ? AppColors.accent
-                          : (isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
                     ),
-                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
