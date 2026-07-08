@@ -35,7 +35,7 @@ class DashboardPage extends StatelessWidget {
                         crossAxisCount: isMobile ? 1 : (isTablet ? 2 : 4),
                         crossAxisSpacing: 16,
                         mainAxisSpacing: 16,
-                        mainAxisExtent: 164, // Updated height to fit new design
+                        mainAxisExtent: 180, // Updated height to guarantee no overflow
                       ),
                       itemCount: 4,
                       itemBuilder: (context, index) {
