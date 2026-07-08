@@ -3,6 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luxestay/src/features/dev_launcher/presentation/dev_launcher_screen.dart';
 import 'package:luxestay/src/features/receptionist/presentation/receptionist_shell.dart';
+import 'package:luxestay/src/features/receptionist/presentation/pages/r_dashboard_page.dart';
+import 'package:luxestay/src/features/receptionist/presentation/pages/r_rooms_page.dart';
+import 'package:luxestay/src/features/receptionist/presentation/pages/r_checkin_page.dart';
+import 'package:luxestay/src/features/receptionist/presentation/pages/r_guests_page.dart';
+import 'package:luxestay/src/features/receptionist/presentation/pages/r_profile_page.dart';
 import 'package:luxestay/src/features/admin/presentation/admin_shell.dart';
 import 'package:luxestay/src/features/admin/presentation/pages/dashboard_page.dart';
 import 'package:luxestay/src/features/admin/presentation/pages/hotel_management_page.dart';
@@ -65,9 +70,57 @@ final appRouter = GoRouter(
       redirect: (context, state) => kDebugMode ? null : '/splash',
       builder: (context, state) => const DevLauncherScreen(),
     ),
-    GoRoute(
-      path: '/receptionist',
-      builder: (context, state) => const ReceptionistShell(),
+    // ─── RECEPTIONIST SHELL ──────────────────────────────────────────
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) {
+        return ReceptionistShell(navigationShell: navigationShell);
+      },
+      branches: [
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/receptionist',
+              redirect: (context, state) => '/receptionist/dashboard',
+            ),
+            GoRoute(
+              path: '/receptionist/dashboard',
+              builder: (context, state) => const RDashboardPage(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/receptionist/rooms',
+              builder: (context, state) => const RRoomsPage(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/receptionist/checkin',
+              builder: (context, state) => const RCheckinPage(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/receptionist/guests',
+              builder: (context, state) => const RGuestsPage(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/receptionist/profile',
+              builder: (context, state) => const RProfilePage(),
+            ),
+          ],
+        ),
+      ],
     ),
     GoRoute(
       path: '/splash',
