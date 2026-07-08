@@ -127,75 +127,143 @@ class _HotelManagementPageState extends State<HotelManagementPage> {
         .where((h) => h['status'].toString().toLowerCase() == 'maintenance')
         .toList();
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: maintenanceHotels.isEmpty ? 1 : maintenanceHotels.length * 2,
-      itemBuilder: (context, index) {
-        if (maintenanceHotels.isEmpty) {
-          return const Padding(
-            padding: EdgeInsets.all(24.0),
-            child: Center(child: Text('No hotels under maintenance.')),
-          );
-        }
-        
-        final isEmergency = index % 2 == 0;
-        final hotel = maintenanceHotels[index % maintenanceHotels.length];
-        
-        return Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: isDark ? AppColors.darkSurfaceVariant : AppColors.backgroundSecondary,
-            borderRadius: BorderRadius.circular(12),
-            border: Border(left: BorderSide(color: isEmergency ? AppColors.error : AppColors.warning, width: 4)),
-          ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Summary Cards
+        Padding(
+          padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
           child: Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: (isEmergency ? AppColors.error : AppColors.warning).withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  isEmergency ? Icons.build_rounded : Icons.cleaning_services_rounded,
-                  color: isEmergency ? AppColors.error : AppColors.warning,
-                  size: 20,
-                ),
-              ),
+              Expanded(child: _buildMaintenanceSummaryCard('Active Tickets', '14', Icons.build_circle_rounded, AppColors.error, isDark)),
               const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      isEmergency ? 'HVAC System Repair - ${hotel['name']}' : 'Deep Cleaning - ${hotel['name']}',
-                      style: TextStyle(fontWeight: FontWeight.bold, color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Reported: 2 days ago • Expected Completion: Tomorrow',
-                      style: TextStyle(fontSize: 12, color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
-                    ),
-                  ],
-                ),
+              Expanded(child: _buildMaintenanceSummaryCard('In Progress', '8', Icons.sync_rounded, AppColors.warning, isDark)),
+              const SizedBox(width: 16),
+              Expanded(child: _buildMaintenanceSummaryCard('Resolved Today', '5', Icons.check_circle_rounded, AppColors.success, isDark)),
+            ],
+          ),
+        ),
+        const SizedBox(height: 24),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Text(
+            'Recent Maintenance Tickets',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        ListView.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: maintenanceHotels.isEmpty ? 3 : maintenanceHotels.length * 3,
+          itemBuilder: (context, index) {
+            final hotelName = maintenanceHotels.isEmpty ? 'Grand Palace' : maintenanceHotels[index % maintenanceHotels.length]['name'];
+            final isEmergency = index % 3 == 0;
+            final isRoutine = index % 3 == 1;
+            
+            String title = 'Deep Cleaning';
+            IconData icon = Icons.cleaning_services_rounded;
+            Color color = AppColors.info;
+            
+            if (isEmergency) {
+              title = 'HVAC System Failure';
+              icon = Icons.thermostat_rounded;
+              color = AppColors.error;
+            } else if (isRoutine) {
+              title = 'Pool Maintenance';
+              icon = Icons.water_rounded;
+              color = AppColors.warning;
+            }
+
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: isDark ? AppColors.darkSurfaceVariant : AppColors.backgroundSecondary,
+                borderRadius: BorderRadius.circular(12),
+                border: Border(left: BorderSide(color: color, width: 4)),
               ),
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isDark ? AppColors.darkCard : AppColors.card,
-                  foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-                  elevation: 0,
-                  side: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(icon, color: color, size: 20),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '$title - $hotelName',
+                          style: TextStyle(fontWeight: FontWeight.bold, color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Reported: ${index + 1} hours ago • Expected Completion: ${isEmergency ? 'Today' : 'Tomorrow'}',
+                          style: TextStyle(fontSize: 12, color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: isDark ? AppColors.darkCard : AppColors.card,
+                      foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                      elevation: 0,
+                      side: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
+                    ),
+                    child: const Text('View Ticket'),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMaintenanceSummaryCard(String title, String value, IconData icon, Color color, bool isDark) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkSurfaceVariant : AppColors.backgroundSecondary,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: color, size: 20),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
                 ),
-                child: const Text('View Ticket'),
               ),
             ],
           ),
-        );
-      },
+          const SizedBox(height: 12),
+          Text(
+            value,
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
+          ),
+        ],
+      ),
     );
   }
 
