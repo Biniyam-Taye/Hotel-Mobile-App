@@ -2,52 +2,84 @@ import 'package:flutter/material.dart';
 import 'package:luxestay/src/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
 
-/// Placeholder shell for the Receptionist Dashboard
 class ReceptionistShell extends StatelessWidget {
-  const ReceptionistShell({super.key});
+  final StatefulNavigationShell navigationShell;
+
+  const ReceptionistShell({
+    super.key,
+    required this.navigationShell,
+  });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Receptionist Dashboard (Placeholder)'),
-        backgroundColor: isDark ? AppColors.darkCard : AppColors.card,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.exit_to_app_rounded),
-            onPressed: () => context.go('/dev-launcher'),
-            tooltip: 'Return to Launcher',
+      body: navigationShell,
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.darkCard : AppColors.card,
+          border: Border(
+            top: BorderSide(
+              color: isDark ? AppColors.darkBorder : AppColors.border,
+            ),
           ),
-        ],
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildNavItem(0, Icons.dashboard_rounded, 'Dashboard', isDark),
+                _buildNavItem(1, Icons.meeting_room_rounded, 'Rooms', isDark),
+                _buildNavItem(2, Icons.login_rounded, 'Check-In', isDark),
+                _buildNavItem(3, Icons.support_agent_rounded, 'Guests', isDark),
+                _buildNavItem(4, Icons.person_rounded, 'Profile', isDark),
+              ],
+            ),
+          ),
+        ),
       ),
-      body: Center(
+    );
+  }
+
+  Widget _buildNavItem(int index, IconData icon, String label, bool isDark) {
+    final isSelected = navigationShell.currentIndex == index;
+
+    return GestureDetector(
+      onTap: () {
+        navigationShell.goBranch(
+          index,
+          initialLocation: index == navigationShell.currentIndex,
+        );
+      },
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.accent.withValues(alpha: 0.15) : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+        ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              Icons.support_agent_rounded,
-              size: 80,
-              color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
+              icon,
+              color: isSelected
+                  ? AppColors.textPrimary // Since accent might be hard to see in light mode, textPrimary is better, but wait, let's use a defined accent text color or just textPrimary if light mode, or a solid color.
+                  : (isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 4),
             Text(
-              'Receptionist Interface',
+              label,
               style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'This is a placeholder for the Receptionist UI.\nYou can build this out later.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-                height: 1.5,
+                fontSize: 10,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                color: isSelected
+                    ? AppColors.textPrimary
+                    : (isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
               ),
             ),
           ],
