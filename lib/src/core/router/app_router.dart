@@ -1,5 +1,25 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:luxestay/src/features/dev_launcher/presentation/dev_launcher_screen.dart';
+import 'package:luxestay/src/features/receptionist/presentation/receptionist_shell.dart';
+import 'package:luxestay/src/features/admin/presentation/admin_shell.dart';
+import 'package:luxestay/src/features/admin/presentation/pages/dashboard_page.dart';
+import 'package:luxestay/src/features/admin/presentation/pages/hotel_management_page.dart';
+import 'package:luxestay/src/features/admin/presentation/pages/room_management_page.dart';
+import 'package:luxestay/src/features/admin/presentation/pages/booking_management_page.dart';
+import 'package:luxestay/src/features/admin/presentation/pages/customer_management_page.dart';
+import 'package:luxestay/src/features/admin/presentation/pages/receptionist_management_page.dart';
+import 'package:luxestay/src/features/admin/presentation/pages/staff_management_page.dart';
+import 'package:luxestay/src/features/admin/presentation/pages/revenue_page.dart';
+import 'package:luxestay/src/features/admin/presentation/pages/reports_page.dart';
+import 'package:luxestay/src/features/admin/presentation/pages/reviews_page.dart';
+import 'package:luxestay/src/features/admin/presentation/pages/notifications_page.dart';
+import 'package:luxestay/src/features/admin/presentation/pages/promotions_page.dart';
+import 'package:luxestay/src/features/admin/presentation/pages/roles_permissions_page.dart';
+import 'package:luxestay/src/features/admin/presentation/pages/activity_logs_page.dart';
+import 'package:luxestay/src/features/admin/presentation/pages/settings_page.dart';
+import 'package:luxestay/src/features/admin/presentation/pages/admin_profile_page.dart';
 import 'package:luxestay/src/features/splash/presentation/splash_screen.dart';
 import 'package:luxestay/src/features/onboarding/presentation/onboarding_screen.dart';
 import 'package:luxestay/src/features/auth/presentation/login_screen.dart';
@@ -34,11 +54,21 @@ final GlobalKey<NavigatorState> _shellNavigatorExploreKey = GlobalKey<NavigatorS
 final GlobalKey<NavigatorState> _shellNavigatorBookingsKey = GlobalKey<NavigatorState>(debugLabel: 'shellBookings');
 final GlobalKey<NavigatorState> _shellNavigatorFavoritesKey = GlobalKey<NavigatorState>(debugLabel: 'shellFavorites');
 final GlobalKey<NavigatorState> _shellNavigatorProfileKey = GlobalKey<NavigatorState>(debugLabel: 'shellProfile');
+final GlobalKey<NavigatorState> _shellNavigatorAdminKey = GlobalKey<NavigatorState>(debugLabel: 'shellAdmin');
 
 final appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: '/splash',
+  initialLocation: kDebugMode ? '/dev-launcher' : '/splash',
   routes: [
+    GoRoute(
+      path: '/dev-launcher',
+      redirect: (context, state) => kDebugMode ? null : '/splash',
+      builder: (context, state) => const DevLauncherScreen(),
+    ),
+    GoRoute(
+      path: '/receptionist',
+      builder: (context, state) => const ReceptionistShell(),
+    ),
     GoRoute(
       path: '/splash',
       builder: (context, state) => SplashScreen(
@@ -152,7 +182,35 @@ final appRouter = GoRouter(
       builder: (context, state) => const SupportScreen(),
     ),
 
-    // ─── BOTTOM NAVIGATION SHELL ───────────────────────────────────────
+    // ─── ADMIN SHELL ──────────────────────────────────────────────────
+    ShellRoute(
+      navigatorKey: _shellNavigatorAdminKey,
+      builder: (context, state, child) => AdminShell(child: child),
+      routes: [
+        GoRoute(
+          path: '/admin',
+          redirect: (context, state) => '/admin/dashboard',
+        ),
+        GoRoute(path: '/admin/dashboard', builder: (context, state) => const DashboardPage()),
+        GoRoute(path: '/admin/hotels', builder: (context, state) => const HotelManagementPage()),
+        GoRoute(path: '/admin/rooms', builder: (context, state) => const RoomManagementPage()),
+        GoRoute(path: '/admin/bookings', builder: (context, state) => const BookingManagementPage()),
+        GoRoute(path: '/admin/customers', builder: (context, state) => const CustomerManagementPage()),
+        GoRoute(path: '/admin/receptionists', builder: (context, state) => const ReceptionistManagementPage()),
+        GoRoute(path: '/admin/staff', builder: (context, state) => const StaffManagementPage()),
+        GoRoute(path: '/admin/revenue', builder: (context, state) => const RevenuePage()),
+        GoRoute(path: '/admin/reports', builder: (context, state) => const ReportsPage()),
+        GoRoute(path: '/admin/reviews', builder: (context, state) => const ReviewsPage()),
+        GoRoute(path: '/admin/notifications', builder: (context, state) => const NotificationsPage()),
+        GoRoute(path: '/admin/promotions', builder: (context, state) => const PromotionsPage()),
+        GoRoute(path: '/admin/roles', builder: (context, state) => const RolesPermissionsPage()),
+        GoRoute(path: '/admin/logs', builder: (context, state) => const ActivityLogsPage()),
+        GoRoute(path: '/admin/settings', builder: (context, state) => const SettingsPage()),
+        GoRoute(path: '/admin/profile', builder: (context, state) => const AdminProfilePage()),
+      ],
+    ),
+
+    // ─── BOTTOM NAVIGATION SHELL (CUSTOMER APP) ───────────────────────
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
         return NavigationShell(navigationShell: navigationShell);
