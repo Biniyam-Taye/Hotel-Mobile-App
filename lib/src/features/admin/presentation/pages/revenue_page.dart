@@ -90,7 +90,7 @@ class RevenuePage extends StatelessWidget {
                               bottomTitles: AxisTitles(
                                 sideTitles: SideTitles(
                                   showTitles: true,
-                                  getTitlesWidget: (double value, SideTitlesMeta meta) {
+                                  getTitlesWidget: (value, meta) {
                                     if (value.toInt() >= 0 && value.toInt() < AdminMockData.revenueSources.length) {
                                       return Padding(
                                         padding: const EdgeInsets.only(top: 8.0),
