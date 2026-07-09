@@ -9,7 +9,7 @@ class TokenStorage {
   static const _accessKey = 'access_token';
   static const _refreshKey = 'refresh_token';
 
-  Future<void saveTokens({
+  Future<void> saveTokens({
     required String accessToken,
     required String refreshToken,
   }) async {
