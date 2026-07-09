@@ -32,24 +32,21 @@ cp .env.example .env
 # Edit .env with your MongoDB URI, JWT secrets, Cloudinary, and Stripe keys
 ```
 
-### 3. Start MongoDB
+### 3. Set up MongoDB (required)
 
-**Option A — Docker (recommended)**
+MongoDB is not installed on your machine. The fastest option is **MongoDB Atlas** (free):
 
-```bash
-docker compose up -d
+1. Go to [mongodb.com/atlas](https://www.mongodb.com/atlas) and create a free cluster
+2. Database Access → create a user with password
+3. Network Access → add IP `0.0.0.0/0` (for dev) or your IP
+4. Connect → Drivers → copy the connection string
+5. Paste into `.env` as `MONGODB_URI`, replacing `<password>` with your password:
+
+```
+MONGODB_URI=mongodb+srv://myuser:mypassword@cluster0.xxxxx.mongodb.net/luxestay?retryWrites=true&w=majority
 ```
 
-**Option B — MongoDB Atlas (cloud, free tier)**
-
-1. Create a cluster at [mongodb.com/atlas](https://www.mongodb.com/atlas)
-2. Copy the connection string to `MONGODB_URI` in `.env`
-
-**Option C — Local MongoDB on Windows**
-
-1. Download from [mongodb.com/try/download/community](https://www.mongodb.com/try/download/community)
-2. Install as a Windows service
-3. Ensure it runs on `mongodb://127.0.0.1:27017`
+**Alternative:** Install [MongoDB Community](https://www.mongodb.com/try/download/community) locally, or run `docker compose up -d` if Docker is installed.
 
 ### 4. Seed Database
 
@@ -222,6 +219,18 @@ Copy the webhook signing secret to `STRIPE_WEBHOOK_SECRET`.
 5. `GET /payments/verify?sessionId=` → confirm on app redirect
 
 ## Flutter Integration
+
+Run the app with live API (after backend is running):
+
+```bash
+# Android emulator (10.0.2.2 = host machine)
+flutter run --dart-define=USE_LIVE_API=true --dart-define=API_BASE_URL=http://10.0.2.2:3000/api/v1
+
+# iOS simulator / Windows / Web
+flutter run --dart-define=USE_LIVE_API=true --dart-define=API_BASE_URL=http://localhost:3000/api/v1
+```
+
+Without `USE_LIVE_API=true`, the app continues using mock data.
 
 Add to `pubspec.yaml`:
 
