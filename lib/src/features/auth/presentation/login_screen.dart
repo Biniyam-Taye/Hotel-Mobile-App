@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:luxestay/src/core/network/api_exception.dart';
 import 'package:luxestay/src/core/theme/app_colors.dart';
 import 'package:luxestay/src/core/theme/app_dimensions.dart';
 import 'package:luxestay/src/core/theme/app_typography.dart';
 import 'package:luxestay/src/core/widgets/buttons/primary_button.dart';
-import 'package:luxestay/src/core/widgets/buttons/primary_button.dart'; // we can just use secondary button actually, I'll import it here, they are in the same file
+import 'package:luxestay/src/providers/auth_provider.dart';
 import 'package:go_router/go_router.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -26,19 +27,45 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _handleLogin() async {
-    setState(() => _isLoading = true);
-    // Simulate network delay
-    await Future.delayed(const Duration(seconds: 2));
-    if (mounted) {
-      setState(() => _isLoading = false);
-      context.go('/home');
+  Future<void> _handleLogin() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      _showError('Please enter email and password');
+      return;
     }
+
+    try {
+      final user = await ref.read(authProvider.notifier).login(email, password);
+      if (!mounted) return;
+
+      switch (user.role) {
+        case 'super_admin':
+        case 'hotel_admin':
+          context.go('/admin/dashboard');
+        case 'receptionist':
+          context.go('/receptionist/dashboard');
+        default:
+          context.go('/home');
+      }
+    } on ApiException catch (e) {
+      if (mounted) _showError(e.message);
+    } catch (_) {
+      if (mounted) _showError('Unable to connect to server. Is the backend running?');
+    }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: AppColors.error),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isLoading = ref.watch(authProvider).isLoading;
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
@@ -50,7 +77,6 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // ─── HEADER ───────────────────────────────────────────
                 Center(
                   child: Container(
                     width: 72,
@@ -88,8 +114,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: AppDimensions.xxxl),
-
-                // ─── FORM ─────────────────────────────────────────────
                 TextField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -123,7 +147,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
@@ -137,49 +160,29 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: AppDimensions.md),
-
-                // ─── BUTTONS ──────────────────────────────────────────
                 PrimaryButton(
                   text: 'Sign In',
-                  isLoading: _isLoading,
+                  isLoading: isLoading,
                   onPressed: _handleLogin,
                 ),
                 const SizedBox(height: AppDimensions.xl),
-
-                // ─── DIVIDER ──────────────────────────────────────────
                 Row(
                   children: [
                     const Expanded(child: Divider()),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: AppDimensions.md),
                       child: Text(
-                        'OR',
+                        'Demo: guest@luxestay.com / Guest123!',
                         style: AppTypography.label(
                           color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                     const Expanded(child: Divider()),
                   ],
                 ),
-                const SizedBox(height: AppDimensions.xl),
-
-                // ─── SOCIAL LOGIN ─────────────────────────────────────
-                SecondaryButton(
-                  text: 'Continue with Google',
-                  onPressed: _handleLogin,
-                  // Using an icon placeholder for Google
-                  icon: Icons.g_mobiledata_rounded,
-                ),
-                const SizedBox(height: AppDimensions.base),
-                SecondaryButton(
-                  text: 'Continue with Apple',
-                  onPressed: _handleLogin,
-                  icon: Icons.apple_rounded,
-                ),
                 const SizedBox(height: AppDimensions.xxxl),
-
-                // ─── REGISTER LINK ────────────────────────────────────
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -190,9 +193,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () {
-                        // context.push('/register');
-                      },
+                      onTap: () => context.push('/register'),
                       child: Text(
                         'Sign Up',
                         style: AppTypography.bodySemiBold(

@@ -32,13 +32,32 @@ cp .env.example .env
 # Edit .env with your MongoDB URI, JWT secrets, Cloudinary, and Stripe keys
 ```
 
-### 3. Seed Database
+### 3. Start MongoDB
+
+**Option A — Docker (recommended)**
+
+```bash
+docker compose up -d
+```
+
+**Option B — MongoDB Atlas (cloud, free tier)**
+
+1. Create a cluster at [mongodb.com/atlas](https://www.mongodb.com/atlas)
+2. Copy the connection string to `MONGODB_URI` in `.env`
+
+**Option C — Local MongoDB on Windows**
+
+1. Download from [mongodb.com/try/download/community](https://www.mongodb.com/try/download/community)
+2. Install as a Windows service
+3. Ensure it runs on `mongodb://127.0.0.1:27017`
+
+### 4. Seed Database
 
 ```bash
 npm run seed
 ```
 
-### 4. Start Server
+### 5. Start Server
 
 ```bash
 # Development (auto-reload)
