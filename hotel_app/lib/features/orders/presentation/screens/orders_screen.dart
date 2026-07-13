@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_borders.dart';
@@ -21,7 +22,7 @@ class OrdersScreen extends StatelessWidget {
         separatorBuilder: (context, index) => const SizedBox(height: AppSpacing.lg),
         itemBuilder: (context, index) {
           final order = DummyOrdersData.orders[index];
-          return _OrderCard(order: order);
+          return _OrderCard(order: order).animate(delay: (index * 50).ms).fade(duration: 300.ms).slideY(begin: 0.1, curve: Curves.easeOutQuart);
         },
       ),
     );
