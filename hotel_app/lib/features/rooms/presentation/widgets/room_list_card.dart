@@ -3,6 +3,8 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_borders.dart';
 import '../../../../core/widgets/cards/premium_card.dart';
+import '../../../../core/widgets/animations/bouncing_wrapper.dart';
+import '../../../../core/widgets/buttons/animated_favorite_button.dart';
 
 class RoomListCard extends StatelessWidget {
   final Map<String, dynamic> room;
@@ -27,47 +29,41 @@ class RoomListCard extends StatelessWidget {
     final int reviews = room['reviews'] ?? 0;
     final double price = room['price'] ?? 0.0;
 
-    return PremiumCard(
-      onTap: onTap,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Image Section
-          Stack(
-            children: [
-              Container(
-                height: 200,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(AppBorders.radiusMedium),
-                    topRight: Radius.circular(AppBorders.radiusMedium),
-                  ),
-                  image: DecorationImage(
-                    image: NetworkImage(mainImage),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              Positioned(
-                top: AppSpacing.sm,
-                right: AppSpacing.sm,
-                child: GestureDetector(
-                  onTap: onFavoriteTap,
+    return BouncingWrapper(
+      child: PremiumCard(
+        onTap: onTap,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image Section
+            Stack(
+              children: [
+                Hero(
+                  tag: 'room_image_${room['id']}',
                   child: Container(
-                    padding: const EdgeInsets.all(AppSpacing.xs),
+                    height: 200,
+                    width: double.infinity,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                      color: isFavorite ? AppColors.error : AppColors.grey400,
-                      size: 20,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(AppBorders.radiusMedium),
+                        topRight: Radius.circular(AppBorders.radiusMedium),
+                      ),
+                      image: DecorationImage(
+                        image: NetworkImage(mainImage),
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 ),
-              ),
+                Positioned(
+                  top: AppSpacing.sm,
+                  right: AppSpacing.sm,
+                  child: AnimatedFavoriteButton(
+                    isFavorite: isFavorite,
+                    onTap: onFavoriteTap ?? () {},
+                    size: 20,
+                  ),
+                ),
               Positioned(
                 bottom: AppSpacing.md,
                 left: AppSpacing.md,
