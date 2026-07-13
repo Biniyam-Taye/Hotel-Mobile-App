@@ -5,8 +5,8 @@ class AppShadows {
   // Soft, diffused shadows for light mode
   static final List<BoxShadow> lightSoft = [
     BoxShadow(
-      color: AppColors.grey900.withValues(alpha: 0.04),
-      blurRadius: 10,
+      color: AppColors.grey900.withValues(alpha: 0.03),
+      blurRadius: 12,
       offset: const Offset(0, 4),
       spreadRadius: 0,
     ),
@@ -20,14 +20,14 @@ class AppShadows {
 
   static final List<BoxShadow> lightMedium = [
     BoxShadow(
-      color: AppColors.grey900.withValues(alpha: 0.06),
-      blurRadius: 16,
+      color: AppColors.grey900.withValues(alpha: 0.05),
+      blurRadius: 20,
       offset: const Offset(0, 8),
       spreadRadius: -2,
     ),
     BoxShadow(
-      color: AppColors.grey900.withValues(alpha: 0.04),
-      blurRadius: 6,
+      color: AppColors.grey900.withValues(alpha: 0.03),
+      blurRadius: 8,
       offset: const Offset(0, 4),
       spreadRadius: -1,
     ),
