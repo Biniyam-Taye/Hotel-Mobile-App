@@ -9,6 +9,7 @@ import '../widgets/promo_carousel.dart';
 import '../widgets/section_header.dart';
 import '../widgets/featured_room_card.dart';
 import '../widgets/service_card.dart';
+import '../../services/data/dummy_services_data.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -53,23 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
     },
   ];
 
-  final List<Map<String, String>> _services = [
-    {
-      'title': 'Spa & Wellness',
-      'subtitle': 'Relax your body and mind',
-      'imageUrl': 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&q=80&w=600',
-    },
-    {
-      'title': 'Gourmet Dining',
-      'subtitle': 'World-class restaurants',
-      'imageUrl': 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&q=80&w=600',
-    },
-    {
-      'title': 'Private Pool',
-      'subtitle': 'Exclusive infinity pools',
-      'imageUrl': 'https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&q=80&w=600',
-    },
-  ];
+  final List<Map<String, dynamic>> _services = DummyServicesData.services.take(3).toList();
 
   @override
   void dispose() {
@@ -108,7 +93,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: AppSpacing.lg),
                   CategoryChipsList(
                     onCategorySelected: (category) {
-                      // TODO: Filter content
+                      if (category == 'Rooms') {
+                        context.push('/rooms');
+                      } else if (category == 'Hospitality') {
+                        context.push('/services');
+                      } else if (category == 'Restaurant') {
+                        context.push('/restaurant');
+                      } else if (category == 'Offers') {
+                        context.push('/offers');
+                      }
                     },
                   ),
                   const SizedBox(height: AppSpacing.xl),
@@ -118,7 +111,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   // Featured Rooms Section
                   SectionHeader(
                     title: 'Featured Rooms',
-                    onActionTap: () {},
+                    onActionTap: () {
+                      context.push('/rooms');
+                    },
                   ),
                   SizedBox(
                     height: 290,
@@ -157,7 +152,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   // Hospitality Services Section
                   SectionHeader(
                     title: 'Hospitality & Services',
-                    onActionTap: () {},
+                    onActionTap: () {
+                      context.push('/services');
+                    },
                   ),
                   SizedBox(
                     height: 180,
@@ -171,10 +168,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         return SizedBox(
                           width: 160,
                           child: ServiceCard(
-                            title: service['title']!,
-                            subtitle: service['subtitle']!,
-                            imageUrl: service['imageUrl']!,
-                            onTap: () {},
+                            title: service['title'],
+                            subtitle: '\$${service['price'].toInt()}',
+                            imageUrl: service['imageUrl'],
+                            onTap: () {
+                              context.push('/services/${service['id']}');
+                            },
                           ),
                         );
                       },
