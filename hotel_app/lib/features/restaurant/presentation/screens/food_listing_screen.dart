@@ -5,7 +5,6 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_borders.dart';
 import '../../../../core/widgets/navigation/custom_app_bar.dart';
 import '../../../../core/widgets/inputs/search_input.dart';
-import '../../../home/presentation/widgets/category_chips_list.dart';
 import '../../data/dummy_food_data.dart';
 
 class FoodListingScreen extends StatefulWidget {
@@ -18,6 +17,9 @@ class FoodListingScreen extends StatefulWidget {
 class _FoodListingScreenState extends State<FoodListingScreen> {
   final TextEditingController _searchController = TextEditingController();
   List<Map<String, dynamic>> _displayedFood = DummyFoodData.menu;
+  String _selectedCategory = 'All';
+
+  final List<String> _categories = ['All', 'Breakfast', 'Lunch', 'Dinner', 'Drinks'];
 
   @override
   void dispose() {
@@ -26,17 +28,16 @@ class _FoodListingScreenState extends State<FoodListingScreen> {
   }
 
   void _filterFood(String category) {
-    if (category == 'All' || category == 'Restaurant') {
-      setState(() {
+    setState(() {
+      _selectedCategory = category;
+      if (category == 'All') {
         _displayedFood = DummyFoodData.menu;
-      });
-    } else {
-      setState(() {
+      } else {
         _displayedFood = DummyFoodData.menu
             .where((food) => food['category'] == category)
             .toList();
-      });
-    }
+      }
+    });
   }
 
   @override
@@ -48,9 +49,7 @@ class _FoodListingScreenState extends State<FoodListingScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.shopping_cart_rounded, color: AppColors.primary),
-            onPressed: () {
-              context.push('/restaurant/cart');
-            },
+            onPressed: () => context.push('/restaurant/cart'),
           ),
         ],
       ),
@@ -67,30 +66,68 @@ class _FoodListingScreenState extends State<FoodListingScreen> {
               onFilterTap: () {},
             ),
           ),
-          CategoryChipsList(
-            onCategorySelected: _filterFood,
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: AppSpacing.md,
-                mainAxisSpacing: AppSpacing.md,
-                childAspectRatio: 0.75,
-              ),
-              itemCount: _displayedFood.length,
+          // Food-specific category chips
+          SizedBox(
+            height: 40,
+            child: ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+              scrollDirection: Axis.horizontal,
+              itemCount: _categories.length,
+              separatorBuilder: (context, index) => const SizedBox(width: AppSpacing.sm),
               itemBuilder: (context, index) {
-                final food = _displayedFood[index];
-                return _FoodCard(
-                  food: food,
-                  onTap: () {
-                    context.push('/restaurant/${food['id']}');
-                  },
+                final cat = _categories[index];
+                final isSelected = _selectedCategory == cat;
+                return GestureDetector(
+                  onTap: () => _filterFood(cat),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: isSelected ? AppColors.primary : AppColors.primaryContainer.withValues(alpha: 0.5),
+                      borderRadius: AppBorders.circular,
+                    ),
+                    child: Text(
+                      cat,
+                      style: TextStyle(
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13,
+                        color: isSelected ? Colors.white : AppColors.primary,
+                      ),
+                    ),
+                  ),
                 );
               },
             ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Expanded(
+            child: _displayedFood.isEmpty
+                ? Center(
+                    child: Text(
+                      'No items in this category',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: AppColors.grey400,
+                          ),
+                    ),
+                  )
+                : GridView.builder(
+                    padding: const EdgeInsets.all(AppSpacing.lg),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: AppSpacing.md,
+                      mainAxisSpacing: AppSpacing.md,
+                      childAspectRatio: 0.75,
+                    ),
+                    itemCount: _displayedFood.length,
+                    itemBuilder: (context, index) {
+                      final food = _displayedFood[index];
+                      return _FoodCard(
+                        food: food,
+                        onTap: () => context.push('/restaurant/${food['id']}'),
+                      );
+                    },
+                  ),
           ),
         ],
       ),
@@ -120,17 +157,45 @@ class _FoodCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(AppBorders.radiusMedium),
-                    topRight: Radius.circular(AppBorders.radiusMedium),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(AppBorders.radiusMedium),
+                      topRight: Radius.circular(AppBorders.radiusMedium),
+                    ),
+                    child: Image.network(
+                      food['imageUrl'],
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Container(
+                        color: AppColors.grey100,
+                        child: const Icon(Icons.broken_image_rounded, color: AppColors.grey400),
+                      ),
+                    ),
                   ),
-                  image: DecorationImage(
-                    image: NetworkImage(food['imageUrl']),
-                    fit: BoxFit.cover,
-                  ),
-                ),
+                  if (food['isPopular'] == true)
+                    Positioned(
+                      top: 8,
+                      left: 8,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.warning,
+                          borderRadius: AppBorders.circular,
+                        ),
+                        child: const Text(
+                          'Popular',
+                          style: TextStyle(
+                            fontFamily: 'Nunito',
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
             Padding(

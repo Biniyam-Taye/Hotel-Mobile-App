@@ -20,11 +20,11 @@ class _BookingScreenState extends State<BookingScreen> {
   late final Map<String, dynamic>? _room;
   int _adults = 2;
   int _children = 0;
-  
-  // Dummy dates
-  final DateTime _checkIn = DateTime.now().add(const Duration(days: 7));
-  final DateTime _checkOut = DateTime.now().add(const Duration(days: 10));
-  
+
+  // Mutable dates for calendar picker
+  DateTime _checkIn = DateTime.now().add(const Duration(days: 7));
+  DateTime _checkOut = DateTime.now().add(const Duration(days: 10));
+
   @override
   void initState() {
     super.initState();
@@ -128,8 +128,29 @@ class _BookingScreenState extends State<BookingScreen> {
                       child: _DateSelectorCard(
                         title: 'Check-In',
                         date: _checkIn,
-                        onTap: () {
-                          // TODO: Show date picker
+                        onTap: () async {
+                          final picked = await showDatePicker(
+                            context: context,
+                            initialDate: _checkIn,
+                            firstDate: DateTime.now(),
+                            lastDate: DateTime.now().add(const Duration(days: 365)),
+                            builder: (context, child) => Theme(
+                              data: Theme.of(context).copyWith(
+                                colorScheme: Theme.of(context).colorScheme.copyWith(
+                                  primary: AppColors.primary,
+                                ),
+                              ),
+                              child: child!,
+                            ),
+                          );
+                          if (picked != null && mounted) {
+                            setState(() {
+                              _checkIn = picked;
+                              if (_checkOut.isBefore(_checkIn.add(const Duration(days: 1)))) {
+                                _checkOut = _checkIn.add(const Duration(days: 1));
+                              }
+                            });
+                          }
                         },
                       ),
                     ),
@@ -138,8 +159,24 @@ class _BookingScreenState extends State<BookingScreen> {
                       child: _DateSelectorCard(
                         title: 'Check-Out',
                         date: _checkOut,
-                        onTap: () {
-                          // TODO: Show date picker
+                        onTap: () async {
+                          final picked = await showDatePicker(
+                            context: context,
+                            initialDate: _checkOut,
+                            firstDate: _checkIn.add(const Duration(days: 1)),
+                            lastDate: DateTime.now().add(const Duration(days: 365)),
+                            builder: (context, child) => Theme(
+                              data: Theme.of(context).copyWith(
+                                colorScheme: Theme.of(context).colorScheme.copyWith(
+                                  primary: AppColors.primary,
+                                ),
+                              ),
+                              child: child!,
+                            ),
+                          );
+                          if (picked != null && mounted) {
+                            setState(() => _checkOut = picked);
+                          }
                         },
                       ),
                     ),
