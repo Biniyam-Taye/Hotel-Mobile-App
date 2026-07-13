@@ -82,12 +82,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: AppSpacing.sm),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                    child: SearchInput(
-                      controller: _searchController,
-                      hintText: 'Search hotels, destinations...',
-                      onFilterTap: () {
-                        context.push('/rooms');
-                      },
+                    child: GestureDetector(
+                      onTap: () => context.push('/rooms'),
+                      child: AbsorbPointer(
+                        child: SearchInput(
+                          controller: _searchController,
+                          hintText: 'Search hotels, destinations...',
+                          onFilterTap: () => context.push('/rooms'),
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: AppSpacing.lg),
