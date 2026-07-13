@@ -48,6 +48,7 @@ GoRouter appRouter(Ref ref) {
         path: '/main',
         name: 'main',
         builder: (context, state) => const MainNavigationScreen(),
+      ),
       GoRoute(
         path: '/rooms',
         name: 'rooms',

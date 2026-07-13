@@ -21,6 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Map<String, dynamic>> _featuredRooms = [
     {
+      'id': 'room_1',
       'title': 'Ocean View Suite',
       'location': 'Maldives, Indian Ocean',
       'rating': 4.9,
@@ -30,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'isFavorite': true,
     },
     {
+      'id': 'room_2',
       'title': 'Mountain Retreat',
       'location': 'Swiss Alps, Switzerland',
       'rating': 4.8,
@@ -39,6 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'isFavorite': false,
     },
     {
+      'id': 'room_3',
       'title': 'City Center Penthouse',
       'location': 'New York, USA',
       'rating': 4.7,
@@ -97,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       controller: _searchController,
                       hintText: 'Search hotels, destinations...',
                       onFilterTap: () {
-                        // TODO: Navigate to search screen
+                        context.push('/rooms');
                       },
                     ),
                   ),
@@ -139,6 +142,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               setState(() {
                                 room['isFavorite'] = !room['isFavorite'];
                               });
+                            },
+                            onTap: () {
+                              context.push('/rooms/${room['id']}');
                             },
                           ),
                         );
