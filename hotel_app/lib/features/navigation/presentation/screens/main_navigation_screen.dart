@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../home/presentation/screens/home_screen.dart';
-import '../../favorites/presentation/screens/favorites_screen.dart';
-import '../../orders/presentation/screens/orders_screen.dart';
-import '../../notifications/presentation/screens/notifications_screen.dart';
-import '../../profile/presentation/screens/profile_screen.dart';
+import '../../../favorites/presentation/screens/favorites_screen.dart';
+import '../../../orders/presentation/screens/orders_screen.dart';
+import '../../../notifications/presentation/screens/notifications_screen.dart';
+import '../../../profile/presentation/screens/profile_screen.dart';
 
 // ── Nav item model ───────────────────────────────────────────────────────────
 

@@ -108,9 +108,9 @@ class ProfileScreen extends StatelessWidget {
             _SettingsSection(
               title: 'Preferences',
               items: [
-                _SettingsItem(icon: Icons.notifications_none_rounded, title: 'Notifications', trailing: Switch(value: true, onChanged: (v) {}, activeColor: AppColors.primary)),
+                _SettingsItem(icon: Icons.notifications_none_rounded, title: 'Notifications', trailing: Switch(value: true, onChanged: (v) {}, activeThumbColor: AppColors.primary)),
                 _SettingsItem(icon: Icons.language_rounded, title: 'Language', trailing: const Text('English', style: TextStyle(fontWeight: FontWeight.bold))),
-                _SettingsItem(icon: Icons.dark_mode_outlined, title: 'Dark Mode', trailing: Switch(value: false, onChanged: (v) {}, activeColor: AppColors.primary)),
+                _SettingsItem(icon: Icons.dark_mode_outlined, title: 'Dark Mode', trailing: Switch(value: false, onChanged: (v) {}, activeThumbColor: AppColors.primary)),
               ],
             ),
             const SizedBox(height: AppSpacing.xl),

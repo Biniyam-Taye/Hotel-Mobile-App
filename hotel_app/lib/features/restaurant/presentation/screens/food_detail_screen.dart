@@ -34,7 +34,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
       );
     }
     
-    final food = _food!;
+    final food = _food;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,

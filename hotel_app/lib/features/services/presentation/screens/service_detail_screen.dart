@@ -33,7 +33,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
       );
     }
     
-    final service = _service!;
+    final service = _service;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,

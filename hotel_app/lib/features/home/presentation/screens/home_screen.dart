@@ -9,7 +9,7 @@ import '../widgets/promo_carousel.dart';
 import '../widgets/section_header.dart';
 import '../widgets/featured_room_card.dart';
 import '../widgets/service_card.dart';
-import '../../services/data/dummy_services_data.dart';
+import '../../../services/data/dummy_services_data.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
