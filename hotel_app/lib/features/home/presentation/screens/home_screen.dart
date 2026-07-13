@@ -130,6 +130,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         return SizedBox(
                           width: 260,
                           child: FeaturedRoomCard(
+                            id: room['id'],
                             title: room['title'],
                             location: room['location'],
                             rating: room['rating'],

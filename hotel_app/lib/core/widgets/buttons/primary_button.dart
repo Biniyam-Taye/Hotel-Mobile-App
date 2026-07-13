@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../animations/bouncing_wrapper.dart';
 
 class PrimaryButton extends StatelessWidget {
   final String text;
@@ -16,8 +17,9 @@ class PrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget button;
     if (icon != null) {
-      return ElevatedButton.icon(
+      button = ElevatedButton.icon(
         onPressed: isLoading ? null : onPressed,
         icon: isLoading
             ? const SizedBox(
@@ -31,20 +33,24 @@ class PrimaryButton extends StatelessWidget {
             : icon!,
         label: Text(text),
       );
+    } else {
+      button = ElevatedButton(
+        onPressed: isLoading ? null : onPressed,
+        child: isLoading
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
+            : Text(text),
+      );
     }
-    
-    return ElevatedButton(
-      onPressed: isLoading ? null : onPressed,
-      child: isLoading
-          ? const SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: Colors.white,
-              ),
-            )
-          : Text(text),
+
+    return BouncingWrapper(
+      child: button,
     );
   }
 }

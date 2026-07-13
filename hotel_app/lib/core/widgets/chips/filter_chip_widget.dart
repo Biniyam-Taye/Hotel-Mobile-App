@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
+import '../animations/bouncing_wrapper.dart';
 
 class FilterChipWidget extends StatelessWidget {
   final String label;
@@ -15,23 +16,25 @@ class FilterChipWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FilterChip(
-      label: Text(label),
-      selected: isSelected,
-      onSelected: onSelected,
-      selectedColor: AppColors.primaryContainer,
-      checkmarkColor: AppColors.primary,
-      labelStyle: TextStyle(
-        color: isSelected ? AppColors.primary : Theme.of(context).colorScheme.onSurface,
-        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(999),
-        side: BorderSide(
-          color: isSelected ? AppColors.primary : AppColors.grey300,
+    return BouncingWrapper(
+      child: FilterChip(
+        label: Text(label),
+        selected: isSelected,
+        onSelected: onSelected,
+        selectedColor: AppColors.primaryContainer,
+        checkmarkColor: AppColors.primary,
+        labelStyle: TextStyle(
+          color: isSelected ? AppColors.primary : Theme.of(context).colorScheme.onSurface,
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(999),
+          side: BorderSide(
+            color: isSelected ? AppColors.primary : AppColors.grey300,
+          ),
+        ),
+        backgroundColor: Colors.transparent,
       ),
-      backgroundColor: Colors.transparent,
     );
   }
 }

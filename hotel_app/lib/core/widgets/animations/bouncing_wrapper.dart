@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 
 class BouncingWrapper extends StatefulWidget {
   final Widget child;
-  final VoidCallback? onTap;
   final double scaleFactor;
   final Duration duration;
 
   const BouncingWrapper({
     super.key,
     required this.child,
-    this.onTap,
     this.scaleFactor = 0.96,
     this.duration = const Duration(milliseconds: 150),
   });
@@ -37,28 +35,24 @@ class _BouncingWrapperState extends State<BouncingWrapper> with SingleTickerProv
     super.dispose();
   }
 
-  void _onTapDown(TapDownDetails details) {
-    if (widget.onTap != null) _controller.forward();
+  void _onPointerDown(PointerDownEvent event) {
+    _controller.forward();
   }
 
-  void _onTapUp(TapUpDetails details) {
-    if (widget.onTap != null) {
-      _controller.reverse();
-      widget.onTap!();
-    }
+  void _onPointerUp(PointerUpEvent event) {
+    _controller.reverse();
   }
 
-  void _onTapCancel() {
-    if (widget.onTap != null) _controller.reverse();
+  void _onPointerCancel(PointerCancelEvent event) {
+    _controller.reverse();
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTapDown: _onTapDown,
-      onTapUp: _onTapUp,
-      onTapCancel: _onTapCancel,
+    return Listener(
+      onPointerDown: _onPointerDown,
+      onPointerUp: _onPointerUp,
+      onPointerCancel: _onPointerCancel,
       child: ScaleTransition(
         scale: _scaleAnimation,
         child: widget.child,
