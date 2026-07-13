@@ -11,6 +11,18 @@ import '../../features/navigation/presentation/screens/main_navigation_screen.da
 import '../../features/rooms/presentation/screens/rooms_listing_screen.dart';
 import '../../features/rooms/presentation/screens/room_detail_screen.dart';
 import '../../features/rooms/presentation/screens/booking_screen.dart';
+import '../../features/favorites/presentation/screens/favorites_screen.dart';
+import '../../features/orders/presentation/screens/orders_screen.dart';
+import '../../features/notifications/presentation/screens/notifications_screen.dart';
+import '../../features/profile/presentation/screens/profile_screen.dart';
+import '../../features/services/presentation/screens/services_listing_screen.dart';
+import '../../features/services/presentation/screens/service_detail_screen.dart';
+import '../../features/services/presentation/screens/service_booking_screen.dart';
+import '../../features/restaurant/presentation/screens/food_listing_screen.dart';
+import '../../features/restaurant/presentation/screens/food_detail_screen.dart';
+import '../../features/restaurant/presentation/screens/food_cart_screen.dart';
+import '../../features/restaurant/presentation/screens/food_checkout_screen.dart';
+import '../../features/offers/presentation/screens/offers_listing_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -73,6 +85,61 @@ GoRouter appRouter(Ref ref) {
             ],
           ),
         ],
+      ),
+      GoRoute(
+        path: '/services',
+        name: 'services',
+        builder: (context, state) => const ServicesListingScreen(),
+        routes: [
+          GoRoute(
+            path: ':id',
+            name: 'service-detail',
+            builder: (context, state) {
+              final id = state.pathParameters['id']!;
+              return ServiceDetailScreen(serviceId: id);
+            },
+            routes: [
+              GoRoute(
+                path: 'book',
+                name: 'service-book',
+                builder: (context, state) {
+                  final id = state.pathParameters['id']!;
+                  return ServiceBookingScreen(serviceId: id);
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/restaurant',
+        name: 'restaurant',
+        builder: (context, state) => const FoodListingScreen(),
+        routes: [
+          GoRoute(
+            path: 'cart',
+            name: 'food-cart',
+            builder: (context, state) => const FoodCartScreen(),
+          ),
+          GoRoute(
+            path: 'checkout',
+            name: 'food-checkout',
+            builder: (context, state) => const FoodCheckoutScreen(),
+          ),
+          GoRoute(
+            path: ':id',
+            name: 'food-detail',
+            builder: (context, state) {
+              final id = state.pathParameters['id']!;
+              return FoodDetailScreen(foodId: id);
+            },
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/offers',
+        name: 'offers',
+        builder: (context, state) => const OffersListingScreen(),
       ),
     ],
   );
