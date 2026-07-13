@@ -11,9 +11,9 @@ class AppBorders {
   static final BorderRadius large = BorderRadius.circular(radiusLarge);
   static final BorderRadius circular = BorderRadius.circular(radiusCircular);
 
-  // Border styles for inputs, cards, etc. if needed
-  static final Border outlineBorder = Border.all(
-    color: const Color(0xFFE2E8F0),
+  // BorderSide for use in OutlinedButton, InputDecoration, etc.
+  static const BorderSide outlineSide = BorderSide(
+    color: Color(0xFFE2E8F0),
     width: 1.0,
   );
 }

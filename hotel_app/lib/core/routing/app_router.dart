@@ -12,7 +12,7 @@ import '../../features/navigation/presentation/screens/main_navigation_screen.da
 part 'app_router.g.dart';
 
 @riverpod
-GoRouter appRouter(AppRouterRef ref) {
+GoRouter appRouter(Ref ref) {
   return GoRouter(
     initialLocation: '/',
     routes: [

@@ -33,7 +33,7 @@ class AppTheme {
       ),
       
       // Cards
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.surfaceLight,
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -62,7 +62,7 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.textPrimaryLight,
-          side: AppBorders.outlineBorder,
+          side: AppBorders.outlineSide,
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.lg,
             vertical: AppSpacing.md,
@@ -97,11 +97,11 @@ class AppTheme {
         ),
         border: OutlineInputBorder(
           borderRadius: AppBorders.circular,
-          borderSide: AppBorders.outlineBorder,
+          borderSide: AppBorders.outlineSide,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: AppBorders.circular,
-          borderSide: AppBorders.outlineBorder,
+          borderSide: AppBorders.outlineSide,
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: AppBorders.circular,
@@ -150,7 +150,7 @@ class AppTheme {
       ),
       
       // Cards
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.surfaceDark,
         elevation: 0,
         shape: RoundedRectangleBorder(
