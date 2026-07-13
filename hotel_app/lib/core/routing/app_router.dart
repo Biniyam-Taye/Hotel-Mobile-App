@@ -11,10 +11,6 @@ import '../../features/navigation/presentation/screens/main_navigation_screen.da
 import '../../features/rooms/presentation/screens/rooms_listing_screen.dart';
 import '../../features/rooms/presentation/screens/room_detail_screen.dart';
 import '../../features/rooms/presentation/screens/booking_screen.dart';
-import '../../features/favorites/presentation/screens/favorites_screen.dart';
-import '../../features/orders/presentation/screens/orders_screen.dart';
-import '../../features/notifications/presentation/screens/notifications_screen.dart';
-import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/services/presentation/screens/services_listing_screen.dart';
 import '../../features/services/presentation/screens/service_detail_screen.dart';
 import '../../features/services/presentation/screens/service_booking_screen.dart';
