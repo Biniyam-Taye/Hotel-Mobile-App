@@ -75,7 +75,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             // Logo mark
             AnimatedBuilder(
               animation: _logoController,
-              builder: (_, __) => Opacity(
+              builder: (context, _) => Opacity(
                 opacity: _logoOpacity.value,
                 child: Transform.scale(
                   scale: _logoScale.value,
@@ -87,7 +87,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       borderRadius: BorderRadius.circular(28),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.15),
+                          color: Colors.black.withValues(alpha: 0.15),
                           blurRadius: 30,
                           offset: const Offset(0, 10),
                         ),
@@ -106,7 +106,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             // App name + tagline
             AnimatedBuilder(
               animation: _textController,
-              builder: (_, __) => FadeTransition(
+              builder: (context, _) => FadeTransition(
                 opacity: _textOpacity,
                 child: SlideTransition(
                   position: _textSlide,
@@ -129,7 +129,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                           fontFamily: 'Nunito',
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
-                          color: Colors.white.withOpacity(0.80),
+                          color: Colors.white.withValues(alpha: 0.80),
                           letterSpacing: 0.2,
                         ),
                       ),
