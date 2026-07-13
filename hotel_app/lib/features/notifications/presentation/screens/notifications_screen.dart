@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_borders.dart';
@@ -55,7 +56,7 @@ class NotificationsScreen extends StatelessWidget {
         separatorBuilder: (context, index) => const SizedBox(height: AppSpacing.md),
         itemBuilder: (context, index) {
           final notif = notifications[index];
-          return _NotificationCard(notif: notif);
+          return _NotificationCard(notif: notif).animate(delay: (index * 50).ms).fade(duration: 300.ms).slideY(begin: 0.1, curve: Curves.easeOutQuart);
         },
       ),
     );

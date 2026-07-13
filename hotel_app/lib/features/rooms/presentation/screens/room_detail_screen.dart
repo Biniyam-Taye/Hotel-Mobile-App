@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_borders.dart';
@@ -105,7 +106,7 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
                   ),
                 ],
                 flexibleSpace: FlexibleSpaceBar(
-                  background: _ImageGallery(imageUrls: imageUrls),
+                  background: _ImageGallery(imageUrls: imageUrls, roomId: widget.roomId),
                 ),
               ),
 
@@ -298,7 +299,7 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
                       // Extra space for bottom bar
                       const SizedBox(height: 120),
                     ],
-                  ),
+                  ).animate().fade(duration: 400.ms, delay: 100.ms).slideY(begin: 0.05, curve: Curves.easeOutQuart),
                 ),
               ),
             ],
@@ -314,7 +315,7 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
               onBookTap: () {
                 context.push('/rooms/${_room['id']}/book');
               },
-            ),
+            ).animate().slideY(begin: 1.0, duration: 400.ms, curve: Curves.easeOutQuart, delay: 300.ms),
           ),
         ],
       ),
@@ -324,8 +325,9 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
 
 class _ImageGallery extends StatefulWidget {
   final List<String> imageUrls;
+  final String roomId;
 
-  const _ImageGallery({required this.imageUrls});
+  const _ImageGallery({required this.imageUrls, required this.roomId});
 
   @override
   State<_ImageGallery> createState() => _ImageGalleryState();
@@ -342,10 +344,19 @@ class _ImageGalleryState extends State<_ImageGallery> {
           itemCount: widget.imageUrls.length,
           onPageChanged: (index) => setState(() => _currentIndex = index),
           itemBuilder: (context, index) {
-            return Image.network(
+            final imageWidget = Image.network(
               widget.imageUrls[index],
               fit: BoxFit.cover,
             );
+            
+            if (index == 0) {
+              return Hero(
+                tag: 'room_image_${widget.roomId}',
+                child: imageWidget,
+              );
+            }
+            
+            return imageWidget;
           },
         ),
         Positioned(

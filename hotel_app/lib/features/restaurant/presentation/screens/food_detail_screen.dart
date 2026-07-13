@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_borders.dart';
@@ -61,9 +62,12 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                   ),
                 ),
                 flexibleSpace: FlexibleSpaceBar(
-                  background: Image.network(
-                    food['imageUrl'],
-                    fit: BoxFit.cover,
+                  background: Hero(
+                    tag: 'food_image_${widget.foodId}',
+                    child: Image.network(
+                      food['imageUrl'],
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ),
@@ -123,7 +127,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                       ),
                       const SizedBox(height: 120),
                     ],
-                  ),
+                  ).animate().fade(duration: 400.ms, delay: 100.ms).slideY(begin: 0.05, curve: Curves.easeOutQuart),
                 ),
               ),
             ],
@@ -196,7 +200,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                   ),
                 ],
               ),
-            ),
+            ).animate().slideY(begin: 1.0, duration: 400.ms, curve: Curves.easeOutQuart, delay: 300.ms),
           ),
         ],
       ),

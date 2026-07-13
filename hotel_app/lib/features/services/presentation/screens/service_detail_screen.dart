@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_borders.dart';
@@ -60,9 +61,12 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                   ),
                 ),
                 flexibleSpace: FlexibleSpaceBar(
-                  background: Image.network(
-                    service['imageUrl'],
-                    fit: BoxFit.cover,
+                  background: Hero(
+                    tag: 'service_image_${widget.serviceId}',
+                    child: Image.network(
+                      service['imageUrl'],
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ),
@@ -130,7 +134,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                       ),
                       const SizedBox(height: 120),
                     ],
-                  ),
+                  ).animate().fade(duration: 400.ms, delay: 100.ms).slideY(begin: 0.05, curve: Curves.easeOutQuart),
                 ),
               ),
             ],
@@ -194,7 +198,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                   ),
                 ],
               ),
-            ),
+            ).animate().slideY(begin: 1.0, duration: 400.ms, curve: Curves.easeOutQuart, delay: 300.ms),
           ),
         ],
       ),
