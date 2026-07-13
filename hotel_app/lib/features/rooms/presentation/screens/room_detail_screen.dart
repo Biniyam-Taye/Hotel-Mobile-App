@@ -48,8 +48,8 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
       );
     }
 
-    final List<String> imageUrls = _room!['imageUrls'] ?? [];
-    final List<Map<String, String>> amenities = _room!['amenities'] ?? [];
+    final List<String> imageUrls = _room['imageUrls'] ?? [];
+    final List<Map<String, String>> amenities = _room['amenities'] ?? [];
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -88,16 +88,16 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
                       ),
                       child: IconButton(
                         icon: Icon(
-                          _room!['isFavorite'] == true
+                          _room['isFavorite'] == true
                               ? Icons.favorite_rounded
                               : Icons.favorite_border_rounded,
                         ),
-                        color: _room!['isFavorite'] == true
+                        color: _room['isFavorite'] == true
                             ? AppColors.error
                             : Theme.of(context).colorScheme.onSurface,
                         onPressed: () {
                           setState(() {
-                            _room!['isFavorite'] = !(_room!['isFavorite'] ?? false);
+                            _room['isFavorite'] = !(_room['isFavorite'] ?? false);
                           });
                         },
                       ),
@@ -123,7 +123,7 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
                         children: [
                           Expanded(
                             child: Text(
-                              _room!['title'],
+                              _room['title'],
                               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                                     fontWeight: FontWeight.w800,
                                     height: 1.2,
@@ -148,7 +148,7 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  _room!['rating'].toString(),
+                                  _room['rating'].toString(),
                                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                         color: AppColors.primary,
                                         fontWeight: FontWeight.w800,
@@ -171,7 +171,7 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            _room!['location'],
+                            _room['location'],
                             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                   color: Theme.of(context)
                                       .colorScheme
@@ -192,7 +192,7 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
                       ),
                       const SizedBox(height: AppSpacing.sm),
                       Text(
-                        _room!['description'],
+                        _room['description'],
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                               color: Theme.of(context)
                                   .colorScheme
@@ -220,7 +220,7 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Reviews (${_room!['reviews']})',
+                            'Reviews (${_room['reviews']})',
                             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                   fontWeight: FontWeight.w800,
                                 ),
@@ -310,9 +310,9 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
             left: 0,
             right: 0,
             child: _StickyBottomBar(
-              price: _room!['price'],
+              price: _room['price'],
               onBookTap: () {
-                context.push('/rooms/${_room!['id']}/book');
+                context.push('/rooms/${_room['id']}/book');
               },
             ),
           ),

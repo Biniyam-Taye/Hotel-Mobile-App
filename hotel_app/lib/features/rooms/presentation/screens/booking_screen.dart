@@ -76,7 +76,7 @@ class _BookingScreenState extends State<BookingScreen> {
                         decoration: BoxDecoration(
                           borderRadius: AppBorders.circular,
                           image: DecorationImage(
-                            image: NetworkImage(_room!['imageUrls'].first),
+                            image: NetworkImage(_room['imageUrls'].first),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -87,21 +87,21 @@ class _BookingScreenState extends State<BookingScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              _room!['title'],
+                              _room['title'],
                               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.w800,
                                   ),
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              _room!['location'],
+                              _room['location'],
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                     color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                                   ),
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              '\$${_room!['price'].toInt()} /night',
+                              '\$${_room['price'].toInt()} /night',
                               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                     color: AppColors.primary,
                                     fontWeight: FontWeight.w800,
@@ -209,7 +209,7 @@ class _BookingScreenState extends State<BookingScreen> {
                   child: Column(
                     children: [
                       _PriceRow(
-                        label: '\$${_room!['price'].toInt()} x $_nights nights',
+                        label: '\$${_room['price'].toInt()} x $_nights nights',
                         value: '\$${_basePrice.toStringAsFixed(2)}',
                       ),
                       const SizedBox(height: AppSpacing.sm),
