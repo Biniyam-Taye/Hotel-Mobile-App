@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/inputs/search_input.dart';
 
@@ -96,8 +95,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                     child: SearchInput(
                       controller: _searchController,
-                      hint: 'Search hotels, destinations...',
-                      onPressed: () {
+                      hintText: 'Search hotels, destinations...',
+                      onFilterTap: () {
                         // TODO: Navigate to search screen
                       },
                     ),
@@ -123,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                       scrollDirection: Axis.horizontal,
                       itemCount: _featuredRooms.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.md),
+                      separatorBuilder: (context, _) => const SizedBox(width: AppSpacing.md),
                       itemBuilder: (context, index) {
                         final room = _featuredRooms[index];
                         return SizedBox(
@@ -159,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                       scrollDirection: Axis.horizontal,
                       itemCount: _services.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.md),
+                      separatorBuilder: (context, _) => const SizedBox(width: AppSpacing.md),
                       itemBuilder: (context, index) {
                         final service = _services[index];
                         return SizedBox(

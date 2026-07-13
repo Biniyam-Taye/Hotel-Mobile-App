@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../home/presentation/screens/home_screen.dart';
+import '../../../home/presentation/screens/home_screen.dart';
 
 // ── Placeholder tab screens ──────────────────────────────────────────────────
 
