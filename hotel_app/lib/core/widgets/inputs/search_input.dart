@@ -26,7 +26,7 @@ class SearchInput extends StatelessWidget {
         suffixIcon: onFilterTap != null
             ? IconButton(
                 icon: const Icon(Icons.tune, color: AppColors.primary),
-                onTap: onFilterTap,
+                onPressed: onFilterTap,
               )
             : null,
       ),
