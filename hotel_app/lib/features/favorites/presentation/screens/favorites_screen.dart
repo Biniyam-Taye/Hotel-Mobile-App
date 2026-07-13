@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/navigation/custom_app_bar.dart';
@@ -73,7 +74,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                           .toList();
                     });
                   },
-                );
+                ).animate(delay: (index * 50).ms).fade(duration: 300.ms).slideY(begin: 0.1, curve: Curves.easeOutQuart);
               },
             ),
     );
