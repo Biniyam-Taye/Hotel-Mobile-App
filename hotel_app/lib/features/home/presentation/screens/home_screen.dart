@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/inputs/search_input.dart';
 
@@ -172,6 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         return SizedBox(
                           width: 160,
                           child: ServiceCard(
+                            id: service['id'],
                             title: service['title'],
                             subtitle: '\$${service['price'].toInt()}',
                             imageUrl: service['imageUrl'],
@@ -186,7 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   
                   // Bottom Padding
                   SizedBox(height: MediaQuery.of(context).padding.bottom + AppSpacing.xxl),
-                ],
+                ].animate(interval: 50.ms).fade(duration: 400.ms).slideY(begin: 0.05, curve: Curves.easeOutQuart),
               ),
             ),
           ],

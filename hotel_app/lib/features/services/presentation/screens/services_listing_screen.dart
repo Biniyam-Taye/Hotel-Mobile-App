@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/navigation/custom_app_bar.dart';
@@ -26,13 +27,14 @@ class ServicesListingScreen extends StatelessWidget {
         itemBuilder: (context, index) {
           final service = DummyServicesData.services[index];
           return ServiceCard(
+            id: service['id'],
             title: service['title'],
             subtitle: '\$${service['price'].toInt()}',
             imageUrl: service['imageUrl'],
             onTap: () {
               context.push('/services/${service['id']}');
             },
-          );
+          ).animate(delay: (index * 50).ms).fade(duration: 300.ms).slideY(begin: 0.1, curve: Curves.easeOutQuart);
         },
       ),
     );

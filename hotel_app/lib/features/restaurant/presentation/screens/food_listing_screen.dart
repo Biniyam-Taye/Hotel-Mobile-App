@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_borders.dart';
 import '../../../../core/widgets/navigation/custom_app_bar.dart';
 import '../../../../core/widgets/inputs/search_input.dart';
+import '../../../../core/widgets/animations/bouncing_wrapper.dart';
 import '../../data/dummy_food_data.dart';
 
 class FoodListingScreen extends StatefulWidget {
@@ -125,7 +127,7 @@ class _FoodListingScreenState extends State<FoodListingScreen> {
                       return _FoodCard(
                         food: food,
                         onTap: () => context.push('/restaurant/${food['id']}'),
-                      );
+                      ).animate(delay: (index * 50).ms).fade(duration: 300.ms).slideY(begin: 0.1, curve: Curves.easeOutQuart);
                     },
                   ),
           ),
@@ -143,9 +145,10 @@ class _FoodCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
+    return BouncingWrapper(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).cardTheme.color,
           borderRadius: AppBorders.medium,
@@ -160,17 +163,20 @@ class _FoodCard extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(AppBorders.radiusMedium),
-                      topRight: Radius.circular(AppBorders.radiusMedium),
-                    ),
-                    child: Image.network(
-                      food['imageUrl'],
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
-                        color: AppColors.grey100,
-                        child: const Icon(Icons.broken_image_rounded, color: AppColors.grey400),
+                  Hero(
+                    tag: 'food_image_${food['id']}',
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(AppBorders.radiusMedium),
+                        topRight: Radius.circular(AppBorders.radiusMedium),
+                      ),
+                      child: Image.network(
+                        food['imageUrl'],
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          color: AppColors.grey100,
+                          child: const Icon(Icons.broken_image_rounded, color: AppColors.grey400),
+                        ),
                       ),
                     ),
                   ),

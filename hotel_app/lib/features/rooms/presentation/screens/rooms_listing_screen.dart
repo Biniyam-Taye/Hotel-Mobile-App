@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/navigation/custom_app_bar.dart';
 import '../../../../core/widgets/inputs/search_input.dart';
@@ -89,7 +90,7 @@ class _RoomsListingScreenState extends State<RoomsListingScreen> {
                       room['isFavorite'] = !(room['isFavorite'] ?? false);
                     });
                   },
-                );
+                ).animate(delay: (index * 50).ms).fade(duration: 300.ms).slideY(begin: 0.1, curve: Curves.easeOutQuart);
               },
             ),
           ),

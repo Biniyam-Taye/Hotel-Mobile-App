@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_borders.dart';
 import '../../../../core/widgets/cards/premium_card.dart';
+import '../../../../core/widgets/animations/bouncing_wrapper.dart';
 
 class ServiceCard extends StatelessWidget {
+  final String id;
   final String title;
   final String subtitle;
   final String imageUrl;
@@ -12,6 +14,7 @@ class ServiceCard extends StatelessWidget {
 
   const ServiceCard({
     super.key,
+    required this.id,
     required this.title,
     required this.subtitle,
     required this.imageUrl,
@@ -20,26 +23,30 @@ class ServiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PremiumCard(
-      onTap: onTap,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(AppBorders.radiusMedium),
-                  topRight: Radius.circular(AppBorders.radiusMedium),
-                ),
-                image: DecorationImage(
-                  image: NetworkImage(imageUrl),
-                  fit: BoxFit.cover,
+    return BouncingWrapper(
+      child: PremiumCard(
+        onTap: onTap,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Hero(
+                tag: 'service_image_$id',
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(AppBorders.radiusMedium),
+                      topRight: Radius.circular(AppBorders.radiusMedium),
+                    ),
+                    image: DecorationImage(
+                      image: NetworkImage(imageUrl),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
           Padding(
             padding: const EdgeInsets.all(AppSpacing.md),
             child: Column(
