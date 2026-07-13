@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/widgets/buttons/primary_button.dart';
 
 class _OnboardingPage {
   final String title;
@@ -199,8 +198,8 @@ class _OnboardingPageView extends StatelessWidget {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  page.accent.withOpacity(0.12),
-                  page.accent.withOpacity(0.04),
+                  page.accent.withValues(alpha: 0.12),
+                  page.accent.withValues(alpha: 0.04),
                 ],
               ),
             ),
@@ -210,13 +209,13 @@ class _OnboardingPageView extends StatelessWidget {
                   width: isTablet ? 220 : 170,
                   height: isTablet ? 220 : 170,
                   decoration: BoxDecoration(
-                    color: page.accent.withOpacity(0.15),
+                    color: page.accent.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
                   child: Container(
                     margin: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: page.accent.withOpacity(0.2),
+                      color: page.accent.withValues(alpha: 0.2),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -257,7 +256,7 @@ class _OnboardingPageView extends StatelessWidget {
                         color: Theme.of(context)
                             .colorScheme
                             .onSurface
-                            .withOpacity(0.55),
+                            .withValues(alpha: 0.55),
                         height: 1.6,
                       ),
                 ),
