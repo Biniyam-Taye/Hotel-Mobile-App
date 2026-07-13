@@ -38,7 +38,7 @@ class _PlaceholderTab extends StatelessWidget {
                   color: Theme.of(context)
                       .colorScheme
                       .onSurface
-                      .withOpacity(0.45),
+                      .withValues(alpha: 0.45),
                 ),
             textAlign: TextAlign.center,
           ),
@@ -213,7 +213,7 @@ class _BottomBar extends StatelessWidget {
         color: Theme.of(context).colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.25 : 0.06),
+            color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.06),
             blurRadius: 24,
             offset: const Offset(0, -6),
           ),

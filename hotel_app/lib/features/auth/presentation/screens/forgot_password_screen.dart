@@ -127,7 +127,7 @@ class _EmailStep extends StatelessWidget {
         Text(
           'No worries! Enter your email and we\'ll send you a reset code.',
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                 height: 1.6,
               ),
         ),
@@ -221,7 +221,7 @@ class _OtpStep extends StatelessWidget {
         RichText(
           text: TextSpan(
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                   height: 1.6,
                 ),
             children: [
@@ -355,7 +355,7 @@ class _SuccessStep extends StatelessWidget {
           width: 110,
           height: 110,
           decoration: BoxDecoration(
-            color: AppColors.success.withOpacity(0.12),
+            color: AppColors.success.withValues(alpha: 0.12),
             shape: BoxShape.circle,
           ),
           child: const Icon(
@@ -376,7 +376,7 @@ class _SuccessStep extends StatelessWidget {
         Text(
           'Your password has been reset successfully.\nYou can now sign in with your new password.',
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                 height: 1.6,
               ),
           textAlign: TextAlign.center,
