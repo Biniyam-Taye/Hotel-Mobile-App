@@ -168,7 +168,7 @@ class _FoodCard extends StatelessWidget {
                     child: Image.network(
                       food['imageUrl'],
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
+                      errorBuilder: (context, error, stackTrace) => Container(
                         color: AppColors.grey100,
                         child: const Icon(Icons.broken_image_rounded, color: AppColors.grey400),
                       ),
