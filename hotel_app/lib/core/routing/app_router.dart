@@ -1,5 +1,5 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../features/auth/presentation/screens/splash_screen.dart';
@@ -22,6 +22,33 @@ import '../../features/offers/presentation/screens/offers_listing_screen.dart';
 
 part 'app_router.g.dart';
 
+// Helper for smooth transitions
+CustomTransitionPage<T> _buildTransitionPage<T>({
+  required BuildContext context,
+  required GoRouterState state,
+  required Widget child,
+}) {
+  return CustomTransitionPage<T>(
+    key: state.pageKey,
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return FadeTransition(
+        opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0, 0.05),
+            end: Offset.zero,
+          ).animate(CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeOutCubic,
+          )),
+          child: child,
+        ),
+      );
+    },
+  );
+}
+
 @riverpod
 GoRouter appRouter(Ref ref) {
   return GoRouter(
@@ -30,52 +57,52 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: '/',
         name: 'splash',
-        builder: (context, state) => const SplashScreen(),
+        pageBuilder: (context, state) => _buildTransitionPage(context: context, state: state, child: const SplashScreen()),
       ),
       GoRoute(
         path: '/onboarding',
         name: 'onboarding',
-        builder: (context, state) => const OnboardingScreen(),
+        pageBuilder: (context, state) => _buildTransitionPage(context: context, state: state, child: const OnboardingScreen()),
       ),
       GoRoute(
         path: '/login',
         name: 'login',
-        builder: (context, state) => const LoginScreen(),
+        pageBuilder: (context, state) => _buildTransitionPage(context: context, state: state, child: const LoginScreen()),
       ),
       GoRoute(
         path: '/signup',
         name: 'signup',
-        builder: (context, state) => const SignupScreen(),
+        pageBuilder: (context, state) => _buildTransitionPage(context: context, state: state, child: const SignupScreen()),
       ),
       GoRoute(
         path: '/forgot-password',
         name: 'forgot-password',
-        builder: (context, state) => const ForgotPasswordScreen(),
+        pageBuilder: (context, state) => _buildTransitionPage(context: context, state: state, child: const ForgotPasswordScreen()),
       ),
       GoRoute(
         path: '/main',
         name: 'main',
-        builder: (context, state) => const MainNavigationScreen(),
+        pageBuilder: (context, state) => _buildTransitionPage(context: context, state: state, child: const MainNavigationScreen()),
       ),
       GoRoute(
         path: '/rooms',
         name: 'rooms',
-        builder: (context, state) => const RoomsListingScreen(),
+        pageBuilder: (context, state) => _buildTransitionPage(context: context, state: state, child: const RoomsListingScreen()),
         routes: [
           GoRoute(
             path: ':id',
             name: 'room-detail',
-            builder: (context, state) {
+            pageBuilder: (context, state) {
               final id = state.pathParameters['id']!;
-              return RoomDetailScreen(roomId: id);
+              return _buildTransitionPage(context: context, state: state, child: RoomDetailScreen(roomId: id));
             },
             routes: [
               GoRoute(
                 path: 'book',
                 name: 'room-book',
-                builder: (context, state) {
+                pageBuilder: (context, state) {
                   final id = state.pathParameters['id']!;
-                  return BookingScreen(roomId: id);
+                  return _buildTransitionPage(context: context, state: state, child: BookingScreen(roomId: id));
                 },
               ),
             ],
@@ -85,22 +112,22 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: '/services',
         name: 'services',
-        builder: (context, state) => const ServicesListingScreen(),
+        pageBuilder: (context, state) => _buildTransitionPage(context: context, state: state, child: const ServicesListingScreen()),
         routes: [
           GoRoute(
             path: ':id',
             name: 'service-detail',
-            builder: (context, state) {
+            pageBuilder: (context, state) {
               final id = state.pathParameters['id']!;
-              return ServiceDetailScreen(serviceId: id);
+              return _buildTransitionPage(context: context, state: state, child: ServiceDetailScreen(serviceId: id));
             },
             routes: [
               GoRoute(
                 path: 'book',
                 name: 'service-book',
-                builder: (context, state) {
+                pageBuilder: (context, state) {
                   final id = state.pathParameters['id']!;
-                  return ServiceBookingScreen(serviceId: id);
+                  return _buildTransitionPage(context: context, state: state, child: ServiceBookingScreen(serviceId: id));
                 },
               ),
             ],
@@ -110,24 +137,24 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: '/restaurant',
         name: 'restaurant',
-        builder: (context, state) => const FoodListingScreen(),
+        pageBuilder: (context, state) => _buildTransitionPage(context: context, state: state, child: const FoodListingScreen()),
         routes: [
           GoRoute(
             path: 'cart',
             name: 'food-cart',
-            builder: (context, state) => const FoodCartScreen(),
+            pageBuilder: (context, state) => _buildTransitionPage(context: context, state: state, child: const FoodCartScreen()),
           ),
           GoRoute(
             path: 'checkout',
             name: 'food-checkout',
-            builder: (context, state) => const FoodCheckoutScreen(),
+            pageBuilder: (context, state) => _buildTransitionPage(context: context, state: state, child: const FoodCheckoutScreen()),
           ),
           GoRoute(
             path: ':id',
             name: 'food-detail',
-            builder: (context, state) {
+            pageBuilder: (context, state) {
               final id = state.pathParameters['id']!;
-              return FoodDetailScreen(foodId: id);
+              return _buildTransitionPage(context: context, state: state, child: FoodDetailScreen(foodId: id));
             },
           ),
         ],
@@ -135,7 +162,7 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: '/offers',
         name: 'offers',
-        builder: (context, state) => const OffersListingScreen(),
+        pageBuilder: (context, state) => _buildTransitionPage(context: context, state: state, child: const OffersListingScreen()),
       ),
     ],
   );
