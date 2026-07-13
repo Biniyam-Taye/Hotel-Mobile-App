@@ -525,10 +525,12 @@ class _StickyBottomBar extends StatelessWidget {
               ),
             ],
           ),
-          PrimaryButton(
-            text: 'Book Now',
-            onPressed: onBookTap,
+          SizedBox(
             width: 160,
+            child: PrimaryButton(
+              text: 'Book Now',
+              onPressed: onBookTap,
+            ),
           ),
         ],
       ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/navigation/custom_app_bar.dart';
 import '../../../../core/widgets/inputs/search_input.dart';
@@ -45,7 +44,6 @@ class _RoomsListingScreenState extends State<RoomsListingScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: const CustomAppBar(
         title: 'Discover Rooms',
-        showBackButton: true,
       ),
       body: Column(
         children: [

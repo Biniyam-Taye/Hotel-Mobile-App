@@ -40,7 +40,7 @@ class _BookingScreenState extends State<BookingScreen> {
   Widget build(BuildContext context) {
     if (_room == null) {
       return const Scaffold(
-        appBar: CustomAppBar(title: 'Booking', showBackButton: true),
+        appBar: CustomAppBar(title: 'Booking'),
         body: Center(child: Text('Room not found')),
       );
     }
@@ -49,7 +49,6 @@ class _BookingScreenState extends State<BookingScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: const CustomAppBar(
         title: 'Complete Booking',
-        showBackButton: true,
       ),
       body: Stack(
         children: [
