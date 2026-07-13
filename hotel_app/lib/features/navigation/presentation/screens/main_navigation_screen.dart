@@ -2,52 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../home/presentation/screens/home_screen.dart';
-
-// ── Placeholder tab screens ──────────────────────────────────────────────────
-
-class _PlaceholderTab extends StatelessWidget {
-  final String label;
-  final IconData icon;
-
-  const _PlaceholderTab({required this.label, required this.icon});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(28),
-            decoration: BoxDecoration(
-              color: AppColors.primaryContainer,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, size: 52, color: AppColors.primary),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'This screen will be built in\nthe next development phase.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withValues(alpha: 0.45),
-                ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-}
+import '../../favorites/presentation/screens/favorites_screen.dart';
+import '../../orders/presentation/screens/orders_screen.dart';
+import '../../notifications/presentation/screens/notifications_screen.dart';
+import '../../profile/presentation/screens/profile_screen.dart';
 
 // ── Nav item model ───────────────────────────────────────────────────────────
 
@@ -76,37 +34,25 @@ final _navItems = [
     label: 'Favorites',
     icon: Icons.favorite_outline_rounded,
     activeIcon: Icons.favorite_rounded,
-    screen: _PlaceholderTab(
-      label: 'Favorites',
-      icon: Icons.favorite_rounded,
-    ),
+    screen: const FavoritesScreen(),
   ),
   _NavItem(
     label: 'Orders',
     icon: Icons.receipt_long_outlined,
     activeIcon: Icons.receipt_long_rounded,
-    screen: _PlaceholderTab(
-      label: 'Orders',
-      icon: Icons.receipt_long_rounded,
-    ),
+    screen: const OrdersScreen(),
   ),
   _NavItem(
     label: 'Notifications',
     icon: Icons.notifications_none_rounded,
     activeIcon: Icons.notifications_rounded,
-    screen: _PlaceholderTab(
-      label: 'Notifications',
-      icon: Icons.notifications_rounded,
-    ),
+    screen: const NotificationsScreen(),
   ),
   _NavItem(
     label: 'Profile',
     icon: Icons.person_outline_rounded,
     activeIcon: Icons.person_rounded,
-    screen: _PlaceholderTab(
-      label: 'Profile',
-      icon: Icons.person_rounded,
-    ),
+    screen: const ProfileScreen(),
   ),
 ];
 
