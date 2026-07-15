@@ -239,33 +239,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: AppSpacing.xxl),
 
-                  // ── Stats Banner ─────────────────────────────────────────
-                  _StatsBanner(),
-                  const SizedBox(height: AppSpacing.xxl),
-
-                  // ── Top Destinations ─────────────────────────────────────
-                  SectionHeader(
-                    title: 'Top Destinations',
-                    onActionTap: () => context.push('/rooms'),
-                  ),
-                  SizedBox(
-                    height: 200,
-                    child: ListView.separated(
-                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _destinations.length,
-                      separatorBuilder: (context, _) => const SizedBox(width: AppSpacing.md),
-                      itemBuilder: (context, index) {
-                        final dest = _destinations[index];
-                        return _DestinationCard(destination: dest)
-                            .animate()
-                            .fade(delay: Duration(milliseconds: index * 80))
-                            .slideX(begin: 0.1);
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xxl),
-
                   // ── Guest Reviews ────────────────────────────────────────
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
