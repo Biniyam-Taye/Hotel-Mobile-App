@@ -14,6 +14,12 @@ import '../../features/rooms/presentation/screens/booking_screen.dart';
 import '../../features/services/presentation/screens/services_listing_screen.dart';
 import '../../features/services/presentation/screens/service_detail_screen.dart';
 import '../../features/services/presentation/screens/service_booking_screen.dart';
+import '../../features/services/presentation/screens/spa_wellness_detail_screen.dart';
+import '../../features/services/presentation/screens/airport_transfer_detail_screen.dart';
+import '../../features/services/presentation/screens/gym_fitness_detail_screen.dart';
+import '../../features/services/presentation/screens/swimming_pool_detail_screen.dart';
+import '../../features/services/presentation/screens/massage_therapy_detail_screen.dart';
+import '../../features/services/presentation/screens/laundry_detail_screen.dart';
 import '../../features/restaurant/presentation/screens/food_listing_screen.dart';
 import '../../features/restaurant/presentation/screens/food_detail_screen.dart';
 import '../../features/restaurant/presentation/screens/food_cart_screen.dart';
@@ -119,7 +125,16 @@ GoRouter appRouter(Ref ref) {
             name: 'service-detail',
             pageBuilder: (context, state) {
               final id = state.pathParameters['id']!;
-              return _buildTransitionPage(context: context, state: state, child: ServiceDetailScreen(serviceId: id));
+              final Widget screen = switch (id) {
+                'service_1' => const SpaWellnessDetailScreen(),
+                'service_2' => const AirportTransferDetailScreen(),
+                'service_3' => const GymFitnessDetailScreen(),
+                'service_4' => const SwimmingPoolDetailScreen(),
+                'service_5' => const MassageTherapyDetailScreen(),
+                'service_6' => const LaundryDetailScreen(),
+                _ => ServiceDetailScreen(serviceId: id),
+              };
+              return _buildTransitionPage(context: context, state: state, child: screen);
             },
             routes: [
               GoRoute(
