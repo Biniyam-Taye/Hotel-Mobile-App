@@ -17,7 +17,6 @@ class _SpaWellnessDetailScreenState extends State<SpaWellnessDetailScreen> {
   int _selectedSlot = 1;
 
   static const _sageGreen = Color(0xFF6B8F71);
-  static const _blush = Color(0xFFF2B5A4);
   static const _cream = Color(0xFFFDF8F4);
 
   final _treatments = [
@@ -29,7 +28,7 @@ class _SpaWellnessDetailScreenState extends State<SpaWellnessDetailScreen> {
   final _slots = ['Morning\n8–11 AM', 'Afternoon\n1–5 PM', 'Evening\n6–9 PM'];
 
   final _includes = [
-    {'icon': Icons.bathrobe_rounded, 'label': 'Plush robe & slippers'},
+    {'icon': Icons.checkroom_rounded, 'label': 'Plush robe & slippers'},
     {'icon': Icons.local_cafe_rounded, 'label': 'Herbal tea welcome'},
     {'icon': Icons.shower_rounded, 'label': 'Steam room access'},
     {'icon': Icons.self_improvement_rounded, 'label': 'Meditation lounge'},
@@ -85,7 +84,7 @@ class _SpaWellnessDetailScreenState extends State<SpaWellnessDetailScreen> {
                         height: 120,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
-                          separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.sm),
+                          separatorBuilder: (_, _a) => const SizedBox(width: AppSpacing.sm),
                           itemCount: _treatments.length,
                           itemBuilder: (context, i) => _TreatmentCard(
                             name: _treatments[i]['name'] as String,
