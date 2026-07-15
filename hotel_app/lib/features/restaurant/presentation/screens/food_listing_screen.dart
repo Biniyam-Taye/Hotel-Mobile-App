@@ -248,6 +248,6 @@ class _FoodCard extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 }

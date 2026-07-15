@@ -188,6 +188,6 @@ class FeaturedRoomCard extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ));
   }
 }

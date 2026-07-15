@@ -77,6 +77,6 @@ class ServiceCard extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ));
   }
 }
