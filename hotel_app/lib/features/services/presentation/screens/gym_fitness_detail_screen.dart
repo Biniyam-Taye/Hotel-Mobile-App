@@ -135,7 +135,7 @@ class _GymFitnessDetailScreenState extends State<GymFitnessDetailScreen> {
                         height: 110,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
-                          separatorBuilder: (_, _a) => const SizedBox(width: AppSpacing.sm),
+                          separatorBuilder: (context, index) => const SizedBox(width: AppSpacing.sm),
                           itemCount: _classes.length,
                           itemBuilder: (context, i) {
                             final cls = _classes[i];

@@ -84,7 +84,7 @@ class _SpaWellnessDetailScreenState extends State<SpaWellnessDetailScreen> {
                         height: 120,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
-                          separatorBuilder: (_, _a) => const SizedBox(width: AppSpacing.sm),
+                          separatorBuilder: (context, index) => const SizedBox(width: AppSpacing.sm),
                           itemCount: _treatments.length,
                           itemBuilder: (context, i) => _TreatmentCard(
                             name: _treatments[i]['name'] as String,

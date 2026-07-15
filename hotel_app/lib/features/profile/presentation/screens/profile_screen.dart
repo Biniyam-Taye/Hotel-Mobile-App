@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_borders.dart';
@@ -87,7 +88,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   IconButton(
                     icon: const Icon(Icons.edit_rounded, color: AppColors.primary),
-                    onPressed: () {},
+                    onPressed: () => context.push('/profile/personal-info'),
                   ),
                 ],
               ),
@@ -98,9 +99,9 @@ class ProfileScreen extends StatelessWidget {
             _SettingsSection(
               title: 'Account Settings',
               items: [
-                _SettingsItem(icon: Icons.person_outline_rounded, title: 'Personal Information', onTap: () {}),
-                _SettingsItem(icon: Icons.payment_rounded, title: 'Payment Methods', onTap: () {}),
-                _SettingsItem(icon: Icons.security_rounded, title: 'Security & Privacy', onTap: () {}),
+                _SettingsItem(icon: Icons.person_outline_rounded, title: 'Personal Information', onTap: () => context.push('/profile/personal-info')),
+                _SettingsItem(icon: Icons.payment_rounded, title: 'Payment Methods', onTap: () => context.push('/profile/payment-methods')),
+                _SettingsItem(icon: Icons.security_rounded, title: 'Security & Privacy', onTap: () => context.push('/profile/security')),
               ],
             ),
             const SizedBox(height: AppSpacing.xl),
@@ -118,8 +119,8 @@ class ProfileScreen extends StatelessWidget {
             _SettingsSection(
               title: 'Support',
               items: [
-                _SettingsItem(icon: Icons.help_outline_rounded, title: 'Help Center', onTap: () {}),
-                _SettingsItem(icon: Icons.info_outline_rounded, title: 'About Us', onTap: () {}),
+                _SettingsItem(icon: Icons.help_outline_rounded, title: 'Help Center', onTap: () => context.push('/profile/help')),
+                _SettingsItem(icon: Icons.info_outline_rounded, title: 'About Us', onTap: () => context.push('/profile/about')),
               ],
             ),
             const SizedBox(height: AppSpacing.xl),

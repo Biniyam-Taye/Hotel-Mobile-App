@@ -4,14 +4,12 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_borders.dart';
-import '../../data/dummy_services_data.dart';
 
 class GymFitnessBookingScreen extends StatelessWidget {
   const GymFitnessBookingScreen({super.key});
 
   static const _charcoal = Color(0xFF1C1C1E);
   static const _darkCard = Color(0xFF2C2C2E);
-  static const _dimText = Color(0xFF8E8E93);
 
   @override
   Widget build(BuildContext context) {

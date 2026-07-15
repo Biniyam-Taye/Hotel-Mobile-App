@@ -31,7 +31,14 @@ import '../../features/restaurant/presentation/screens/food_detail_screen.dart';
 import '../../features/restaurant/presentation/screens/food_cart_screen.dart';
 import '../../features/restaurant/presentation/screens/food_checkout_screen.dart';
 import '../../features/offers/presentation/screens/offers_listing_screen.dart';
-
+import '../../features/profile/presentation/screens/personal_info_screen.dart';
+import '../../features/profile/presentation/screens/payment_methods_screen.dart';
+import '../../features/profile/presentation/screens/security_privacy_screen.dart';
+import '../../features/profile/presentation/screens/help_center_screen.dart';
+import '../../features/profile/presentation/screens/about_us_screen.dart';
+import '../../features/profile/presentation/screens/terms_of_service_screen.dart';
+import '../../features/profile/presentation/screens/privacy_policy_screen.dart';
+import '../../features/profile/presentation/screens/licenses_screen.dart';
 part 'app_router.g.dart';
 
 // Helper for smooth transitions
@@ -193,6 +200,46 @@ GoRouter appRouter(Ref ref) {
         path: '/offers',
         name: 'offers',
         pageBuilder: (context, state) => _buildTransitionPage(context: context, state: state, child: const OffersListingScreen()),
+      ),
+      GoRoute(
+        path: '/profile/personal-info',
+        name: 'personal-info',
+        pageBuilder: (context, state) => _buildTransitionPage(context: context, state: state, child: const PersonalInfoScreen()),
+      ),
+      GoRoute(
+        path: '/profile/payment-methods',
+        name: 'payment-methods',
+        pageBuilder: (context, state) => _buildTransitionPage(context: context, state: state, child: const PaymentMethodsScreen()),
+      ),
+      GoRoute(
+        path: '/profile/security',
+        name: 'security',
+        pageBuilder: (context, state) => _buildTransitionPage(context: context, state: state, child: const SecurityPrivacyScreen()),
+      ),
+      GoRoute(
+        path: '/profile/help',
+        name: 'help-center',
+        pageBuilder: (context, state) => _buildTransitionPage(context: context, state: state, child: const HelpCenterScreen()),
+      ),
+      GoRoute(
+        path: '/profile/about',
+        name: 'about-us',
+        pageBuilder: (context, state) => _buildTransitionPage(context: context, state: state, child: const AboutUsScreen()),
+      ),
+      GoRoute(
+        path: '/profile/about/terms',
+        name: 'terms-of-service',
+        pageBuilder: (context, state) => _buildTransitionPage(context: context, state: state, child: const TermsOfServiceScreen()),
+      ),
+      GoRoute(
+        path: '/profile/about/privacy',
+        name: 'privacy-policy',
+        pageBuilder: (context, state) => _buildTransitionPage(context: context, state: state, child: const PrivacyPolicyScreen()),
+      ),
+      GoRoute(
+        path: '/profile/about/licenses',
+        name: 'licenses',
+        pageBuilder: (context, state) => _buildTransitionPage(context: context, state: state, child: const LicensesScreen()),
       ),
     ],
   );
