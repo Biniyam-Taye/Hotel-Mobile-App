@@ -431,7 +431,7 @@ class _DestinationCard extends StatelessWidget {
               child: Image.network(
                 destination['imageUrl'],
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(color: Colors.grey.shade300),
+                errorBuilder: (context, error, stack) => Container(color: Colors.grey.shade300),
               ),
             ),
             Positioned.fill(
@@ -679,7 +679,7 @@ class _CtaSection extends StatelessWidget {
             child: Image.network(
               'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&q=80&w=800',
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
+              errorBuilder: (context, error, stack) => Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(colors: [AppColors.primary, Color(0xFFE65100)]),
                 ),
