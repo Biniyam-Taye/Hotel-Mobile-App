@@ -291,12 +291,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: AppSpacing.xxl),
 
-                  // ── Why Choose Us ────────────────────────────────────────
-                  _WhyChooseUsSection(),
+                  // ── Flash Deals ──────────────────────────────────────────
+                  _FlashDealsSection(),
                   const SizedBox(height: AppSpacing.xxl),
 
-                  // ── CTA Section ──────────────────────────────────────────
-                  _CtaSection(),
+                  // ── Membership Banner ────────────────────────────────────
+                  _MembershipBanner(),
                   SizedBox(height: MediaQuery.of(context).padding.bottom + AppSpacing.xxl),
                 ],
               ),
@@ -552,195 +552,313 @@ class _TestimonialCard extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────
-// Why Choose Us
+// Flash Deals Section
 // ─────────────────────────────────────────────────────────────
-class _WhyChooseUsSection extends StatelessWidget {
+class _FlashDealsSection extends StatelessWidget {
+  final List<Map<String, dynamic>> _deals = const [
+    {
+      'title': 'Summer Getaway',
+      'subtitle': '20% off all Villas',
+      'code': 'SUMMER20',
+      'badge': 'HOT',
+      'imageUrl': 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&q=80&w=600',
+      'colorStart': 0xFFFF6B35,
+      'colorEnd': 0xFFFF8E53,
+    },
+    {
+      'title': 'Spa Special',
+      'subtitle': 'BOGO Massage',
+      'code': 'SPABOGO',
+      'badge': 'BOGO',
+      'imageUrl': 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&q=80&w=600',
+      'colorStart': 0xFF7E57C2,
+      'colorEnd': 0xFFAB47BC,
+    },
+    {
+      'title': 'Weekend Escape',
+      'subtitle': 'Free Breakfast',
+      'code': 'WKNDFREE',
+      'badge': 'FREE',
+      'imageUrl': 'https://images.unsplash.com/photo-1551882547-ff40c4a49f7e?auto=format&fit=crop&q=80&w=600',
+      'colorStart': 0xFF00897B,
+      'colorEnd': 0xFF4DB6AC,
+    },
+  ];
+
+  const _FlashDealsSection();
+
   @override
   Widget build(BuildContext context) {
-    final features = [
-      {'icon': Icons.verified_rounded, 'title': 'Verified Hotels', 'desc': 'Every property is hand-picked and quality-assured.'},
-      {'icon': Icons.price_change_rounded, 'title': 'Best Price Guarantee', 'desc': 'Find a lower price and we\'ll match it, instantly.'},
-      {'icon': Icons.support_agent_rounded, 'title': '24/7 Concierge', 'desc': 'Our team is always available to assist you.'},
-      {'icon': Icons.cancel_rounded, 'title': 'Free Cancellation', 'desc': 'Cancel most bookings for free up to 24h before.'},
-    ];
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Why Choose Us',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: AppSpacing.md,
-              crossAxisSpacing: AppSpacing.md,
-              childAspectRatio: 1.3,
-            ),
-            itemCount: features.length,
-            itemBuilder: (context, index) {
-              final f = features[index];
-              return Container(
-                padding: const EdgeInsets.all(AppSpacing.md),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).cardTheme.color,
-                  borderRadius: AppBorders.large,
-                  border: Border.all(
-                    color: Theme.of(context).dividerColor.withValues(alpha: 0.1),
-                  ),
+                  color: AppColors.error.withValues(alpha: 0.12),
+                  borderRadius: AppBorders.circular,
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryContainer.withValues(alpha: 0.5),
-                        borderRadius: AppBorders.medium,
-                      ),
-                      child: Icon(f['icon'] as IconData, color: AppColors.primary, size: 22),
-                    ),
-                    const Spacer(),
-                    Text(
-                      f['title'] as String,
-                      style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      f['desc'] as String,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.55),
-                        height: 1.4,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                    Container(width: 7, height: 7, decoration: const BoxDecoration(color: AppColors.error, shape: BoxShape.circle)),
+                    const SizedBox(width: 5),
+                    const Text('LIVE DEALS', style: TextStyle(color: AppColors.error, fontWeight: FontWeight.w800, fontSize: 11, letterSpacing: 0.8)),
                   ],
                 ),
-              ).animate().fade(delay: Duration(milliseconds: index * 80)).scale(begin: const Offset(0.95, 0.95));
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Text(
+                'Flash Offers',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+              ),
+              const Spacer(),
+              GestureDetector(
+                onTap: () => context.push('/offers'),
+                child: const Text('See All', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700, fontSize: 14)),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        SizedBox(
+          height: 175,
+          child: ListView.separated(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+            scrollDirection: Axis.horizontal,
+            itemCount: _deals.length,
+            separatorBuilder: (context, _) => const SizedBox(width: AppSpacing.md),
+            itemBuilder: (context, index) {
+              final deal = _deals[index];
+              final colorStart = Color(deal['colorStart'] as int);
+              final colorEnd = Color(deal['colorEnd'] as int);
+              return GestureDetector(
+                onTap: () => context.push('/offers'),
+                child: ClipRRect(
+                  borderRadius: AppBorders.large,
+                  child: SizedBox(
+                    width: 210,
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          child: Image.network(
+                            deal['imageUrl'],
+                            fit: BoxFit.cover,
+                            errorBuilder: (c, e, s) => Container(color: colorStart),
+                          ),
+                        ),
+                        Positioned.fill(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  colorStart.withValues(alpha: 0.85),
+                                  colorEnd.withValues(alpha: 0.7),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(14),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: AppBorders.circular,
+                                ),
+                                child: Text(
+                                  deal['badge'],
+                                  style: TextStyle(
+                                    color: colorStart,
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 10,
+                                    letterSpacing: 0.8,
+                                  ),
+                                ),
+                              ),
+                              const Spacer(),
+                              Text(
+                                deal['title'],
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                deal['subtitle'],
+                                style: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.9),
+                                  fontSize: 12,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.18),
+                                  borderRadius: AppBorders.medium,
+                                  border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+                                ),
+                                child: Text(
+                                  deal['code'],
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 13,
+                                    letterSpacing: 1.5,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ).animate().fade(delay: Duration(milliseconds: index * 80)).slideX(begin: 0.1);
             },
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
 
 // ─────────────────────────────────────────────────────────────
-// CTA Section
+// Membership Banner
 // ─────────────────────────────────────────────────────────────
-class _CtaSection extends StatelessWidget {
+class _MembershipBanner extends StatelessWidget {
+  const _MembershipBanner();
+
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(borderRadius: AppBorders.large),
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF1A1A2E), Color(0xFF0F3460)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: AppBorders.large,
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF0F3460).withValues(alpha: 0.4),
+            blurRadius: 24,
+            offset: const Offset(0, 12),
+          ),
+        ],
+      ),
       child: Stack(
         children: [
-          // Background image
-          SizedBox(
-            height: 240,
-            width: double.infinity,
-            child: Image.network(
-              'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&q=80&w=800',
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stack) => Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(colors: [AppColors.primary, Color(0xFFE65100)]),
-                ),
+          // Decorative circle
+          Positioned(
+            right: -30,
+            top: -30,
+            child: Container(
+              width: 140,
+              height: 140,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.primary.withValues(alpha: 0.08),
               ),
             ),
           ),
-          // Dark overlay
-          Container(
-            height: 240,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.black.withValues(alpha: 0.65),
-                  Colors.black.withValues(alpha: 0.35),
-                ],
+          Positioned(
+            right: 10,
+            bottom: -20,
+            child: Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.04),
               ),
             ),
           ),
-          // Content
-          SizedBox(
-            height: 240,
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.xl),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.85),
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFF5C518), Color(0xFFE6A817)],
+                      ),
                       borderRadius: AppBorders.circular,
                     ),
-                    child: const Text(
-                      'LIMITED OFFER',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
-                        fontSize: 11,
-                        letterSpacing: 1.2,
-                      ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.workspace_premium_rounded, color: Colors.white, size: 14),
+                        SizedBox(width: 4),
+                        Text('GOLD MEMBER', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 11, letterSpacing: 0.8)),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 14),
-                  const Text(
-                    'Your Dream\nGetaway Awaits',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 28,
-                      height: 1.15,
-                      letterSpacing: -0.5,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Book now and get up to 30% off\non selected luxury suites.',
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.85),
-                      fontSize: 14,
-                      height: 1.4,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Builder(
-                    builder: (context) => GestureDetector(
-                      onTap: () => context.push('/rooms'),
+                ],
+              ),
+              const SizedBox(height: 14),
+              const Text(
+                'Unlock Exclusive\nBenefits',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 24,
+                  height: 1.2,
+                  letterSpacing: -0.3,
+                ),
+              ),
+              const SizedBox(height: 12),
+              _MemberPerk(icon: Icons.percent_rounded, text: 'Up to 30% off on every booking'),
+              const SizedBox(height: 6),
+              _MemberPerk(icon: Icons.star_rounded, text: 'Priority room upgrades'),
+              const SizedBox(height: 6),
+              _MemberPerk(icon: Icons.restaurant_rounded, text: 'Complimentary breakfast'),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => context.push('/offers'),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 13),
+                        padding: const EdgeInsets.symmetric(vertical: 13),
                         decoration: BoxDecoration(
-                          color: AppColors.primary,
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFFF5C518), Color(0xFFE6A817)],
+                          ),
                           borderRadius: AppBorders.medium,
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.primary.withValues(alpha: 0.4),
+                              color: const Color(0xFFF5C518).withValues(alpha: 0.35),
                               blurRadius: 12,
                               offset: const Offset(0, 6),
                             ),
                           ],
                         ),
-                        child: const Text(
-                          'Explore Rooms →',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w800,
-                            fontSize: 15,
+                        child: const Center(
+                          child: Text(
+                            'Join Now — Free',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 15,
+                            ),
                           ),
                         ),
                       ),
@@ -748,10 +866,41 @@ class _CtaSection extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
+            ],
           ),
         ],
       ),
-    ).animate().fade(delay: 300.ms).slideY(begin: 0.15);
+    ).animate().fade(delay: 200.ms).slideY(begin: 0.15);
+  }
+}
+
+class _MemberPerk extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  const _MemberPerk({required this.icon, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            color: AppColors.primary.withValues(alpha: 0.15),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: AppColors.primary, size: 13),
+        ),
+        const SizedBox(width: 10),
+        Text(
+          text,
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.85),
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
   }
 }
