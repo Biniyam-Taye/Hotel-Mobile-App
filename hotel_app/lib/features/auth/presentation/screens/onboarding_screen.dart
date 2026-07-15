@@ -186,6 +186,8 @@ class _OnboardingPageView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bottomReserved = MediaQuery.of(context).size.height * 0.28;
+
     return Column(
       children: [
         // Illustration area
@@ -265,8 +267,8 @@ class _OnboardingPageView extends StatelessWidget {
           ),
         ),
 
-        // Space for bottom controls
-        const SizedBox(height: 180),
+        // Space for bottom controls — dynamic so it never overflows
+        SizedBox(height: bottomReserved),
       ],
     );
   }
