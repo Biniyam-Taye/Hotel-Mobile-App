@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_borders.dart';
 
@@ -195,8 +194,11 @@ class _MassageTherapyDetailScreenState extends State<MassageTherapyDetailScreen>
                           final selected = _addons.contains(e.value);
                           return GestureDetector(
                             onTap: () => setState(() {
-                              if (selected) _addons.remove(e.value);
-                              else _addons.add(e.value);
+                              if (selected) {
+                                _addons.remove(e.value);
+                              } else {
+                                _addons.add(e.value);
+                              }
                             }),
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 200),
