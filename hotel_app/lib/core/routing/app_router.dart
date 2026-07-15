@@ -14,6 +14,12 @@ import '../../features/rooms/presentation/screens/booking_screen.dart';
 import '../../features/services/presentation/screens/services_listing_screen.dart';
 import '../../features/services/presentation/screens/service_detail_screen.dart';
 import '../../features/services/presentation/screens/service_booking_screen.dart';
+import '../../features/services/presentation/screens/spa_wellness_booking_screen.dart';
+import '../../features/services/presentation/screens/airport_transfer_booking_screen.dart';
+import '../../features/services/presentation/screens/gym_fitness_booking_screen.dart';
+import '../../features/services/presentation/screens/swimming_pool_booking_screen.dart';
+import '../../features/services/presentation/screens/massage_therapy_booking_screen.dart';
+import '../../features/services/presentation/screens/laundry_booking_screen.dart';
 import '../../features/services/presentation/screens/spa_wellness_detail_screen.dart';
 import '../../features/services/presentation/screens/airport_transfer_detail_screen.dart';
 import '../../features/services/presentation/screens/gym_fitness_detail_screen.dart';
@@ -142,7 +148,16 @@ GoRouter appRouter(Ref ref) {
                 name: 'service-book',
                 pageBuilder: (context, state) {
                   final id = state.pathParameters['id']!;
-                  return _buildTransitionPage(context: context, state: state, child: ServiceBookingScreen(serviceId: id));
+                  final Widget screen = switch (id) {
+                    'service_1' => const SpaWellnessBookingScreen(),
+                    'service_2' => const AirportTransferBookingScreen(),
+                    'service_3' => const GymFitnessBookingScreen(),
+                    'service_4' => const SwimmingPoolBookingScreen(),
+                    'service_5' => const MassageTherapyBookingScreen(),
+                    'service_6' => const LaundryBookingScreen(),
+                    _ => ServiceBookingScreen(serviceId: id),
+                  };
+                  return _buildTransitionPage(context: context, state: state, child: screen);
                 },
               ),
             ],
