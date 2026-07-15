@@ -59,33 +59,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Map<String, dynamic>> _services = DummyServicesData.services.take(3).toList();
 
-  final List<Map<String, dynamic>> _destinations = [
-    {
-      'city': 'Paris',
-      'country': 'France',
-      'hotels': 240,
-      'imageUrl': 'https://images.unsplash.com/photo-1499856374010-9df3ee6e1e51?auto=format&fit=crop&q=80&w=600',
-    },
-    {
-      'city': 'Bali',
-      'country': 'Indonesia',
-      'hotels': 185,
-      'imageUrl': 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=600',
-    },
-    {
-      'city': 'Dubai',
-      'country': 'UAE',
-      'hotels': 310,
-      'imageUrl': 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=600',
-    },
-    {
-      'city': 'Santorini',
-      'country': 'Greece',
-      'hotels': 95,
-      'imageUrl': 'https://images.unsplash.com/photo-1533104816931-20fa691ff6ca?auto=format&fit=crop&q=80&w=600',
-    },
-  ];
-
   final List<Map<String, dynamic>> _testimonials = [
     {
       'name': 'Sarah K.',
@@ -309,167 +282,6 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 // ─────────────────────────────────────────────────────────────
-// Stats Banner
-// ─────────────────────────────────────────────────────────────
-class _StatsBanner extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: AppSpacing.lg),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: AppBorders.large,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.25),
-            blurRadius: 24,
-            offset: const Offset(0, 12),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: const [
-          _StatItem(value: '500+', label: 'Hotels'),
-          _StatDivider(),
-          _StatItem(value: '80+', label: 'Countries'),
-          _StatDivider(),
-          _StatItem(value: '2M+', label: 'Happy Guests'),
-        ],
-      ),
-    ).animate().fade(delay: 200.ms).slideY(begin: 0.15);
-  }
-}
-
-class _StatItem extends StatelessWidget {
-  final String value;
-  final String label;
-  const _StatItem({required this.value, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: const TextStyle(
-            color: AppColors.primary,
-            fontWeight: FontWeight.w900,
-            fontSize: 26,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(
-            color: Colors.white60,
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _StatDivider extends StatelessWidget {
-  const _StatDivider();
-  @override
-  Widget build(BuildContext context) {
-    return Container(width: 1, height: 40, color: Colors.white.withValues(alpha: 0.12));
-  }
-}
-
-// ─────────────────────────────────────────────────────────────
-// Destination Card
-// ─────────────────────────────────────────────────────────────
-class _DestinationCard extends StatelessWidget {
-  final Map<String, dynamic> destination;
-  const _DestinationCard({required this.destination});
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: AppBorders.large,
-      child: SizedBox(
-        width: 145,
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Image.network(
-                destination['imageUrl'],
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stack) => Container(color: Colors.grey.shade300),
-              ),
-            ),
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withValues(alpha: 0.7),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 14,
-              left: 14,
-              right: 14,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    destination['city'],
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 17,
-                    ),
-                  ),
-                  Text(
-                    destination['country'],
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.8),
-                      fontSize: 12,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.85),
-                      borderRadius: AppBorders.circular,
-                    ),
-                    child: Text(
-                      '${destination['hotels']} Hotels',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────
 // Testimonial Card
 // ─────────────────────────────────────────────────────────────
 class _TestimonialCard extends StatelessWidget {
@@ -647,7 +459,7 @@ class _FlashDealsSection extends StatelessWidget {
                           child: Image.network(
                             deal['imageUrl'],
                             fit: BoxFit.cover,
-                            errorBuilder: (c, e, s) => Container(color: colorStart),
+                            errorBuilder: (context, error, stack) => Container(color: colorStart),
                           ),
                         ),
                         Positioned.fill(
