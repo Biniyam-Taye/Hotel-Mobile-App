@@ -47,7 +47,7 @@ class _FoodListingScreenState extends State<FoodListingScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: CustomAppBar(
-        title: 'Room Service',
+        title: 'Restaurant',
         actions: [
           IconButton(
             icon: const Icon(Icons.shopping_cart_rounded, color: AppColors.primary),
