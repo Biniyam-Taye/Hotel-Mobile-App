@@ -27,7 +27,6 @@ class _AirportTransferBookingScreenState extends State<AirportTransferBookingScr
 
   @override
   Widget build(BuildContext context) {
-    final service = DummyServicesData.getServiceById('service_2')!;
 
     return Scaffold(
       backgroundColor: _lightNavy,
