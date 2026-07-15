@@ -77,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   HomeAppBar(
                     userName: 'Alex Johnson',
                     hasNotification: true,
-                    onNotificationTap: () {},
+                    onNotificationTap: () => context.push('/notifications'),
                     onAvatarTap: () {},
                   ),
                   const SizedBox(height: AppSpacing.sm),

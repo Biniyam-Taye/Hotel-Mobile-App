@@ -39,6 +39,7 @@ import '../../features/profile/presentation/screens/about_us_screen.dart';
 import '../../features/profile/presentation/screens/terms_of_service_screen.dart';
 import '../../features/profile/presentation/screens/privacy_policy_screen.dart';
 import '../../features/profile/presentation/screens/licenses_screen.dart';
+import '../../features/notifications/presentation/screens/notifications_screen.dart';
 part 'app_router.g.dart';
 
 // Helper for smooth transitions
@@ -240,6 +241,11 @@ GoRouter appRouter(Ref ref) {
         path: '/profile/about/licenses',
         name: 'licenses',
         pageBuilder: (context, state) => _buildTransitionPage(context: context, state: state, child: const LicensesScreen()),
+      ),
+      GoRoute(
+        path: '/notifications',
+        name: 'notifications',
+        pageBuilder: (context, state) => _buildTransitionPage(context: context, state: state, child: const NotificationsScreen()),
       ),
     ],
   );
