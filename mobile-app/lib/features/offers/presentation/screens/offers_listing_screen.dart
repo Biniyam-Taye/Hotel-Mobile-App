@@ -1,29 +1,90 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_borders.dart';
 import '../../../../core/widgets/navigation/custom_app_bar.dart';
-import '../../data/dummy_offers_data.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../providers/offer_provider.dart';
+import 'package:intl/intl.dart';
 
-class OffersListingScreen extends StatelessWidget {
+class OffersListingScreen extends ConsumerWidget {
   const OffersListingScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final offersAsync = ref.watch(offersProvider);
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: const CustomAppBar(title: 'Exclusive Offers'),
-      body: ListView.separated(
-        padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.md, AppSpacing.lg, 32),
-        itemCount: DummyOffersData.offers.length,
-        separatorBuilder: (context, index) => const SizedBox(height: AppSpacing.xl),
-        itemBuilder: (context, index) {
-          final offer = DummyOffersData.offers[index];
-          return _OfferCard(offer: offer)
-              .animate()
-              .fade(delay: Duration(milliseconds: index * 120))
-              .slideY(begin: 0.15);
+      body: offersAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+              const SizedBox(height: AppSpacing.md),
+              Text('Failed to load offers', style: Theme.of(context).textTheme.titleMedium),
+              TextButton(
+                onPressed: () => ref.invalidate(offersProvider),
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+        data: (offers) {
+          if (offers.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.local_offer_outlined, size: 72, color: AppColors.grey300),
+                  const SizedBox(height: AppSpacing.lg),
+                  Text(
+                    'No offers available',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
+                    'Check back later for new promotions.',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.grey400),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return RefreshIndicator(
+            onRefresh: () async => ref.invalidate(offersProvider),
+            child: ListView.separated(
+              padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.md, AppSpacing.lg, 32),
+              itemCount: offers.length,
+              separatorBuilder: (context, index) => const SizedBox(height: AppSpacing.xl),
+              itemBuilder: (context, index) {
+                final offer = offers[index];
+                
+                // Map the backend model to the UI expectations
+                final offerMap = {
+                  'title': offer.title,
+                  'subtitle': offer.description,
+                  'imageUrl': offer.image,
+                  'discount': offer.discountPercentage != null ? '${offer.discountPercentage!.toInt()}% OFF' : 'SPECIAL',
+                  'category': 'OFFER',
+                  'expires': DateFormat('MMM dd, yyyy').format(offer.validUntil),
+                  'colorStart': 0xFF1E88E5, // Default blue gradient
+                  'colorEnd': 0xFF1565C0,
+                };
+                
+                return _OfferCard(offer: offerMap)
+                    .animate()
+                    .fade(delay: Duration(milliseconds: index * 120))
+                    .slideY(begin: 0.15);
+              },
+            ),
+          );
         },
       ),
     );
@@ -98,6 +159,8 @@ class _OfferCard extends StatelessWidget {
                       letterSpacing: -0.5,
                       shadows: [Shadow(color: Colors.black26, blurRadius: 4)],
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -107,16 +170,16 @@ class _OfferCard extends StatelessWidget {
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const Spacer(),
 
                   // Bottom: promo code + expiry
                   Row(
                     children: [
-                      Expanded(
-                        child: _PromoCodeBox(code: offer['code']),
-                      ),
-                      const SizedBox(width: AppSpacing.md),
+                      // Removed PromoCodeBox as Offers don't have codes
+                      const Spacer(),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
@@ -202,55 +265,6 @@ class _DiscountBadge extends StatelessWidget {
           fontSize: 11,
           fontWeight: FontWeight.w900,
           letterSpacing: 0.5,
-        ),
-      ),
-    );
-  }
-}
-
-class _PromoCodeBox extends StatelessWidget {
-  final String code;
-  const _PromoCodeBox({required this.code});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Clipboard.setData(ClipboardData(text: code));
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Code "$code" copied!'),
-            duration: const Duration(seconds: 2),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: AppBorders.medium),
-          ),
-        );
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.15),
-          borderRadius: AppBorders.medium,
-          border: Border.all(
-            color: Colors.white.withValues(alpha: 0.4),
-            style: BorderStyle.solid,
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.copy_rounded, color: Colors.white, size: 14),
-            const SizedBox(width: 8),
-            Text(
-              code,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w900,
-                fontSize: 15,
-                letterSpacing: 2,
-              ),
-            ),
-          ],
         ),
       ),
     );

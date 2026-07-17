@@ -12,76 +12,26 @@ import '../widgets/promo_carousel.dart';
 import '../widgets/section_header.dart';
 import '../widgets/featured_room_card.dart';
 import '../widgets/service_card.dart';
-import '../../../services/data/dummy_services_data.dart';
+import '../../providers/home_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
 
-  final List<Map<String, dynamic>> _featuredRooms = [
-    {
-      'id': 'room_1',
-      'title': 'Ocean View Suite',
-      'location': 'Maldives, Indian Ocean',
-      'rating': 4.9,
-      'reviews': 128,
-      'price': 450.0,
-      'imageUrl': 'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&q=80&w=800',
-      'isFavorite': true,
-    },
-    {
-      'id': 'room_2',
-      'title': 'Mountain Retreat',
-      'location': 'Swiss Alps, Switzerland',
-      'rating': 4.8,
-      'reviews': 84,
-      'price': 320.0,
-      'imageUrl': 'https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&q=80&w=800',
-      'isFavorite': false,
-    },
-    {
-      'id': 'room_3',
-      'title': 'City Center Penthouse',
-      'location': 'New York, USA',
-      'rating': 4.7,
-      'reviews': 256,
-      'price': 550.0,
-      'imageUrl': 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=800',
-      'isFavorite': false,
-    },
-  ];
-
-  final List<Map<String, dynamic>> _services = DummyServicesData.services.take(3).toList();
-
-  final List<Map<String, dynamic>> _testimonials = [
-    {
-      'name': 'Sarah K.',
-      'avatar': 'https://i.pravatar.cc/150?img=44',
-      'rating': 5,
-      'review': 'Absolutely breathtaking stay! The ocean view from our suite was unmatched. Service was impeccable.',
-      'room': 'Ocean View Suite',
-    },
-    {
-      'name': 'James M.',
-      'avatar': 'https://i.pravatar.cc/150?img=12',
-      'rating': 5,
-      'review': 'The spa experience was world-class. Staff went above and beyond every single day.',
-      'room': 'Mountain Retreat',
-    },
-    {
-      'name': 'Lena P.',
-      'avatar': 'https://i.pravatar.cc/150?img=47',
-      'rating': 5,
-      'review': 'Gorgeous property, amazing food. The penthouse had every luxury you could imagine.',
-      'room': 'City Penthouse',
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      ref.read(homeProvider.notifier).loadHomeData();
+    });
+  }
 
   @override
   void dispose() {
@@ -91,6 +41,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final homeState = ref.watch(homeProvider);
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -142,7 +94,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: AppSpacing.xl),
 
                   // ── Promo Carousel ───────────────────────────────────────
-                  const PromoCarousel(),
+                  if (homeState.isLoading && homeState.offers.isEmpty)
+                    const Center(child: Padding(padding: EdgeInsets.all(32), child: CircularProgressIndicator()))
+                  else if (homeState.offers.isNotEmpty)
+                    PromoCarousel(offers: homeState.offers)
+                  else
+                    const SizedBox.shrink(),
                   const SizedBox(height: AppSpacing.md),
 
                   // ── Featured Rooms ───────────────────────────────────────
@@ -150,37 +107,31 @@ class _HomeScreenState extends State<HomeScreen> {
                     title: 'Featured Rooms',
                     onActionTap: () => context.push('/rooms'),
                   ),
-                  SizedBox(
-                    height: 310,
-                    child: ListView.separated(
-                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _featuredRooms.length,
-                      separatorBuilder: (context, _) => const SizedBox(width: AppSpacing.md),
-                      itemBuilder: (context, index) {
-                        final room = _featuredRooms[index];
-                        return SizedBox(
-                          width: 260,
-                          child: FeaturedRoomCard(
-                            id: room['id'],
-                            title: room['title'],
-                            location: room['location'],
-                            rating: room['rating'],
-                            reviews: room['reviews'],
-                            price: room['price'],
-                            imageUrl: room['imageUrl'],
-                            isFavorite: room['isFavorite'],
-                            onFavoriteTap: () {
-                              setState(() {
-                                room['isFavorite'] = !room['isFavorite'];
-                              });
-                            },
-                            onTap: () => context.push('/rooms/${room['id']}'),
-                          ),
-                        );
-                      },
+                  if (homeState.isLoading && homeState.featuredRooms.isEmpty)
+                    const Center(child: Padding(padding: EdgeInsets.all(32), child: CircularProgressIndicator()))
+                  else if (homeState.featuredRooms.isNotEmpty)
+                    SizedBox(
+                      height: 320,
+                      child: ListView.separated(
+                        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: homeState.featuredRooms.length,
+                        separatorBuilder: (context, index) => const SizedBox(width: AppSpacing.md),
+                        itemBuilder: (context, index) {
+                          final room = homeState.featuredRooms[index];
+                          return FeaturedRoomCard(
+                            id: room.id,
+                            title: room.title,
+                            location: room.roomType,
+                            rating: 4.5,
+                            reviews: 100,
+                            price: room.pricePerNight,
+                            imageUrl: room.images.isNotEmpty ? room.images.first : 'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&q=80&w=800',
+                            isFavorite: false,
+                          ).animate(delay: (index * 100).ms).fade(duration: 400.ms).slideX(begin: 0.1, curve: Curves.easeOutQuart);
+                        },
+                      ),
                     ),
-                  ),
                   const SizedBox(height: AppSpacing.lg),
 
                   // ── Hospitality & Services ───────────────────────────────
@@ -188,28 +139,26 @@ class _HomeScreenState extends State<HomeScreen> {
                     title: 'Hospitality & Services',
                     onActionTap: () => context.push('/services'),
                   ),
-                  SizedBox(
-                    height: 180,
-                    child: ListView.separated(
+                  if (homeState.isLoading && homeState.featuredServices.isEmpty)
+                    const Center(child: Padding(padding: EdgeInsets.all(32), child: CircularProgressIndicator()))
+                  else if (homeState.featuredServices.isNotEmpty)
+                    ListView.separated(
                       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _services.length,
-                      separatorBuilder: (context, _) => const SizedBox(width: AppSpacing.md),
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: homeState.featuredServices.length,
+                      separatorBuilder: (context, index) => const SizedBox(height: AppSpacing.md),
                       itemBuilder: (context, index) {
-                        final service = _services[index];
-                        return SizedBox(
-                          width: 160,
-                          child: ServiceCard(
-                            id: service['id'],
-                            title: service['title'],
-                            subtitle: '\$${service['price'].toInt()}',
-                            imageUrl: service['imageUrl'],
-                            onTap: () => context.push('/services/${service['id']}'),
-                          ),
-                        );
+                        final service = homeState.featuredServices[index];
+                        return ServiceCard(
+                          id: service['_id'] ?? service['id'] ?? '',
+                          title: service['title'] ?? service['name'] ?? '',
+                          subtitle: service['description'] ?? service['type'] ?? '',
+                          imageUrl: service['imageUrl'] ?? service['image'] ?? 'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&q=80&w=800',
+                          onTap: () {},
+                        ).animate(delay: (index * 100).ms).fade(duration: 400.ms).slideY(begin: 0.1, curve: Curves.easeOutQuart);
                       },
                     ),
-                  ),
                   const SizedBox(height: AppSpacing.xxl),
 
                   // ── Guest Reviews ────────────────────────────────────────
@@ -247,19 +196,37 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  SizedBox(
-                    height: 200,
-                    child: ListView.separated(
-                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _testimonials.length,
-                      separatorBuilder: (context, _) => const SizedBox(width: AppSpacing.md),
-                      itemBuilder: (context, index) {
-                        return _TestimonialCard(testimonial: _testimonials[index])
-                            .animate()
-                            .fade(delay: Duration(milliseconds: index * 100))
-                            .slideX(begin: 0.1);
-                      },
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                    padding: const EdgeInsets.all(AppSpacing.xl),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardTheme.color,
+                      borderRadius: AppBorders.medium,
+                      border: Border.all(
+                        color: Theme.of(context).dividerColor.withValues(alpha: 0.1),
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        const Icon(Icons.rate_review_outlined, size: 48, color: AppColors.grey400),
+                        const SizedBox(height: AppSpacing.md),
+                        Text(
+                          'No reviews yet',
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                                fontWeight: FontWeight.w700,
+                              ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Be the first to share your experience with us!',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                              ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xxl),
@@ -281,87 +248,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// Testimonial Card
-// ─────────────────────────────────────────────────────────────
-class _TestimonialCard extends StatelessWidget {
-  final Map<String, dynamic> testimonial;
-  const _TestimonialCard({required this.testimonial});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 280,
-      padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardTheme.color,
-        borderRadius: AppBorders.large,
-        border: Border.all(
-          color: Theme.of(context).dividerColor.withValues(alpha: 0.1),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              CircleAvatar(
-                backgroundImage: NetworkImage(testimonial['avatar']),
-                radius: 20,
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      testimonial['name'],
-                      style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
-                    ),
-                    Text(
-                      testimonial['room'],
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-                        fontSize: 11,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Row(
-                children: List.generate(
-                  5,
-                  (i) => const Icon(Icons.star_rounded, color: AppColors.warning, size: 14),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          const Divider(height: 1),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            '"${testimonial['review']}"',
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-              fontSize: 13,
-              fontStyle: FontStyle.italic,
-              height: 1.5,
-            ),
-            maxLines: 4,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 // ─────────────────────────────────────────────────────────────
 // Flash Deals Section

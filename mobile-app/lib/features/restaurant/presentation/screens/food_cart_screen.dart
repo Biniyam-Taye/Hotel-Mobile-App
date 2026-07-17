@@ -1,29 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_borders.dart';
 import '../../../../core/widgets/navigation/custom_app_bar.dart';
 import '../../../../core/widgets/buttons/primary_button.dart';
-import '../../data/dummy_food_data.dart';
+import '../../providers/restaurant_provider.dart';
 
-class FoodCartScreen extends StatelessWidget {
+class FoodCartScreen extends ConsumerWidget {
   const FoodCartScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Dummy cart items
-    final cartItems = [
-      {'food': DummyFoodData.menu[0], 'quantity': 2},
-      {'food': DummyFoodData.menu[3], 'quantity': 1},
-    ];
-
-    double subtotal = 0;
-    for (var item in cartItems) {
-      final food = item['food'] as Map<String, dynamic>;
-      final qty = item['quantity'] as int;
-      subtotal += food['price'] * qty;
-    }
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cartItemsMap = ref.watch(foodCartProvider);
+    final cartItems = cartItemsMap.values.toList();
+    
+    final subtotal = ref.read(foodCartProvider.notifier).totalAmount;
     final tax = subtotal * 0.1;
     final total = subtotal + tax;
 
@@ -41,8 +34,8 @@ class FoodCartScreen extends StatelessWidget {
                     separatorBuilder: (context, index) => const SizedBox(height: AppSpacing.md),
                     itemBuilder: (context, index) {
                       final item = cartItems[index];
-                      final food = item['food'] as Map<String, dynamic>;
-                      final qty = item['quantity'] as int;
+                      final food = item.foodItem!;
+                      final qty = item.quantity;
 
                       return Row(
                         children: [
@@ -52,7 +45,7 @@ class FoodCartScreen extends StatelessWidget {
                             decoration: BoxDecoration(
                               borderRadius: AppBorders.medium,
                               image: DecorationImage(
-                                image: NetworkImage(food['imageUrl']),
+                                image: NetworkImage(food.image),
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -63,14 +56,14 @@ class FoodCartScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  food['title'],
+                                  food.name,
                                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                         fontWeight: FontWeight.w700,
                                       ),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  '\$${food['price'].toInt()}',
+                                  '\$${food.price.toInt()}',
                                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                         color: AppColors.primary,
                                         fontWeight: FontWeight.w800,
@@ -79,11 +72,27 @@ class FoodCartScreen extends StatelessWidget {
                               ],
                             ),
                           ),
-                          Text(
-                            'x$qty',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w800,
-                                ),
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.remove_circle_outline, color: AppColors.primary),
+                                onPressed: () {
+                                  ref.read(foodCartProvider.notifier).updateQuantity(food.id, qty - 1);
+                                },
+                              ),
+                              Text(
+                                '$qty',
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.add_circle_outline, color: AppColors.primary),
+                                onPressed: () {
+                                  ref.read(foodCartProvider.notifier).updateQuantity(food.id, qty + 1);
+                                },
+                              ),
+                            ],
                           ),
                         ],
                       );

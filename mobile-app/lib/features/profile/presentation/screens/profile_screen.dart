@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_borders.dart';
 import '../../../../core/widgets/navigation/custom_app_bar.dart';
+import '../../../auth/providers/auth_provider.dart';
+import '../../../auth/providers/auth_state.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+    final user = authState is AuthAuthenticated ? authState.user : null;
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: const CustomAppBar(
@@ -37,8 +43,12 @@ class ProfileScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(color: AppColors.primary, width: 3),
-                      image: const DecorationImage(
-                        image: NetworkImage('https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200'),
+                      image: DecorationImage(
+                        image: NetworkImage(
+                          user?.profilePicture?.isNotEmpty == true
+                              ? user!.profilePicture!
+                              : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200',
+                        ),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -49,14 +59,14 @@ class ProfileScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Alex Johnson',
+                          user != null ? '${user.firstName} ${user.lastName}' : 'Guest User',
                           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                 fontWeight: FontWeight.w800,
                               ),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'alex.johnson@example.com',
+                          user?.email ?? 'No email',
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                 color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                               ),
@@ -129,7 +139,10 @@ class ProfileScreen extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: TextButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  ref.read(authProvider.notifier).logout();
+                  context.go('/login');
+                },
                 icon: const Icon(Icons.logout_rounded, color: AppColors.error),
                 label: Text(
                   'Log Out',

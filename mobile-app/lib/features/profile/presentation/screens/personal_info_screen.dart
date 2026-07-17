@@ -1,35 +1,91 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_borders.dart';
 import '../../../../core/widgets/navigation/custom_app_bar.dart';
 import '../../../../core/widgets/buttons/primary_button.dart';
+import '../../../auth/providers/auth_provider.dart';
+import '../../../auth/data/auth_repository.dart';
+import '../../../auth/providers/auth_state.dart';
 
-class PersonalInfoScreen extends StatefulWidget {
+class PersonalInfoScreen extends ConsumerStatefulWidget {
   const PersonalInfoScreen({super.key});
 
   @override
-  State<PersonalInfoScreen> createState() => _PersonalInfoScreenState();
+  ConsumerState<PersonalInfoScreen> createState() => _PersonalInfoScreenState();
 }
 
-class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
-  final _nameController = TextEditingController(text: 'Alex Johnson');
-  final _emailController = TextEditingController(text: 'alex.johnson@example.com');
-  final _phoneController = TextEditingController(text: '+1 (555) 123-4567');
-  final _dobController = TextEditingController(text: '15 Aug 1990');
+class _PersonalInfoScreenState extends ConsumerState<PersonalInfoScreen> {
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final authState = ref.read(authProvider);
+    if (authState is AuthAuthenticated) {
+      final user = authState.user;
+      _nameController.text = '${user.firstName} ${user.lastName}'.trim();
+      _emailController.text = user.email;
+      _phoneController.text = user.phone ?? '';
+    }
+  }
 
   @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
-    _dobController.dispose();
     super.dispose();
+  }
+
+  Future<void> _saveChanges() async {
+    setState(() => _isLoading = true);
+
+    final fullName = _nameController.text.trim();
+    final parts = fullName.split(' ');
+    final firstName = parts.first;
+    final lastName = parts.length > 1 ? parts.sublist(1).join(' ') : '';
+
+    try {
+      final repo = ref.read(authRepositoryProvider);
+      await repo.updateProfile({
+        'firstName': firstName,
+        'lastName': lastName,
+        'phone': _phoneController.text.trim(),
+      });
+
+      // Refresh auth state
+      await ref.read(authProvider.notifier).checkAuthStatus();
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Profile updated successfully!')),
+      );
+      context.pop();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update profile: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+    final user = authState is AuthAuthenticated ? authState.user : null;
+
+    final profilePicUrl = user?.profilePicture?.isNotEmpty == true
+        ? user!.profilePicture!
+        : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200';
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: const CustomAppBar(title: 'Personal Information'),
@@ -47,8 +103,8 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(color: AppColors.primary, width: 3),
-                      image: const DecorationImage(
-                        image: NetworkImage('https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200'),
+                      image: DecorationImage(
+                        image: NetworkImage(profilePicUrl),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -71,22 +127,15 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
             const SizedBox(height: AppSpacing.xxl),
             _buildTextField(context, 'Full Name', _nameController, Icons.person_outline_rounded),
             const SizedBox(height: AppSpacing.md),
-            _buildTextField(context, 'Email Address', _emailController, Icons.email_outlined),
+            _buildTextField(context, 'Email Address', _emailController, Icons.email_outlined, enabled: false),
             const SizedBox(height: AppSpacing.md),
             _buildTextField(context, 'Phone Number', _phoneController, Icons.phone_outlined),
-            const SizedBox(height: AppSpacing.md),
-            _buildTextField(context, 'Date of Birth', _dobController, Icons.calendar_today_rounded),
             const SizedBox(height: 40),
             SizedBox(
               width: double.infinity,
               child: PrimaryButton(
-                text: 'Save Changes',
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Profile updated successfully!')),
-                  );
-                  context.pop();
-                },
+                text: _isLoading ? 'Saving...' : 'Save Changes',
+                onPressed: _isLoading ? null : _saveChanges,
               ),
             ),
           ],
@@ -95,7 +144,13 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     );
   }
 
-  Widget _buildTextField(BuildContext context, String label, TextEditingController controller, IconData icon) {
+  Widget _buildTextField(
+    BuildContext context,
+    String label,
+    TextEditingController controller,
+    IconData icon, {
+    bool enabled = true,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -109,7 +164,9 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
         const SizedBox(height: AppSpacing.sm),
         Container(
           decoration: BoxDecoration(
-            color: Theme.of(context).cardTheme.color,
+            color: enabled
+                ? Theme.of(context).cardTheme.color
+                : Theme.of(context).disabledColor.withValues(alpha: 0.05),
             borderRadius: AppBorders.medium,
             border: Border.all(
               color: Theme.of(context).dividerColor.withValues(alpha: 0.2),
@@ -117,8 +174,9 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
           ),
           child: TextField(
             controller: controller,
+            enabled: enabled,
             decoration: InputDecoration(
-              prefixIcon: Icon(icon, color: AppColors.grey400),
+              prefixIcon: Icon(icon, color: enabled ? AppColors.grey400 : AppColors.grey300),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             ),

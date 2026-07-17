@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../home/presentation/screens/home_screen.dart';
@@ -6,6 +7,7 @@ import '../../../favorites/presentation/screens/favorites_screen.dart';
 import '../../../orders/presentation/screens/orders_screen.dart';
 import '../../../notifications/presentation/screens/notifications_screen.dart';
 import '../../../profile/presentation/screens/profile_screen.dart';
+import '../../../auth/providers/auth_provider.dart';
 
 // ── Nav item model ───────────────────────────────────────────────────────────
 
@@ -241,7 +243,7 @@ class _BottomBar extends StatelessWidget {
 
 // ── Tablet side rail ─────────────────────────────────────────────────────────
 
-class _TabletNavRail extends StatelessWidget {
+class _TabletNavRail extends ConsumerWidget {
   final int selectedIndex;
   final ValueChanged<int> onTap;
 
@@ -251,7 +253,7 @@ class _TabletNavRail extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       width: 220,
       color: Theme.of(context).colorScheme.surface,
@@ -327,7 +329,10 @@ class _TabletNavRail extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(16),
               child: ListTile(
-                onTap: () => context.go('/login'),
+                onTap: () {
+                  ref.read(authProvider.notifier).logout();
+                  context.go('/login');
+                },
                 leading: const Icon(Icons.logout_rounded,
                     color: AppColors.grey400),
                 title: Text(

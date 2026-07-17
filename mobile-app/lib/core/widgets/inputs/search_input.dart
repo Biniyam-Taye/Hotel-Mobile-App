@@ -5,6 +5,7 @@ class SearchInput extends StatelessWidget {
   final String hintText;
   final TextEditingController? controller;
   final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
   final VoidCallback? onFilterTap;
 
   const SearchInput({
@@ -12,6 +13,7 @@ class SearchInput extends StatelessWidget {
     this.hintText = 'Search...',
     this.controller,
     this.onChanged,
+    this.onSubmitted,
     this.onFilterTap,
   });
 
@@ -20,6 +22,7 @@ class SearchInput extends StatelessWidget {
     return TextField(
       controller: controller,
       onChanged: onChanged,
+      onSubmitted: onSubmitted,
       decoration: InputDecoration(
         hintText: hintText,
         prefixIcon: const Icon(Icons.search, color: AppColors.grey400),

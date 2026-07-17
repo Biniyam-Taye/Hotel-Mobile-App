@@ -158,7 +158,13 @@ class _EmailStep extends StatelessWidget {
           width: double.infinity,
           height: AppSpacing.buttonHeight,
           child: ElevatedButton(
-            onPressed: onNext,
+            onPressed: () {
+              // TODO: Implement actual backend API for forgot password
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Forgot password API not yet implemented in backend')),
+              );
+              // onNext(); // Uncomment when API is ready
+            },
             child: const Text(
               'Send Reset Code',
               style: TextStyle(
@@ -289,7 +295,13 @@ class _OtpStep extends StatelessWidget {
           width: double.infinity,
           height: AppSpacing.buttonHeight,
           child: ElevatedButton(
-            onPressed: onVerify,
+            onPressed: () {
+              // TODO: Implement actual backend API for OTP verification
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Verify OTP API not yet implemented in backend')),
+              );
+              // onVerify(); // Uncomment when API is ready
+            },
             child: const Text(
               'Verify Code',
               style: TextStyle(

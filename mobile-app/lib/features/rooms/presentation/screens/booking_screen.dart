@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_borders.dart';
 import '../../../../core/widgets/navigation/custom_app_bar.dart';
 import '../../../../core/widgets/buttons/primary_button.dart';
-import '../../data/dummy_rooms_data.dart';
+import '../../../../core/widgets/inputs/custom_text_field.dart';
+import '../../../payment/providers/payment_provider.dart';
+import '../../providers/rooms_provider.dart';
+import '../../providers/booking_provider.dart';
 
-class BookingScreen extends StatefulWidget {
+class BookingScreen extends ConsumerStatefulWidget {
   final String roomId;
 
   const BookingScreen({super.key, required this.roomId});
 
   @override
-  State<BookingScreen> createState() => _BookingScreenState();
+  ConsumerState<BookingScreen> createState() => _BookingScreenState();
 }
 
-class _BookingScreenState extends State<BookingScreen> {
-  late final Map<String, dynamic>? _room;
+class _BookingScreenState extends ConsumerState<BookingScreen> {
   int _adults = 2;
   int _children = 0;
 
@@ -28,22 +32,25 @@ class _BookingScreenState extends State<BookingScreen> {
   @override
   void initState() {
     super.initState();
-    _room = DummyRoomsData.getRoomById(widget.roomId);
   }
 
   int get _nights => _checkOut.difference(_checkIn).inDays;
-  double get _basePrice => (_room?['price'] ?? 0.0) * _nights;
-  double get _taxes => _basePrice * 0.12; // 12% tax
-  double get _totalPrice => _basePrice + _taxes;
 
   @override
   Widget build(BuildContext context) {
-    if (_room == null) {
-      return const Scaffold(
-        appBar: CustomAppBar(title: 'Booking'),
-        body: Center(child: Text('Room not found')),
-      );
-    }
+    final roomAsync = ref.watch(roomDetailProvider(widget.roomId));
+    final bookingState = ref.watch(bookingProvider);
+
+    return roomAsync.when(
+      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (error, stack) => Scaffold(
+        appBar: const CustomAppBar(title: 'Booking'),
+        body: Center(child: Text('Error: $error')),
+      ),
+      data: (room) {
+        final double basePrice = room.pricePerNight * _nights;
+        final double taxes = basePrice * 0.12;
+        final double totalPrice = basePrice + taxes;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -75,43 +82,43 @@ class _BookingScreenState extends State<BookingScreen> {
                         decoration: BoxDecoration(
                           borderRadius: AppBorders.circular,
                           image: DecorationImage(
-                            image: NetworkImage(_room['imageUrls'].first),
-                            fit: BoxFit.cover,
+                              image: NetworkImage(room.images.isNotEmpty ? room.images.first : 'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&q=80&w=800'),
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: AppSpacing.md),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              _room['title'],
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              _room['location'],
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                                  ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              '\$${_room['price'].toInt()} /night',
-                              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                            ),
-                          ],
+                        const SizedBox(width: AppSpacing.md),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                room.title,
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                room.roomType,
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                                    ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                '\$${room.pricePerNight.toInt()} /night',
+                                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
                 const SizedBox(height: AppSpacing.xl),
 
                 // Date Selection
@@ -245,13 +252,13 @@ class _BookingScreenState extends State<BookingScreen> {
                   child: Column(
                     children: [
                       _PriceRow(
-                        label: '\$${_room['price'].toInt()} x $_nights nights',
-                        value: '\$${_basePrice.toStringAsFixed(2)}',
+                        label: '\$${room.pricePerNight.toInt()} x $_nights nights',
+                        value: '\$${basePrice.toStringAsFixed(2)}',
                       ),
                       const SizedBox(height: AppSpacing.sm),
                       _PriceRow(
                         label: 'Taxes & Fees',
-                        value: '\$${_taxes.toStringAsFixed(2)}',
+                        value: '\$${taxes.toStringAsFixed(2)}',
                       ),
                       Divider(color: Theme.of(context).dividerColor.withValues(alpha: 0.1), height: 32),
                       Row(
@@ -264,7 +271,7 @@ class _BookingScreenState extends State<BookingScreen> {
                                 ),
                           ),
                           Text(
-                            '\$${_totalPrice.toStringAsFixed(2)}',
+                            '\$${totalPrice.toStringAsFixed(2)}',
                             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                   color: AppColors.primary,
                                   fontWeight: FontWeight.w800,
@@ -308,22 +315,67 @@ class _BookingScreenState extends State<BookingScreen> {
                   topRight: Radius.circular(AppBorders.radiusLarge),
                 ),
               ),
-              child: PrimaryButton(
-                text: 'Proceed to Payment',
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Payment flow is mocked for this demo!'),
-                      behavior: SnackBarBehavior.floating,
+              child: bookingState.isLoading || ref.watch(paymentNotifierProvider).isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : PrimaryButton(
+                      text: 'Confirm Booking',
+                      onPressed: () async {
+                        final success = await ref.read(bookingProvider.notifier).createBooking(
+                          roomId: widget.roomId,
+                          checkInDate: _checkIn,
+                          checkOutDate: _checkOut,
+                          adults: _adults,
+                          children: _children,
+                          totalAmount: totalPrice,
+                        );
+
+                        if (success && mounted) {
+                          // Get the created booking ID
+                          final createdBooking = ref.read(bookingProvider).booking;
+                          if (createdBooking != null) {
+                            // Create Payment Intent
+                            final paymentSuccess = await ref.read(paymentNotifierProvider.notifier).processPayment(
+                                  relatedType: 'Booking',
+                                  relatedId: createdBooking.id,
+                                  amount: totalPrice,
+                                );
+                            
+                            if (paymentSuccess && mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Payment Intent Created! Ready for Stripe SDK.'),
+                                  backgroundColor: AppColors.primary,
+                                ),
+                              );
+                            }
+                          }
+
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Booking created successfully!'),
+                                backgroundColor: AppColors.success,
+                              ),
+                            );
+                            // Go to main orders screen
+                            context.go('/main');
+                          }
+                        } else if (mounted && bookingState.error != null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Failed: ${bookingState.error}'),
+                              backgroundColor: AppColors.error,
+                            ),
+                          );
+                        }
+                      },
                     ),
-                  );
-                  context.go('/main');
-                },
-              ),
             ),
           ),
         ],
       ),
+    );
+      },
     );
   }
 }

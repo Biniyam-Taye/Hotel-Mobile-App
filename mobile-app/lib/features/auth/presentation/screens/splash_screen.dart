@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../providers/auth_provider.dart';
+import '../../providers/auth_state.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -51,9 +53,19 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       _textController.forward();
     });
 
-    // Navigate to onboarding after 2.8s
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(authProvider.notifier).checkAuthStatus();
+    });
+
+    // Navigate to onboarding or main after 2.8s
     Future.delayed(const Duration(milliseconds: 2800), () {
-      if (mounted) context.go('/onboarding');
+      if (!mounted) return;
+      final authState = ref.read(authProvider);
+      if (authState is AuthAuthenticated) {
+        context.go('/main');
+      } else {
+        context.go('/onboarding');
+      }
     });
   }
 

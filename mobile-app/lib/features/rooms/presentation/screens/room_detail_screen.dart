@@ -5,26 +5,25 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_borders.dart';
 import '../../../../core/widgets/buttons/primary_button.dart';
-import '../../data/dummy_rooms_data.dart';
+import '../../providers/rooms_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RoomDetailScreen extends StatefulWidget {
+class RoomDetailScreen extends ConsumerStatefulWidget {
   final String roomId;
 
   const RoomDetailScreen({super.key, required this.roomId});
 
   @override
-  State<RoomDetailScreen> createState() => _RoomDetailScreenState();
+  ConsumerState<RoomDetailScreen> createState() => _RoomDetailScreenState();
 }
 
-class _RoomDetailScreenState extends State<RoomDetailScreen> {
-  late final Map<String, dynamic>? _room;
+class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _isScrolled = false;
 
   @override
   void initState() {
     super.initState();
-    _room = DummyRoomsData.getRoomById(widget.roomId);
     _scrollController.addListener(() {
       if (_scrollController.offset > 50 && !_isScrolled) {
         setState(() => _isScrolled = true);
@@ -42,15 +41,18 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_room == null) {
-      return Scaffold(
-        appBar: AppBar(),
-        body: const Center(child: Text('Room not found')),
-      );
-    }
+    final roomAsync = ref.watch(roomDetailProvider(widget.roomId));
 
-    final List<String> imageUrls = _room['imageUrls'] ?? [];
-    final List<Map<String, String>> amenities = _room['amenities'] ?? [];
+    return roomAsync.when(
+      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (error, stack) => Scaffold(
+        appBar: AppBar(),
+        body: Center(child: Text('Error: $error')),
+      ),
+      data: (room) {
+        final List<String> imageUrls = room.images.isNotEmpty ? room.images : ['https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&q=80&w=800'];
+        // Dummy mapping for amenities icons since backend only sends strings
+        final List<Map<String, String>> amenities = room.amenities.map((a) => {'icon': 'wifi', 'name': a}).toList();
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -88,18 +90,10 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
                         shape: BoxShape.circle,
                       ),
                       child: IconButton(
-                        icon: Icon(
-                          _room['isFavorite'] == true
-                              ? Icons.favorite_rounded
-                              : Icons.favorite_border_rounded,
-                        ),
-                        color: _room['isFavorite'] == true
-                            ? AppColors.error
-                            : Theme.of(context).colorScheme.onSurface,
+                        icon: const Icon(Icons.favorite_border_rounded),
+                        color: Theme.of(context).colorScheme.onSurface,
                         onPressed: () {
-                          setState(() {
-                            _room['isFavorite'] = !(_room['isFavorite'] ?? false);
-                          });
+                          // Backend doesn't support room favorites yet
                         },
                       ),
                     ),
@@ -124,7 +118,7 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
                         children: [
                           Expanded(
                             child: Text(
-                              _room['title'],
+                              room.title,
                               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                                     fontWeight: FontWeight.w800,
                                     height: 1.2,
@@ -149,10 +143,19 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  _room['rating'].toString(),
+                                  '4.8',
                                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                        color: AppColors.primary,
                                         fontWeight: FontWeight.w800,
+                                      ),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '(128 Reviews)',
+                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface
+                                            .withValues(alpha: 0.6),
                                       ),
                                 ),
                               ],
@@ -172,13 +175,15 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            _room['location'],
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            room.roomType,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                   color: Theme.of(context)
                                       .colorScheme
                                       .onSurface
-                                      .withValues(alpha: 0.7),
+                                      .withValues(alpha: 0.6),
                                 ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
@@ -193,7 +198,7 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
                       ),
                       const SizedBox(height: AppSpacing.sm),
                       Text(
-                        _room['description'],
+                        room.description,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                               color: Theme.of(context)
                                   .colorScheme
@@ -221,7 +226,7 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Reviews (${_room['reviews']})',
+                            'Reviews',
                             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                   fontWeight: FontWeight.w800,
                                 ),
@@ -311,14 +316,16 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
             left: 0,
             right: 0,
             child: _StickyBottomBar(
-              price: _room['price'],
+              price: room.pricePerNight,
               onBookTap: () {
-                context.push('/rooms/${_room['id']}/book');
+                context.push('/rooms/${room.id}/book');
               },
             ).animate().slideY(begin: 1.0, duration: 400.ms, curve: Curves.easeOutQuart, delay: 300.ms),
           ),
         ],
       ),
+    );
+      },
     );
   }
 }

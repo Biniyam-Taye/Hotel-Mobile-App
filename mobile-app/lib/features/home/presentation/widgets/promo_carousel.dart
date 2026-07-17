@@ -4,7 +4,9 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_borders.dart';
 
 class PromoCarousel extends StatefulWidget {
-  const PromoCarousel({super.key});
+  final List<Map<String, dynamic>> offers;
+  
+  const PromoCarousel({super.key, this.offers = const []});
 
   @override
   State<PromoCarousel> createState() => _PromoCarouselState();
@@ -14,23 +16,7 @@ class _PromoCarouselState extends State<PromoCarousel> {
   final PageController _pageController = PageController(viewportFraction: 0.9);
   int _currentPage = 0;
 
-  final List<Map<String, String>> _promos = [
-    {
-      'title': 'Enjoy 20% off your\nfirst luxury stay!',
-      'subtitle': 'Valid until Oct 31',
-      'image': 'https://images.unsplash.com/photo-1542314831-c6a4d142104d?auto=format&fit=crop&q=80&w=1200',
-    },
-    {
-      'title': 'Exclusive Spa\nWeekend Package',
-      'subtitle': 'Relax and rejuvenate',
-      'image': 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&q=80&w=1200',
-    },
-    {
-      'title': 'Fine Dining\nExperience',
-      'subtitle': 'Michelin star chefs',
-      'image': 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&q=80&w=1200',
-    },
-  ];
+  List<Map<String, dynamic>> get _promos => widget.offers;
 
   @override
   void dispose() {
@@ -76,7 +62,7 @@ class _PromoCarouselState extends State<PromoCarousel> {
                     borderRadius: AppBorders.large,
                     color: AppColors.grey200,
                     image: DecorationImage(
-                      image: NetworkImage(promo['image']!),
+                      image: NetworkImage(promo['imageUrl'] ?? 'https://images.unsplash.com/photo-1542314831-c6a4d142104d?auto=format&fit=crop&q=80&w=1200'),
                       fit: BoxFit.cover,
                       colorFilter: ColorFilter.mode(
                         Colors.black.withValues(alpha: 0.35),
@@ -98,7 +84,7 @@ class _PromoCarouselState extends State<PromoCarousel> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Text(
-                          promo['title']!,
+                          promo['title'] ?? 'Special Offer',
                           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w800,
@@ -107,7 +93,7 @@ class _PromoCarouselState extends State<PromoCarousel> {
                         ),
                         const SizedBox(height: AppSpacing.xs),
                         Text(
-                          promo['subtitle']!,
+                          promo['description'] ?? 'Don\'t miss out!',
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                 color: Colors.white.withValues(alpha: 0.9),
                                 fontWeight: FontWeight.w500,

@@ -40,6 +40,8 @@ import '../../features/profile/presentation/screens/terms_of_service_screen.dart
 import '../../features/profile/presentation/screens/privacy_policy_screen.dart';
 import '../../features/profile/presentation/screens/licenses_screen.dart';
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
+import '../../features/auth/providers/auth_provider.dart';
+import '../../features/auth/providers/auth_state.dart';
 part 'app_router.g.dart';
 
 // Helper for smooth transitions
@@ -71,8 +73,32 @@ CustomTransitionPage<T> _buildTransitionPage<T>({
 
 @riverpod
 GoRouter appRouter(Ref ref) {
+  final authState = ref.watch(authProvider);
+
   return GoRouter(
     initialLocation: '/',
+    redirect: (context, state) {
+      final isAuthRoute = state.matchedLocation == '/login' ||
+          state.matchedLocation == '/signup' ||
+          state.matchedLocation == '/forgot-password' ||
+          state.matchedLocation == '/onboarding' ||
+          state.matchedLocation == '/';
+
+      if (authState is AuthInitial || authState is AuthLoading) {
+        return null; 
+      }
+
+      final isAuthenticated = authState is AuthAuthenticated;
+
+      if (!isAuthenticated) {
+        if (isAuthRoute) return null;
+        return '/login';
+      } else {
+        if (isAuthRoute && state.matchedLocation != '/') return '/main';
+      }
+
+      return null;
+    },
     routes: [
       GoRoute(
         path: '/',

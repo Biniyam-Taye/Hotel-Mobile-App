@@ -1,16 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_borders.dart';
 import '../../../../core/widgets/navigation/custom_app_bar.dart';
 import '../../../../core/widgets/buttons/primary_button.dart';
+import '../../providers/restaurant_provider.dart';
 
-class FoodCheckoutScreen extends StatelessWidget {
+class FoodCheckoutScreen extends ConsumerStatefulWidget {
   const FoodCheckoutScreen({super.key});
 
   @override
+  ConsumerState<FoodCheckoutScreen> createState() => _FoodCheckoutScreenState();
+}
+
+class _FoodCheckoutScreenState extends ConsumerState<FoodCheckoutScreen> {
+  final TextEditingController _instructionsController = TextEditingController();
+
+  @override
+  void dispose() {
+    _instructionsController.dispose();
+    super.dispose();
+  }
+
+  void _submitOrder() async {
+    final success = await ref.read(checkoutStateProvider.notifier).submitOrder(_instructionsController.text);
+    if (!mounted) return;
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Order placed successfully!')),
+      );
+      context.go('/main');
+    } else {
+      final error = ref.read(checkoutStateProvider).error;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to place order: $error')),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final checkoutState = ref.watch(checkoutStateProvider);
+    final isLoading = checkoutState.isLoading;
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: const CustomAppBar(title: 'Checkout'),
@@ -57,7 +91,7 @@ class FoodCheckoutScreen extends StatelessWidget {
                               ),
                         ),
                         Text(
-                          'Room 402 - Ocean View Suite',
+                          'Your current room',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                 color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                               ),
@@ -68,6 +102,35 @@ class FoodCheckoutScreen extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(height: AppSpacing.xl),
+            
+            Text(
+              'Special Instructions',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            TextField(
+              controller: _instructionsController,
+              maxLines: 3,
+              decoration: InputDecoration(
+                hintText: 'Any special requests?',
+                border: OutlineInputBorder(
+                  borderRadius: AppBorders.medium,
+                  borderSide: BorderSide(
+                    color: Theme.of(context).dividerColor.withValues(alpha: 0.1),
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: AppBorders.medium,
+                  borderSide: BorderSide(
+                    color: Theme.of(context).dividerColor.withValues(alpha: 0.1),
+                  ),
+                ),
+              ),
+            ),
+
             const SizedBox(height: AppSpacing.xl),
             
             Text(
@@ -108,13 +171,8 @@ class FoodCheckoutScreen extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: PrimaryButton(
-                text: 'Place Order',
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Order placed successfully!')),
-                  );
-                  context.go('/main');
-                },
+                text: isLoading ? 'Placing Order...' : 'Place Order',
+                onPressed: isLoading ? null : _submitOrder,
               ),
             ),
           ],
