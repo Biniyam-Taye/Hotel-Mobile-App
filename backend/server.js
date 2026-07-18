@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 5000;
 const startServer = async () => {
   try {
     // Connect to database
-    // await connectDB(); // Uncomment when MongoDB URI is real
+    await connectDB();
 
     const server = app.listen(PORT, () => {
       console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
