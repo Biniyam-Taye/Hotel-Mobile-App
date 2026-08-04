@@ -1,12 +1,11 @@
-// src/components/Rooms.jsx
+// src/components/Home.jsx
 import { Link } from 'react-router-dom';
 import { 
   Wifi, Tv, AirVent, Coffee, Car, Users, Bath, 
-  ArrowRight, Star, Bed, Maximize, Utensils, Dumbbell, Sparkles,
-  Home
+  ArrowRight, Star, Bed, Maximize, Utensils, Dumbbell, Sparkles
 } from 'lucide-react';
 
-const Rooms = () => {
+const Home = () => {  // ← Changed from Rooms to Home
   // Exchange rate: 1 USD = 57 ETB (approx)
   const usdToEtb = 57;
 
@@ -376,4 +375,4 @@ const Rooms = () => {
   );
 };
 
-export default Rooms;
+export default Home;  // ← Changed from Rooms to Home

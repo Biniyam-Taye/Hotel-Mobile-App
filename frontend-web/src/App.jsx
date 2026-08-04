@@ -4,12 +4,13 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Stats from './components/Stats';
 import About from './components/About';
-import Rooms from './components/Rooms';
+import Home from './components/Home';
 import RoomDetail from './components/RoomDetail';
 import RoomsPage from './pages/RoomsPage';
 import HospitalityPage from './pages/HospitalityPage';
 import ExperiencePage from './pages/ExperiencePage';
 import AboutPage from './pages/AboutPage';
+import Footer from './components/Footer';  // ← Import Footer
 
 function App() {
   return (
@@ -23,7 +24,7 @@ function App() {
                 <Hero />
                 <Stats />
                 <About />
-                <Rooms />
+                <Home />
               </>
             } />
             <Route path="/rooms" element={<RoomsPage />} />
@@ -33,6 +34,7 @@ function App() {
             <Route path="/room/:id" element={<RoomDetail />} />
           </Routes>
         </div>
+        <Footer />  {/* ← Footer appears on ALL pages */}
       </div>
     </BrowserRouter>
   );
