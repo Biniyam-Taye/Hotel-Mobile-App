@@ -2,7 +2,8 @@
 import { Link } from 'react-router-dom';
 import { 
   Wifi, Tv, AirVent, Coffee, Car, Users, Bath, 
-  ArrowRight, Star, Bed, Maximize, Utensils, Dumbbell, Sparkles
+  ArrowRight, Star, Bed, Maximize, Utensils, Dumbbell, Sparkles,
+  Home
 } from 'lucide-react';
 
 const Rooms = () => {

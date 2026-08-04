@@ -3,22 +3,35 @@ import { useParams, Link } from 'react-router-dom';
 import { useState } from 'react';
 import { 
   Wifi, Tv, AirVent, Coffee, Car, Users, Bath, 
-  ArrowLeft, Star, Calendar, User, Check, 
-  Utensils, Dumbbell, Sparkles, Phone, Mail, MapPin 
+  ArrowLeft, Star, Calendar, Check, 
+  Utensils, Dumbbell, Sparkles, Bed, Maximize, MapPin
 } from 'lucide-react';
 
 const RoomDetail = () => {
   const { id } = useParams();
   const [showBooking, setShowBooking] = useState(false);
 
-  // Room data - same as before but with more details
+  // Exchange rate
+  const usdToEtb = 57;
+
+  // Helper to format price
+  const formatPrice = (price) => {
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
+  // Room data with location and discount
   const rooms = [
     {
       id: 1,
       name: 'Deluxe Suite',
-      price: 250,
-      capacity: 2,
       bedType: 'King Size Bed',
+      priceUSD: 250,
+      priceETB: 250 * usdToEtb,
+      location: 'Adama',
+      discount: 20,
+      rating: 4.8,
+      reviews: 200,
+      capacity: 2,
       size: '45 m²',
       description: 'Elegant suite with city views, featuring a separate living area and premium amenities.',
       longDescription: 'The Deluxe Suite offers an unparalleled experience with breathtaking city views. Step into a world of elegance where every detail has been carefully curated for your comfort. The suite features a spacious separate living area, perfect for entertaining guests or simply relaxing in style. The bedroom boasts a luxurious king-size bed with premium linens, ensuring a restful night\'s sleep. The marble bathroom includes a deep soaking tub and separate rain shower. 24-hour room service ensures your every need is met, while the dedicated concierge team is always ready to assist with any request.',
@@ -31,10 +44,15 @@ const RoomDetail = () => {
     },
     {
       id: 2,
-      name: 'Executive Room',
-      price: 180,
+      name: 'Executive Double Room',
+      bedType: 'Double Bed',
+      priceUSD: 180,
+      priceETB: 180 * usdToEtb,
+      location: 'Adama',
+      discount: 20,
+      rating: 4.8,
+      reviews: 200,
       capacity: 2,
-      bedType: 'Queen Size Bed',
       size: '32 m²',
       description: 'Modern room designed for business travelers, with workspace and high-speed internet.',
       longDescription: 'The Executive Room is designed with the modern business traveler in mind. Featuring a dedicated workspace with ergonomic chair and high-speed internet, this room provides the perfect environment for productivity. After a long day of meetings, unwind in the comfortable queen-size bed and enjoy the flat-screen TV with streaming services. The room also includes a mini-fridge, coffee maker, and luxurious bath amenities. Business services including printing, scanning, and secretarial support are available upon request.',
@@ -43,20 +61,25 @@ const RoomDetail = () => {
       popular: false,
       amenities: ['Free Wi-Fi', 'Work Desk', 'Business Services', 'Express Check-in', 'Daily Housekeeping', 'Iron & Ironing Board'],
       guests: 2,
-      bed: 'Queen Size'
+      bed: 'Double Bed'
     },
     {
       id: 3,
       name: 'Presidential Suite',
-      price: 450,
-      capacity: 4,
       bedType: 'King Size Bed + Sofa Bed',
+      priceUSD: 450,
+      priceETB: 450 * usdToEtb,
+      location: 'Adama',
+      discount: 15,
+      rating: 4.9,
+      reviews: 150,
+      capacity: 4,
       size: '85 m²',
       description: 'Our most luxurious suite with panoramic views, private terrace, and butler service.',
       longDescription: 'The Presidential Suite is the epitome of luxury living. Spanning an impressive 85 square meters, this suite offers panoramic views of the city skyline from a private terrace. The suite features a spacious living area with a designer sofa bed, a separate dining area, and a fully equipped kitchenette. The bedroom boasts a king-size bed with premium Egyptian cotton linens and a pillow menu for the perfect night\'s sleep. The marble bathroom includes a Jacuzzi bathtub, rain shower, and double vanities. A dedicated butler is available to cater to your every need, from packing and unpacking to arranging private tours and dining experiences.',
       features: ['Free Wi-Fi', 'Smart TV', 'Air Conditioning', 'Coffee Maker', 'Mini Bar', 'Bathtub', 'Private Terrace', 'Butler Service'],
       image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-      popular: true,
+      popular: false,
       amenities: ['Butler Service', 'Private Terrace', 'Jacuzzi', 'Kitchenette', 'Dining Area', 'Welcome Champagne', 'Turn-down Service', 'Premium Toiletries'],
       guests: 4,
       bed: 'King Size + Sofa'
@@ -64,9 +87,14 @@ const RoomDetail = () => {
     {
       id: 4,
       name: 'Standard Room',
-      price: 120,
-      capacity: 2,
       bedType: 'Double Bed',
+      priceUSD: 120,
+      priceETB: 120 * usdToEtb,
+      location: 'Adama',
+      discount: 0,
+      rating: 4.5,
+      reviews: 180,
+      capacity: 2,
       size: '24 m²',
       description: 'Comfortable room with all essential amenities for a pleasant stay.',
       longDescription: 'The Standard Room offers a comfortable and inviting space for travelers seeking value without compromising on quality. The room features a cozy double bed with comfortable linens, a flat-screen TV, and a work desk. The private bathroom is equipped with a shower and complimentary toiletries. Enjoy the convenience of free Wi-Fi, air conditioning, and a coffee maker. This room is perfect for solo travelers, couples, or business guests looking for a comfortable stay at an affordable price.',
@@ -80,9 +108,14 @@ const RoomDetail = () => {
     {
       id: 5,
       name: 'Family Suite',
-      price: 320,
-      capacity: 5,
       bedType: 'King Size Bed + 2 Twin Beds',
+      priceUSD: 320,
+      priceETB: 320 * usdToEtb,
+      location: 'Adama',
+      discount: 10,
+      rating: 4.7,
+      reviews: 120,
+      capacity: 5,
       size: '65 m²',
       description: 'Spacious suite designed for families, with separate children\'s area and entertainment.',
       longDescription: 'The Family Suite is perfect for families seeking space and comfort. This suite features a separate children\'s area with a game console, board games, and a selection of movies. The master bedroom boasts a king-size bed with premium linens, while the second area includes two comfortable twin beds. The suite also features a living area with a sofa bed, a dining area, and a kitchenette. The bathroom includes a bathtub and separate shower. Family-friendly amenities include a kids\' menu, babysitting services on request, and complimentary activities for children.',
@@ -96,15 +129,20 @@ const RoomDetail = () => {
     {
       id: 6,
       name: 'Honeymoon Suite',
-      price: 380,
-      capacity: 2,
       bedType: 'King Size Bed',
+      priceUSD: 380,
+      priceETB: 380 * usdToEtb,
+      location: 'Adama',
+      discount: 25,
+      rating: 4.9,
+      reviews: 250,
+      capacity: 2,
       size: '55 m²',
       description: 'Romantic suite with jacuzzi, rose petals, and breathtaking sunset views.',
       longDescription: 'The Honeymoon Suite is designed for romance and celebration. Upon arrival, guests are welcomed with rose petals, champagne, and chocolates. The suite features a king-size bed with premium linens, a cozy sitting area, and a private balcony with breathtaking sunset views. The highlight of the suite is the jacuzzi bathtub, perfect for a romantic soak. The suite also includes a mini bar, coffee maker, and luxurious bath amenities. Couples can enjoy personalized services including private dining, spa packages, and romantic excursions arranged by our dedicated concierge team.',
       features: ['Free Wi-Fi', 'Smart TV', 'Air Conditioning', 'Coffee Maker', 'Jacuzzi', 'Mini Bar', 'Private Balcony', 'Romantic Setup'],
       image: 'https://images.unsplash.com/photo-1591088398332-8a7791972843?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-      popular: true,
+      popular: false,
       amenities: ['Jacuzzi', 'Private Balcony', 'Romantic Setup', 'Complimentary Champagne', 'Rose Petals', 'Chocolate Truffles', 'Couples Spa Services'],
       guests: 2,
       bed: 'King Size'
@@ -128,30 +166,49 @@ const RoomDetail = () => {
     setShowBooking(false);
   };
 
+  // Generate stars
+  const renderStars = (rating) => {
+    const fullStars = Math.floor(rating);
+    const halfStar = rating % 1 >= 0.5;
+    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+    const stars = [];
+    
+    for (let i = 0; i < fullStars; i++) {
+      stars.push(<Star key={`full-${i}`} size={18} fill="#d4af37" color="#d4af37" />);
+    }
+    if (halfStar) {
+      stars.push(<Star key="half" size={18} fill="#d4af37" color="#d4af37" style={{ opacity: 0.5 }} />);
+    }
+    for (let i = 0; i < emptyStars; i++) {
+      stars.push(<Star key={`empty-${i}`} size={18} color="#d1d5db" />);
+    }
+    return stars;
+  };
+
   // Feature icons
   const getFeatureIcon = (feature) => {
-    if (feature.includes('Wi-Fi')) return <Wifi size={18} />;
-    if (feature.includes('TV') || feature.includes('Smart')) return <Tv size={18} />;
-    if (feature.includes('Air')) return <AirVent size={18} />;
-    if (feature.includes('Coffee') || feature.includes('Mini Bar')) return <Coffee size={18} />;
-    if (feature.includes('Car') || feature.includes('Parking')) return <Car size={18} />;
-    if (feature.includes('Gym') || feature.includes('Fitness')) return <Dumbbell size={18} />;
-    if (feature.includes('Bathtub') || feature.includes('Jacuzzi')) return <Bath size={18} />;
-    if (feature.includes('Terrace') || feature.includes('Balcony')) return <Sparkles size={18} />;
-    if (feature.includes('Butler') || feature.includes('Concierge')) return <Star size={18} />;
-    if (feature.includes('Game')) return <Users size={18} />;
-    if (feature.includes('Room Service')) return <Utensils size={18} />;
-    return <Check size={18} />;
+    if (feature.includes('Wi-Fi')) return <Wifi size={16} />;
+    if (feature.includes('TV') || feature.includes('Smart')) return <Tv size={16} />;
+    if (feature.includes('Air')) return <AirVent size={16} />;
+    if (feature.includes('Coffee') || feature.includes('Mini Bar')) return <Coffee size={16} />;
+    if (feature.includes('Car') || feature.includes('Parking')) return <Car size={16} />;
+    if (feature.includes('Gym') || feature.includes('Fitness')) return <Dumbbell size={16} />;
+    if (feature.includes('Bathtub') || feature.includes('Jacuzzi')) return <Bath size={16} />;
+    if (feature.includes('Terrace') || feature.includes('Balcony')) return <Sparkles size={16} />;
+    if (feature.includes('Butler') || feature.includes('Concierge')) return <Star size={16} />;
+    if (feature.includes('Game')) return <Users size={16} />;
+    if (feature.includes('Room Service')) return <Utensils size={16} />;
+    return <Check size={16} />;
   };
 
   return (
     <>
       <style>{`
-        /* ===== ROOM DETAIL STYLES ===== */
+        /* ===== ROOM DETAIL PAGE - FIXED LAYOUT ===== */
         .room-detail-page {
-          padding: 40px 24px 80px;
           background: #f8f9fa;
           min-height: 100vh;
+          padding: 100px 24px 80px;
         }
 
         .room-detail-container {
@@ -160,7 +217,7 @@ const RoomDetail = () => {
         }
 
         /* Back Button */
-        .back-btn {
+        .back-link {
           display: inline-flex;
           align-items: center;
           gap: 8px;
@@ -171,17 +228,18 @@ const RoomDetail = () => {
           transition: color 0.3s;
         }
 
-        .back-btn:hover {
+        .back-link:hover {
           color: #d4af37;
         }
 
-        /* Main Layout */
+        /* Main Grid */
         .detail-grid {
           display: grid;
           grid-template-columns: 1fr;
-          gap: 40px;
+          gap: 32px;
         }
 
+        /* Image */
         .detail-image {
           position: relative;
           border-radius: 16px;
@@ -195,125 +253,168 @@ const RoomDetail = () => {
           object-fit: cover;
         }
 
-        .detail-image .badge {
+        .detail-image .discount-badge {
           position: absolute;
           top: 20px;
-          right: 20px;
-          background: #d4af37;
-          color: #1a1a1a;
-          padding: 6px 18px;
+          left: 20px;
+          background: #ef4444;
+          color: #ffffff;
+          padding: 8px 20px;
           border-radius: 9999px;
-          font-size: 12px;
           font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 1px;
+          font-size: 14px;
+          box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
         }
 
-        .detail-content {
+        /* Content Card */
+        .detail-card {
+          background: #ffffff;
+          border-radius: 16px;
+          padding: 32px;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+
+        /* Location */
+        .detail-location {
           display: flex;
-          flex-direction: column;
-          gap: 24px;
+          align-items: center;
+          gap: 6px;
+          color: #6b7280;
+          font-size: 14px;
+          margin-bottom: 4px;
         }
 
-        .detail-content .room-title {
-          font-size: 32px;
+        .detail-location svg {
+          color: #d4af37;
+          width: 16px;
+          height: 16px;
+        }
+
+        /* Room Name */
+        .detail-name {
+          font-size: 28px;
           font-weight: 700;
           color: #1a1a1a;
           margin: 0;
         }
 
-        .detail-content .room-price {
-          font-size: 36px;
+        .detail-name .bed-type {
+          font-size: 16px;
+          font-weight: 400;
+          color: #6b7280;
+        }
+
+        /* Price */
+        .detail-price {
+          margin: 12px 0 8px;
+        }
+
+        .detail-price .original-price {
+          font-size: 16px;
+          color: #9ca3af;
+          text-decoration: line-through;
+        }
+
+        .detail-price .current-price {
+          font-size: 32px;
           font-weight: 700;
           color: #d4af37;
         }
 
-        .detail-content .room-price span {
-          font-size: 16px;
+        .detail-price .per-night {
+          font-size: 14px;
           color: #6b7280;
           font-weight: 400;
         }
 
-        .detail-meta {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 20px;
-          padding: 16px 0;
-          border-top: 1px solid #e5e7eb;
-          border-bottom: 1px solid #e5e7eb;
-        }
-
-        .detail-meta .meta-item {
+        /* Rating */
+        .detail-rating {
           display: flex;
           align-items: center;
           gap: 8px;
+          margin: 8px 0 16px;
+          flex-wrap: wrap;
+        }
+
+        .detail-rating .stars {
+          display: flex;
+          gap: 2px;
+        }
+
+        .detail-rating .rating-text {
+          font-weight: 600;
+          color: #1a1a1a;
+        }
+
+        .detail-rating .review-count {
+          color: #6b7280;
+          font-size: 14px;
+        }
+
+        /* Divider */
+        .divider {
+          border: none;
+          border-top: 1px solid #e5e7eb;
+          margin: 16px 0;
+        }
+
+        /* Room Meta */
+        .room-meta {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 16px;
+        }
+
+        .room-meta .meta-item {
+          display: flex;
+          align-items: center;
+          gap: 6px;
           color: #4b5563;
           font-size: 14px;
         }
 
-        .detail-meta .meta-item svg {
+        .room-meta .meta-item svg {
           color: #d4af37;
         }
 
+        /* Description */
         .detail-description {
           color: #4b5563;
-          font-size: 16px;
+          font-size: 15px;
           line-height: 1.8;
+          margin: 16px 0;
         }
 
-        /* Features Grid */
-        .features-grid {
+        /* Features */
+        .features-list {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 12px;
-          margin: 8px 0;
+          gap: 8px;
+          margin: 12px 0;
         }
 
-        .features-grid .feature-item {
+        .features-list .feature-item {
           display: flex;
           align-items: center;
-          gap: 10px;
-          padding: 10px 16px;
-          background: #ffffff;
+          gap: 8px;
+          padding: 8px 12px;
+          background: #f8f9fa;
           border-radius: 8px;
-          border: 1px solid #e5e7eb;
           font-size: 14px;
           color: #374151;
         }
 
-        .features-grid .feature-item svg {
+        .features-list .feature-item svg {
           color: #d4af37;
           flex-shrink: 0;
         }
 
-        /* Amenities */
-        .amenities-list {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 8px;
-          margin: 4px 0 8px;
-        }
-
-        .amenities-list .amenity {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          background: #f3f4f6;
-          padding: 6px 14px;
-          border-radius: 9999px;
-          font-size: 13px;
-          color: #4b5563;
-        }
-
-        .amenities-list .amenity svg {
-          color: #d4af37;
-        }
-
-        .btn-book-now {
+        /* Book Button */
+        .btn-book {
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          padding: 14px 40px;
+          padding: 14px 48px;
           background: #d4af37;
           color: #1a1a1a;
           border: none;
@@ -322,16 +423,78 @@ const RoomDetail = () => {
           font-size: 16px;
           cursor: pointer;
           transition: all 0.3s ease;
-          width: fit-content;
+          font-family: 'Poppins', sans-serif;
+          width: 100%;
+          justify-content: center;
+          margin-top: 8px;
         }
 
-        .btn-book-now:hover {
+        .btn-book:hover {
           background: #c5a028;
-          transform: translateY(-3px);
+          transform: translateY(-2px);
           box-shadow: 0 8px 30px rgba(212, 175, 55, 0.35);
         }
 
-        /* Booking Modal */
+        /* Responsive */
+        @media (min-width: 992px) {
+          .detail-grid {
+            grid-template-columns: 1fr 1fr;
+          }
+          .detail-image img {
+            height: 500px;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .room-detail-page {
+            padding: 90px 16px 60px;
+          }
+          .detail-card {
+            padding: 20px;
+          }
+          .detail-name {
+            font-size: 22px;
+          }
+          .detail-price .current-price {
+            font-size: 26px;
+          }
+          .detail-image img {
+            height: 250px;
+          }
+          .features-list {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .room-detail-page {
+            padding: 80px 12px 40px;
+          }
+          .detail-card {
+            padding: 16px;
+          }
+          .detail-name {
+            font-size: 18px;
+          }
+          .detail-price .current-price {
+            font-size: 22px;
+          }
+          .detail-image img {
+            height: 200px;
+          }
+          .btn-book {
+            font-size: 14px;
+            padding: 12px 24px;
+          }
+          .detail-rating {
+            gap: 4px;
+          }
+          .detail-rating .stars {
+            gap: 1px;
+          }
+        }
+
+        /* Modal Styles */
         .modal-overlay {
           position: fixed;
           inset: 0;
@@ -456,56 +619,12 @@ const RoomDetail = () => {
           from { transform: translateY(30px); opacity: 0; }
           to { transform: translateY(0); opacity: 1; }
         }
-
-        /* Responsive */
-        @media (min-width: 992px) {
-          .detail-grid {
-            grid-template-columns: 1fr 1fr;
-          }
-          .detail-image img {
-            height: 500px;
-          }
-        }
-
-        @media (max-width: 768px) {
-          .room-detail-page {
-            padding: 24px 16px 60px;
-          }
-          .detail-content .room-title {
-            font-size: 26px;
-          }
-          .detail-content .room-price {
-            font-size: 28px;
-          }
-          .features-grid {
-            grid-template-columns: 1fr;
-          }
-          .detail-image img {
-            height: 250px;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .detail-meta {
-            gap: 12px;
-          }
-          .modal-content {
-            padding: 20px;
-          }
-          .modal-content .form-row {
-            grid-template-columns: 1fr;
-          }
-          .btn-book-now {
-            width: 100%;
-            justify-content: center;
-          }
-        }
       `}</style>
 
       <div className="room-detail-page">
         <div className="room-detail-container">
           {/* Back Button */}
-          <Link to="/#rooms" className="back-btn">
+          <Link to="/#rooms" className="back-link">
             <ArrowLeft size={18} /> Back to Rooms
           </Link>
 
@@ -513,60 +632,74 @@ const RoomDetail = () => {
             {/* Image */}
             <div className="detail-image">
               <img src={room.image} alt={room.name} />
-              {room.popular && (
-                <div className="badge">✦ Popular</div>
+              {room.discount > 0 && (
+                <div className="discount-badge">{room.discount}% OFF</div>
               )}
             </div>
 
             {/* Content */}
-            <div className="detail-content">
-              <h1 className="room-title">{room.name}</h1>
-              <div className="room-price">
-                ${room.price} <span>/ night</span>
+            <div className="detail-card">
+              {/* Location */}
+              <div className="detail-location">
+                <MapPin size={16} />
+                {room.location}
               </div>
 
-              <div className="detail-meta">
-                <span className="meta-item">
-                  <Users size={16} /> {room.guests} Guests
-                </span>
-                <span className="meta-item">
-                  <Star size={16} /> {room.bed}
-                </span>
-                <span className="meta-item">
-                  <Sparkles size={16} /> {room.size}
-                </span>
+              {/* Room Name */}
+              <h1 className="detail-name">
+                {room.name}
+                <span className="bed-type"> ({room.bedType})</span>
+              </h1>
+
+              {/* Price */}
+              <div className="detail-price">
+                {room.discount > 0 && (
+                  <div className="original-price">
+                    ETB {formatPrice(Math.round(room.priceETB + (room.priceETB * room.discount / 100)))}
+                  </div>
+                )}
+                <div>
+                  <span className="current-price">ETB {formatPrice(room.priceETB)}</span>
+                  <span className="per-night"> / night</span>
+                </div>
               </div>
 
+              {/* Rating */}
+              <div className="detail-rating">
+                <div className="stars">{renderStars(room.rating)}</div>
+                <span className="rating-text">{room.rating}</span>
+                <span className="review-count">({room.reviews}+ reviews)</span>
+              </div>
+
+              <hr className="divider" />
+
+              {/* Room Meta */}
+              <div className="room-meta">
+                <span className="meta-item"><Users size={16} /> {room.guests} Guests</span>
+                <span className="meta-item"><Bed size={16} /> {room.bed}</span>
+                <span className="meta-item"><Maximize size={16} /> {room.size}</span>
+              </div>
+
+              {/* Description */}
               <p className="detail-description">{room.longDescription}</p>
 
-              <div>
-                <h4 style={{ fontSize: '16px', fontWeight: 600, color: '#1a1a1a', marginBottom: '8px' }}>
-                  Room Features
-                </h4>
-                <div className="features-grid">
-                  {room.features.map((feature, index) => (
-                    <span key={index} className="feature-item">
-                      {getFeatureIcon(feature)} {feature}
-                    </span>
-                  ))}
-                </div>
+              <hr className="divider" />
+
+              {/* Features */}
+              <h4 style={{ fontSize: '16px', fontWeight: 600, color: '#1a1a1a', margin: '0 0 12px 0' }}>
+                Room Features
+              </h4>
+              <div className="features-list">
+                {room.features.map((feature, index) => (
+                  <span key={index} className="feature-item">
+                    {getFeatureIcon(feature)} {feature}
+                  </span>
+                ))}
               </div>
 
-              <div>
-                <h4 style={{ fontSize: '16px', fontWeight: 600, color: '#1a1a1a', marginBottom: '8px' }}>
-                  Premium Amenities
-                </h4>
-                <div className="amenities-list">
-                  {room.amenities.map((amenity, index) => (
-                    <span key={index} className="amenity">
-                      <Check size={14} /> {amenity}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <button className="btn-book-now" onClick={() => setShowBooking(true)}>
-                Book This Room <Calendar size={18} />
+              {/* Book Button */}
+              <button className="btn-book" onClick={() => setShowBooking(true)}>
+                <Calendar size={18} /> Book This Room
               </button>
             </div>
           </div>
@@ -580,7 +713,7 @@ const RoomDetail = () => {
             <button className="modal-close" onClick={() => setShowBooking(false)}>✕</button>
             <h3>{room.name}</h3>
             <div className="modal-price">
-              ${room.price} <span>/ night</span>
+              ETB {formatPrice(room.priceETB)} <span>/ night</span>
             </div>
 
             <form onSubmit={handleBooking}>

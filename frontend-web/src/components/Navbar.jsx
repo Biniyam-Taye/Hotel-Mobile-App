@@ -1,5 +1,6 @@
 // src/components/Navbar.jsx
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 
 const Navbar = () => {
@@ -8,106 +9,121 @@ const Navbar = () => {
   return (
     <>
       <style>{`
-        /* ===== TRANSPARENT NAVBAR ===== */
+        /* ===== TRANSPARENT CURVED NAVBAR ===== */
         .navbar {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          z-index: 50;
-          padding: 20px 24px;
-          background: transparent;
+          position: fixed;
+          top: 20px; 
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 1000;
+          background: rgba(0, 0, 0, 0.35);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          padding: 12px 28px;
+          border-radius: 50px;
+          width: 90%;
+          max-width: 1200px;
+          box-shadow: 0 4px 30px rgba(0,0,0,0.2);
+          border: 1px solid rgba(255,255,255,0.08);
+          box-sizing: border-box;
           transition: background 0.3s ease;
         }
 
-        .navbar-scrolled {
-          background: rgba(255, 255, 255, 0.95);
-          box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-          backdrop-filter: blur(10px);
+        .navbar.scrolled {
+          background: rgba(0, 0, 0, 0.7);
+          backdrop-filter: blur(16px);
         }
 
         .navbar-container {
-          max-width: 1280px;
-          margin: 0 auto;
+          width: 100%;
           display: flex;
           align-items: center;
           justify-content: space-between;
         }
 
-        /* Logo */
         .logo {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: 10px;
           text-decoration: none;
+          flex-shrink: 0;
         }
 
         .logo-icon {
-          width: 40px;
-          height: 40px;
-          background: rgba(255, 255, 255, 0.15);
-          backdrop-filter: blur(4px);
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          width: 36px;
+          height: 36px;
+          background: #d4af37;
           border-radius: 8px;
           display: flex;
           align-items: center;
           justify-content: center;
-          color: #d4af37;
-          font-weight: bold;
-          font-size: 18px;
+          color: #1a1a1a;
+          font-weight: 800;
+          font-size: 15px;
         }
 
-        .logo-title {
-          font-size: 20px;
-          font-weight: bold;
-          color: #ffffff;
-          margin: 0;
+        .logo-text {
           line-height: 1.2;
         }
 
-        .logo-subtitle {
-          font-size: 10px;
-          color: rgba(255, 255, 255, 0.6);
-          letter-spacing: 3px;
+        .logo-title {
+          font-size: 15px;
+          font-weight: 700;
+          color: #ffffff;
           margin: 0;
+          line-height: 1.2;
+          letter-spacing: 0.5px;
         }
 
-        /* Desktop Nav Links - WHITE TEXT */
+        .logo-subtitle {
+          font-size: 7px;
+          color: rgba(255,255,255,0.6);
+          letter-spacing: 3px;
+          margin: 0;
+          text-transform: uppercase;
+        }
+
         .nav-links {
-          display: none;
+          display: flex;
           align-items: center;
-          gap: 32px;
+          gap: 28px;
         }
 
         .nav-links a {
-          color: rgba(255, 255, 255, 0.8);
+          color: rgba(255,255,255,0.85);
           text-decoration: none;
-          font-size: 14px;
+          font-size: 12px;
           font-weight: 500;
           transition: color 0.3s;
+          letter-spacing: 0.5px;
+          text-transform: uppercase;
+          white-space: nowrap;
         }
 
         .nav-links a:hover {
           color: #d4af37;
         }
 
-        /* Auth Buttons - WHITE TEXT */
         .auth-buttons {
-          display: none;
+          display: flex;
           align-items: center;
-          gap: 12px;
+          gap: 10px;
+          flex-shrink: 0;
         }
 
         .auth-buttons a {
           text-decoration: none;
-          font-size: 14px;
+          font-size: 12px;
           font-weight: 500;
           transition: all 0.3s;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          white-space: nowrap;
         }
 
         .btn-login {
-          padding: 8px 20px;
-          color: rgba(255, 255, 255, 0.8);
+          padding: 6px 14px;
+          color: rgba(255,255,255,0.85);
         }
 
         .btn-login:hover {
@@ -115,11 +131,12 @@ const Navbar = () => {
         }
 
         .btn-signup {
-          padding: 8px 20px;
+          padding: 6px 20px;
           background: #d4af37;
           color: #1a1a1a;
           border-radius: 9999px;
           transition: all 0.3s;
+          font-weight: 600;
         }
 
         .btn-signup:hover {
@@ -128,9 +145,8 @@ const Navbar = () => {
           box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
         }
 
-        /* Mobile Menu Button - WHITE */
         .menu-toggle {
-          display: block;
+          display: none;
           background: none;
           border: none;
           color: #ffffff;
@@ -138,97 +154,147 @@ const Navbar = () => {
           padding: 4px;
         }
 
-        /* Mobile Menu - DARK */
         .mobile-menu {
           display: none;
-          margin-top: 16px;
-          background: rgba(0, 0, 0, 0.8);
-          backdrop-filter: blur(10px);
-          border-radius: 16px;
-          padding: 24px;
-          flex-direction: column;
-          gap: 16px;
         }
 
-        .mobile-menu.open {
-          display: flex;
-        }
-
-        .mobile-menu a {
-          color: rgba(255, 255, 255, 0.8);
-          text-decoration: none;
-          padding: 8px 0;
-          transition: color 0.3s;
-        }
-
-        .mobile-menu a:hover {
-          color: #d4af37;
-        }
-
-        .mobile-divider {
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
-          padding-top: 16px;
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-
-        .mobile-divider a {
-          text-align: center;
-          padding: 8px;
-        }
-
-        .mobile-divider .btn-signup-mobile {
-          background: #d4af37;
-          color: #1a1a1a;
-          border-radius: 9999px;
-          padding: 10px;
-          text-align: center;
-        }
-
-        /* Desktop Styles */
-        @media (min-width: 768px) {
+        @media (max-width: 992px) {
           .nav-links {
-            display: flex;
+            gap: 16px;
           }
-          .auth-buttons {
-            display: flex;
+          .nav-links a {
+            font-size: 11px;
           }
-          .menu-toggle {
+          .btn-login {
+            font-size: 11px;
+            padding: 4px 10px;
+          }
+          .btn-signup {
+            font-size: 11px;
+            padding: 4px 14px;
+          }
+          .navbar {
+            padding: 10px 20px;
+            width: 95%;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .navbar {
+            top: 12px;
+            padding: 10px 16px;
+            border-radius: 30px;
+            width: 96%;
+            background: rgba(0,0,0,0.5);
+          }
+
+          .nav-links {
             display: none;
           }
+
+          .auth-buttons {
+            display: none;
+          }
+
+          .menu-toggle {
+            display: block;
+          }
+
           .mobile-menu {
-            display: none !important;
+            display: none;
+            margin-top: 12px;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: 20px;
+            flex-direction: column;
+            gap: 12px;
+          }
+
+          .mobile-menu.open {
+            display: flex;
+          }
+
+          .mobile-menu a {
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            padding: 8px 0;
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+
+          .mobile-menu a:hover {
+            color: #d4af37;
+          }
+
+          .mobile-divider {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+          }
+
+          .mobile-divider a {
+            text-align: center;
+            padding: 10px;
+          }
+
+          .mobile-divider .btn-signup-mobile {
+            background: #d4af37;
+            color: #1a1a1a;
+            border-radius: 9999px;
+            font-weight: 600;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .logo-title {
+            font-size: 12px;
+          }
+          .logo-subtitle {
+            font-size: 6px;
+            letter-spacing: 2px;
+          }
+          .logo-icon {
+            width: 28px;
+            height: 28px;
+            font-size: 11px;
+          }
+          .navbar {
+            top: 10px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            width: 98%;
           }
         }
       `}</style>
 
       <nav className="navbar" id="navbar">
         <div className="navbar-container">
-          {/* Logo - WHITE TEXT */}
-          <a href="/" className="logo">
+          <Link to="/" className="logo">
             <div className="logo-icon">V</div>
-            <div>
+            <div className="logo-text">
               <h1 className="logo-title">VILLA ALPHA</h1>
               <p className="logo-subtitle">INTERNATIONAL HOTEL</p>
             </div>
-          </a>
+          </Link>
 
-          {/* Desktop Nav Links - WHITE TEXT */}
           <div className="nav-links">
-            <a href="/rooms">Rooms& Suites</a>
-            <a href="/hospitality">Hospitality</a>
-            <a href="/experience">Experience</a>
-            <a href="/about">About</a>
+            <Link to="/rooms">Rooms</Link>
+            <Link to="/hospitality">Hospitality</Link>
+            <Link to="/experience">Experience</Link>
+            <Link to="/about">About</Link>
           </div>
 
-          {/* Auth Buttons - WHITE TEXT */}
           <div className="auth-buttons">
-            <a href="/login" className="btn-login">Login</a>
-            <a href="/signup" className="btn-signup">Sign Up</a>
+            <Link to="/login" className="btn-login">Login</Link>
+            <Link to="/signup" className="btn-signup">Sign Up</Link>
           </div>
 
-          {/* Mobile Menu Button */}
           <button
             className="menu-toggle"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -237,28 +303,26 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/* Mobile Menu */}
         <div className={`mobile-menu ${isMenuOpen ? 'open' : ''}`}>
-          <a href="/rooms">Rooms</a>
-          <a href="/hospitality">Hospitality</a>
-          <a href="/experience">Experience</a>
-          <a href="/about">About</a>
+          <Link to="/rooms" onClick={() => setIsMenuOpen(false)}>Rooms</Link>
+          <Link to="/hospitality" onClick={() => setIsMenuOpen(false)}>Hospitality</Link>
+          <Link to="/experience" onClick={() => setIsMenuOpen(false)}>Experience</Link>
+          <Link to="/about" onClick={() => setIsMenuOpen(false)}>About</Link>
           <div className="mobile-divider">
-            <a href="/login">Login</a>
-            <a href="/signup" className="btn-signup-mobile">Sign Up</a>
+            <Link to="/login" onClick={() => setIsMenuOpen(false)}>Login</Link>
+            <Link to="/signup" className="btn-signup-mobile" onClick={() => setIsMenuOpen(false)}>Sign Up</Link>
           </div>
         </div>
       </nav>
 
-      {/* Scroll effect script */}
       <script dangerouslySetInnerHTML={{
         __html: `
           window.addEventListener('scroll', function() {
             const navbar = document.getElementById('navbar');
             if (window.scrollY > 50) {
-              navbar.classList.add('navbar-scrolled');
+              navbar.classList.add('scrolled');
             } else {
-              navbar.classList.remove('navbar-scrolled');
+              navbar.classList.remove('scrolled');
             }
           });
         `
