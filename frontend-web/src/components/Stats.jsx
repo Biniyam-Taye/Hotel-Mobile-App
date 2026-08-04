@@ -15,10 +15,10 @@ const Stats = () => {
 
   // Target values
   const targets = {
-    experience: 25,
-    clients: 10000,
+    experience: 16,
+    clients: 1000,
     rooms: 120,
-    awards: 15
+    awards: 7,
   };
 
   // Intersection Observer to trigger animation when visible
@@ -163,7 +163,7 @@ const Stats = () => {
 
         .stat-card {
           background: #ffffff;
-          padding: 32px 20px;
+          padding: 34px 20px;
           border-radius: 16px;
           text-align: center;
           box-shadow: 0 2px 8px rgba(0,0,0,0.06);
@@ -239,7 +239,7 @@ const Stats = () => {
         <div className="stats-container">
           {/* Header */}
           <div className="stats-header">
-            <div className="label">✦ ABOUT VILLA ALPHA</div>
+            <div className="label"> </div>
             <h2>Excellence in Hospitality</h2>
             <p>
               Since our founding, we've been dedicated to providing 
