@@ -2,38 +2,51 @@
 import hotelImage from '../assets/hotelphoto.png';
 
 const Hero = () => {
+  // Function to scroll to the next section
+  const scrollToNextSection = () => {
+    // Find the next section after hero (Stats section)
+    const nextSection = document.querySelector('.stats-section');
+    if (nextSection) {
+      nextSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      // Fallback: scroll down by 100vh
+      window.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
+    }
+  };
+
   return (
     <>
       <style>{`
-        /* ===== HERO SECTION - FULL SCREEN IMAGE ===== */
         .hero-section {
           position: relative;
           height: 100vh;
           width: 100%;
           display: flex;
           align-items: center;
-          justify-content: flex-start; /* Changed from center to flex-start (left) */
-          background: url(${hotelImage}) center/cover no-repeat;
+          justify-content: flex-start;
+          background-color: #1a1a1a;
+          background-image: url(${hotelImage});
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
           overflow: hidden;
         }
 
         .hero-overlay {
           position: absolute;
           inset: 0;
-          background: rgba(0, 0, 0, 0.5);
+          background: rgba(0, 0, 0, 0.55);
         }
 
         .hero-content {
           position: relative;
           z-index: 10;
-          text-align: left; /* Changed from center to left */
+          text-align: left;
           color: #ffffff;
           max-width: 800px;
-          padding: 0 60px; /* Added more left padding */
-          margin-left: 0; /* Ensure it stays left */
+          padding: 0 60px;
         }
 
-        /* Badge / Tag */
         .hero-badge {
           display: inline-block;
           background: rgba(212, 175, 55, 0.15);
@@ -49,7 +62,6 @@ const Hero = () => {
           text-transform: uppercase;
         }
 
-        /* Main Title */
         .hero-title {
           font-family: 'Georgia', 'Times New Roman', serif;
           font-size: 72px;
@@ -63,22 +75,20 @@ const Hero = () => {
           color: #d4af37;
         }
 
-        /* Subtitle */
         .hero-sub {
           font-size: 18px;
           color: rgba(255, 255, 255, 0.8);
           max-width: 560px;
-          margin: 0 0 36px 0; /* Changed from margin: 0 auto to left aligned */
+          margin: 0 0 36px 0;
           line-height: 1.8;
           font-weight: 300;
           letter-spacing: 0.5px;
         }
 
-        /* Buttons */
         .hero-buttons {
           display: flex;
           gap: 16px;
-          justify-content: flex-start; /* Changed from center to flex-start (left) */
+          justify-content: flex-start;
           flex-wrap: wrap;
         }
 
@@ -122,7 +132,7 @@ const Hero = () => {
           transform: translateY(-3px);
         }
 
-        /* Scroll Indicator */
+        /* Scroll Indicator - Now Clickable */
         .scroll-indicator {
           position: absolute;
           bottom: 32px;
@@ -138,6 +148,12 @@ const Hero = () => {
           letter-spacing: 2px;
           text-transform: uppercase;
           animation: floatDown 2s ease-in-out infinite;
+          cursor: pointer; /* Make it look clickable */
+          transition: color 0.3s ease;
+        }
+
+        .scroll-indicator:hover {
+          color: rgba(255, 255, 255, 0.8);
         }
 
         .scroll-indicator .mouse {
@@ -148,6 +164,11 @@ const Hero = () => {
           display: flex;
           justify-content: center;
           padding-top: 8px;
+          transition: border-color 0.3s ease;
+        }
+
+        .scroll-indicator:hover .mouse {
+          border-color: rgba(255, 255, 255, 0.6);
         }
 
         .scroll-indicator .mouse .wheel {
@@ -168,10 +189,9 @@ const Hero = () => {
           50% { transform: translateX(-50%) translateY(6px); }
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
           .hero-section {
-            justify-content: center; /* Center on mobile for better readability */
+            justify-content: center;
           }
           .hero-content {
             text-align: center;
@@ -216,7 +236,6 @@ const Hero = () => {
         }
       `}</style>
 
-      {/* ===== HERO HTML ===== */}
       <section className="hero-section">
         <div className="hero-overlay"></div>
 
@@ -230,13 +249,11 @@ const Hero = () => {
             Where elegance meets comfort — experience world-class hospitality
             in the heart of the city.
           </p>
-          <div className="hero-buttons">
-            <a href="/rooms" className="btn-primary">Explore Suites</a>
-            <a href="/about" className="btn-secondary">About Us</a>
-          </div>
+          
         </div>
 
-        <div className="scroll-indicator">
+        {/* Scroll Indicator - Clickable */}
+        <div className="scroll-indicator" onClick={scrollToNextSection}>
           <div className="mouse">
             <div className="wheel"></div>
           </div>

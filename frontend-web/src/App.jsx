@@ -21,7 +21,7 @@ function App() {
     <BrowserRouter>
       <div>
         <Navbar />
-        <div style={{ paddingTop: '85px' }}>
+        <div >
           <Routes>
             <Route path="/" element={
               <>
