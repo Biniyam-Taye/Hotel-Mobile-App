@@ -1,13 +1,15 @@
 // src/components/Home.jsx
 import { Link } from 'react-router-dom';
-import { 
-  Wifi, Tv, AirVent, Coffee, Car, Users, Bath, 
-  ArrowRight, Star, Bed, Maximize, Utensils, Dumbbell, Sparkles
+import { useState } from 'react';
+import {
+  Wifi, Tv, AirVent, Coffee, Car, Users, Bath,
+  ArrowRight, Star, Bed, Maximize, Utensils, Dumbbell, Sparkles, Calendar
 } from 'lucide-react';
 
-const Home = () => {  // ← Changed from Rooms to Home
-  // Exchange rate: 1 USD = 57 ETB (approx)
+const Home = () => {
   const usdToEtb = 57;
+  const [showBooking, setShowBooking] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState(null);
 
   const rooms = [
     {
@@ -21,7 +23,8 @@ const Home = () => {  // ← Changed from Rooms to Home
       shortDescription: 'Elegant suite with stunning city views and premium amenities.',
       features: ['Free Wi-Fi', 'Flat-screen TV', 'Air Conditioning', 'Coffee Maker', 'Mini Bar', 'Bathtub'],
       image: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      popular: true
+      popular: true,
+      longDescription: 'The Deluxe Suite offers an unparalleled experience with breathtaking city views. Step into a world of elegance where every detail has been carefully curated for your comfort.'
     },
     {
       id: 2,
@@ -34,7 +37,8 @@ const Home = () => {  // ← Changed from Rooms to Home
       shortDescription: 'Modern room designed for business travelers with workspace.',
       features: ['Free Wi-Fi', 'Flat-screen TV', 'Air Conditioning', 'Coffee Maker', 'Work Desk'],
       image: 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      popular: false
+      popular: false,
+      longDescription: 'The Executive Room is designed with the modern business traveler in mind. Featuring a dedicated workspace with ergonomic chair and high-speed internet.'
     },
     {
       id: 3,
@@ -47,7 +51,8 @@ const Home = () => {  // ← Changed from Rooms to Home
       shortDescription: 'Our most luxurious suite with private terrace and butler service.',
       features: ['Free Wi-Fi', 'Smart TV', 'Air Conditioning', 'Coffee Maker', 'Mini Bar', 'Bathtub', 'Private Terrace'],
       image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      popular: true
+      popular: true,
+      longDescription: 'The Presidential Suite is the epitome of luxury living. Spanning an impressive 85 square meters, this suite offers panoramic views of the city skyline from a private terrace.'
     },
     {
       id: 4,
@@ -60,7 +65,8 @@ const Home = () => {  // ← Changed from Rooms to Home
       shortDescription: 'Comfortable room with all essential amenities for a pleasant stay.',
       features: ['Free Wi-Fi', 'Flat-screen TV', 'Air Conditioning', 'Coffee Maker'],
       image: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      popular: false
+      popular: false,
+      longDescription: 'The Standard Room offers a comfortable and inviting space for travelers seeking value without compromising on quality.'
     },
     {
       id: 5,
@@ -73,7 +79,8 @@ const Home = () => {  // ← Changed from Rooms to Home
       shortDescription: 'Spacious suite designed for families with children\'s entertainment area.',
       features: ['Free Wi-Fi', 'Smart TV', 'Air Conditioning', 'Coffee Maker', 'Mini Bar', 'Game Console'],
       image: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      popular: false
+      popular: false,
+      longDescription: 'The Family Suite is perfect for families seeking space and comfort. This suite features a separate children\'s area with a game console, board games, and a selection of movies.'
     },
     {
       id: 6,
@@ -86,13 +93,26 @@ const Home = () => {  // ← Changed from Rooms to Home
       shortDescription: 'Romantic suite with jacuzzi, rose petals, and sunset views.',
       features: ['Free Wi-Fi', 'Smart TV', 'Air Conditioning', 'Coffee Maker', 'Jacuzzi', 'Mini Bar'],
       image: 'https://images.unsplash.com/photo-1591088398332-8a7791972843?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      popular: true
+      popular: true,
+      longDescription: 'The Honeymoon Suite is designed for romance and celebration. Upon arrival, guests are welcomed with rose petals, champagne, and chocolates.'
     }
   ];
 
-  // Format ETB price with commas
   const formatPrice = (price) => {
-    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
+
+  const handleBooking = (e) => {
+    e.preventDefault();
+    alert('🎉 Booking confirmed! We will contact you shortly.');
+    setShowBooking(false);
+    setSelectedRoom(null);
+  };
+
+  const openBooking = (room, e) => {
+    e.preventDefault();
+    setSelectedRoom(room);
+    setShowBooking(true);
   };
 
   return (
@@ -155,7 +175,7 @@ const Home = () => {  // ← Changed from Rooms to Home
           text-decoration: none;
           color: inherit;
           display: block;
-          cursor: pointer;
+          cursor: default;
         }
 
         .room-card:hover {
@@ -261,28 +281,176 @@ const Home = () => {  // ← Changed from Rooms to Home
           overflow: hidden;
         }
 
-        .room-card .room-details .btn-view {
+        /* ---- NEW BUTTON STYLES ---- */
+        .room-card .room-details .action-buttons {
+          display: flex;
+          gap: 12px;
+          align-items: center;
+        }
+
+        .room-card .room-details .action-buttons .btn {
           display: inline-flex;
           align-items: center;
-          gap: 8px;
-          padding: 10px 28px;
+          justify-content: center;
+          gap: 6px;
+          padding: 8px 20px;
+          border: none;
+          border-radius: 9999px;
+          font-weight: 600;
+          font-size: 13px;
+          font-family: 'Poppins', sans-serif;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          text-decoration: none;
+          flex: 1;
+        }
+
+        .room-card .room-details .action-buttons .btn-view {
+          background: #f3f4f6;
+          color: #1a1a1a;
+        }
+
+        .room-card .room-details .action-buttons .btn-view:hover {
+          background: #e5e7eb;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .room-card .room-details .action-buttons .btn-book {
+          background: #d4af37;
+          color: #1a1a1a;
+        }
+
+        .room-card .room-details .action-buttons .btn-book:hover {
+          background: #c5a028;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 20px rgba(212, 175, 55, 0.35);
+        }
+
+        /* -------- MODAL STYLES (same as RoomDetail) -------- */
+        .modal-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0,0,0,0.6);
+          backdrop-filter: blur(8px);
+          z-index: 999;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 24px;
+          animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+          background: #ffffff;
+          border-radius: 20px;
+          max-width: 520px;
+          width: 100%;
+          padding: 32px;
+          animation: slideUp 0.4s ease;
+          max-height: 90vh;
+          overflow-y: auto;
+        }
+
+        .modal-content .modal-close {
+          float: right;
+          background: none;
+          border: none;
+          font-size: 24px;
+          color: #6b7280;
+          cursor: pointer;
+          transition: color 0.3s;
+        }
+
+        .modal-content .modal-close:hover {
+          color: #1a1a1a;
+        }
+
+        .modal-content h3 {
+          font-size: 24px;
+          font-weight: 700;
+          color: #1a1a1a;
+          margin: 0 0 4px;
+        }
+
+        .modal-content .modal-price {
+          color: #d4af37;
+          font-size: 28px;
+          font-weight: 700;
+        }
+
+        .modal-content .modal-price span {
+          font-size: 14px;
+          color: #6b7280;
+          font-weight: 400;
+        }
+
+        .modal-content .form-group {
+          margin: 16px 0;
+        }
+
+        .modal-content .form-group label {
+          display: block;
+          font-size: 14px;
+          font-weight: 600;
+          color: #374151;
+          margin-bottom: 4px;
+        }
+
+        .modal-content .form-group input,
+        .modal-content .form-group select {
+          width: 100%;
+          padding: 10px 14px;
+          border: 1px solid #d1d5db;
+          border-radius: 8px;
+          font-size: 14px;
+          transition: border-color 0.3s;
+          box-sizing: border-box;
+          font-family: 'Poppins', sans-serif;
+        }
+
+        .modal-content .form-group input:focus,
+        .modal-content .form-group select:focus {
+          outline: none;
+          border-color: #d4af37;
+          box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+        }
+
+        .modal-content .btn-confirm {
+          width: 100%;
+          padding: 14px;
           background: #d4af37;
           color: #1a1a1a;
           border: none;
           border-radius: 9999px;
           font-weight: 600;
-          font-size: 14px;
+          font-size: 16px;
           cursor: pointer;
           transition: all 0.3s ease;
+          margin-top: 8px;
           font-family: 'Poppins', sans-serif;
-          width: 100%;
-          justify-content: center;
         }
 
-        .room-card .room-details .btn-view:hover {
+        .modal-content .btn-confirm:hover {
           background: #c5a028;
           transform: translateY(-2px);
-          box-shadow: 0 4px 20px rgba(212, 175, 55, 0.35);
+          box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .modal-content .form-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+          from { transform: translateY(30px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
         }
 
         @media (min-width: 768px) {
@@ -318,9 +486,19 @@ const Home = () => {  // ← Changed from Rooms to Home
           .room-card .room-details {
             padding: 16px 18px 20px;
           }
-          .room-card .room-details .btn-view {
-            font-size: 13px;
-            padding: 8px 20px;
+          .room-card .room-details .action-buttons .btn {
+            font-size: 12px;
+            padding: 6px 14px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .room-card .room-details .action-buttons {
+            flex-direction: column;
+            gap: 8px;
+          }
+          .room-card .room-details .action-buttons .btn {
+            width: 100%;
           }
         }
       `}</style>
@@ -338,7 +516,7 @@ const Home = () => {  // ← Changed from Rooms to Home
 
           <div className="rooms-grid">
             {rooms.map((room) => (
-              <Link key={room.id} to={`/room/${room.id}`} className="room-card">
+              <div key={room.id} className="room-card">
                 <div className="room-image">
                   <img src={room.image} alt={room.name} />
                   {room.popular && (
@@ -362,17 +540,83 @@ const Home = () => {  // ← Changed from Rooms to Home
                     <span><Maximize size={14} /> {room.size}</span>
                   </div>
                   <p className="short-description">{room.shortDescription}</p>
-                  <span className="btn-view">
-                    View Details <ArrowRight size={16} />
-                  </span>
+
+                  {/* ---- Two buttons side by side ---- */}
+                  <div className="action-buttons">
+                    <Link to={`/room/${room.id}`} className="btn btn-view">
+                      View Details <ArrowRight size={12} />
+                    </Link>
+                    <button
+                      className="btn btn-book"
+                      onClick={(e) => openBooking(room, e)}
+                    >
+                      Book Now <Calendar size={12} />
+                    </button>
+                  </div>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         </div>
       </section>
+
+      {/* ---- Booking Modal ---- */}
+      {showBooking && selectedRoom && (
+        <div className="modal-overlay" onClick={() => setShowBooking(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setShowBooking(false)}>✕</button>
+            <h3>{selectedRoom.name}</h3>
+            <div className="modal-price">
+              ETB {formatPrice(selectedRoom.priceETB)} <span>/ night</span>
+            </div>
+
+            <form onSubmit={handleBooking}>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Check-in Date</label>
+                  <input type="date" required />
+                </div>
+                <div className="form-group">
+                  <label>Check-out Date</label>
+                  <input type="date" required />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Full Name</label>
+                <input type="text" placeholder="John Doe" required />
+              </div>
+
+              <div className="form-group">
+                <label>Email Address</label>
+                <input type="email" placeholder="john@example.com" required />
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Phone Number</label>
+                  <input type="tel" placeholder="+1 234 567 890" required />
+                </div>
+                <div className="form-group">
+                  <label>Number of Guests</label>
+                  <select required>
+                    <option value="1">1 Guest</option>
+                    <option value="2" selected>2 Guests</option>
+                    <option value="3">3 Guests</option>
+                    <option value="4">4+ Guests</option>
+                  </select>
+                </div>
+              </div>
+
+              <button type="submit" className="btn-confirm">
+                Confirm Booking
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   );
 };
 
-export default Home;  // ← Changed from Rooms to Home
+export default Home;

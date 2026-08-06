@@ -1,246 +1,205 @@
 // src/components/Hero.jsx
-import hotelImage from '../assets/hotelphoto.png';
+import { ArrowRight } from 'lucide-react';
 
 const Hero = () => {
-  // Function to scroll to the next section
+  // Smooth scroll to the next section (e.g., rooms)
   const scrollToNextSection = () => {
-    // Find the next section after hero (Stats section)
-    const nextSection = document.querySelector('.stats-section');
+    const nextSection = document.getElementById('rooms');
     if (nextSection) {
-      nextSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else {
-      // Fallback: scroll down by 100vh
-      window.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
+      nextSection.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
   return (
     <>
       <style>{`
-        .hero-section {
+        .hero {
           position: relative;
-          height: 100vh;
-          width: 100%;
+          min-height: 100vh; /* Full viewport height */
           display: flex;
           align-items: center;
-          justify-content: flex-start;
-          background-color: #1a1a1a;
-          background-image: url(${hotelImage});
-          background-size: cover;
-          background-position: center;
-          background-repeat: no-repeat;
-          overflow: hidden;
+          justify-content: center;
+          text-align: center;
+          color: #ffffff;
+          padding: 0 24px;
+          background: url('https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')
+            center/cover no-repeat;
+          background-attachment: fixed; /* Optional parallax effect */
         }
 
-        .hero-overlay {
+        .hero::before {
+          content: '';
           position: absolute;
           inset: 0;
-          background: rgba(0, 0, 0, 0.55);
+          background: linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.7));
+          z-index: 0;
         }
 
         .hero-content {
           position: relative;
-          z-index: 10;
-          text-align: left;
-          color: #ffffff;
+          z-index: 1;
           max-width: 800px;
-          padding: 0 60px;
-        }
-
-        .hero-badge {
-          display: inline-block;
-          background: rgba(212, 175, 55, 0.15);
-          backdrop-filter: blur(4px);
-          padding: 8px 24px;
-          border-radius: 9999px;
-          font-size: 13px;
-          font-weight: 500;
-          letter-spacing: 2px;
-          color: #d4af37;
-          margin-bottom: 24px;
-          border: 1px solid rgba(212, 175, 55, 0.25);
-          text-transform: uppercase;
+          padding: 20px;
         }
 
         .hero-title {
           font-family: 'Georgia', 'Times New Roman', serif;
-          font-size: 72px;
+          font-size: 4rem;
           font-weight: 700;
           line-height: 1.1;
-          margin-bottom: 16px;
-          letter-spacing: 2px;
+          margin-bottom: 0.25rem;
+          text-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
 
         .hero-title .gold {
           color: #d4af37;
+          display: block;
+          font-size: 1.8rem;
+          letter-spacing: 4px;
+          text-transform: uppercase;
+          margin-top: 4px;
         }
 
         .hero-sub {
-          font-size: 18px;
-          color: rgba(255, 255, 255, 0.8);
-          max-width: 560px;
-          margin: 0 0 36px 0;
-          line-height: 1.8;
+          font-size: 1.25rem;
           font-weight: 300;
-          letter-spacing: 0.5px;
+          margin: 1rem 0 2rem;
+          color: rgba(255,255,255,0.9);
+          line-height: 1.6;
+          text-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
 
-        .hero-buttons {
-          display: flex;
-          gap: 16px;
-          justify-content: flex-start;
-          flex-wrap: wrap;
-        }
-
-        .btn-primary {
-          padding: 14px 44px;
+        .hero-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          padding: 16px 40px;
           background: #d4af37;
           color: #1a1a1a;
+          font-weight: 600;
+          font-size: 1.1rem;
           border: none;
           border-radius: 9999px;
-          font-weight: 600;
-          font-size: 15px;
+          cursor: pointer;
           text-decoration: none;
           transition: all 0.3s ease;
-          cursor: pointer;
-          letter-spacing: 0.5px;
+          font-family: 'Poppins', sans-serif;
+          box-shadow: 0 4px 20px rgba(212, 175, 55, 0.4);
         }
 
-        .btn-primary:hover {
+        .hero-btn:hover {
           background: #c5a028;
           transform: translateY(-3px);
-          box-shadow: 0 8px 30px rgba(212, 175, 55, 0.4);
+          box-shadow: 0 8px 30px rgba(212, 175, 55, 0.6);
         }
 
-        .btn-secondary {
-          padding: 14px 44px;
-          background: transparent;
-          color: #ffffff;
-          border: 2px solid rgba(255, 255, 255, 0.4);
-          border-radius: 9999px;
-          font-weight: 600;
-          font-size: 15px;
-          text-decoration: none;
-          transition: all 0.3s ease;
-          cursor: pointer;
-          letter-spacing: 0.5px;
-        }
-
-        .btn-secondary:hover {
-          background: rgba(255, 255, 255, 0.1);
-          border-color: #ffffff;
-          transform: translateY(-3px);
-        }
-
-        /* Scroll Indicator - Now Clickable */
+        /* ----- SCROLL INDICATOR ----- */
         .scroll-indicator {
           position: absolute;
-          bottom: 32px;
+          bottom: 40px;
           left: 50%;
           transform: translateX(-50%);
-          z-index: 10;
+          z-index: 2;
           display: flex;
           flex-direction: column;
           align-items: center;
           gap: 6px;
-          color: rgba(255, 255, 255, 0.5);
-          font-size: 11px;
-          letter-spacing: 2px;
-          text-transform: uppercase;
-          animation: floatDown 2s ease-in-out infinite;
-          cursor: pointer; /* Make it look clickable */
-          transition: color 0.3s ease;
+          cursor: pointer;
+          color: rgba(255,255,255,0.7);
+          transition: color 0.3s;
+          animation: bounce 2s infinite;
         }
 
         .scroll-indicator:hover {
-          color: rgba(255, 255, 255, 0.8);
+          color: #ffffff;
         }
 
         .scroll-indicator .mouse {
           width: 24px;
           height: 38px;
-          border: 2px solid rgba(255, 255, 255, 0.3);
-          border-radius: 9999px;
+          border: 2px solid currentColor;
+          border-radius: 12px;
+          position: relative;
           display: flex;
           justify-content: center;
-          padding-top: 8px;
-          transition: border-color 0.3s ease;
-        }
-
-        .scroll-indicator:hover .mouse {
-          border-color: rgba(255, 255, 255, 0.6);
         }
 
         .scroll-indicator .mouse .wheel {
           width: 4px;
           height: 8px;
-          background: rgba(255, 255, 255, 0.5);
-          border-radius: 9999px;
-          animation: scrollWheel 1.5s ease-in-out infinite;
+          background: currentColor;
+          border-radius: 2px;
+          position: absolute;
+          top: 8px;
+          animation: scrollWheel 1.5s infinite;
+        }
+
+        .scroll-indicator span {
+          font-size: 12px;
+          letter-spacing: 1px;
+          text-transform: uppercase;
         }
 
         @keyframes scrollWheel {
           0% { transform: translateY(0); opacity: 1; }
-          100% { transform: translateY(14px); opacity: 0; }
+          100% { transform: translateY(12px); opacity: 0; }
         }
 
-        @keyframes floatDown {
-          0%, 100% { transform: translateX(-50%) translateY(0); }
-          50% { transform: translateX(-50%) translateY(6px); }
+        @keyframes bounce {
+          0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+          40% { transform: translateX(-50%) translateY(-8px); }
+          60% { transform: translateX(-50%) translateY(-4px); }
         }
 
+        /* ----- RESPONSIVE ----- */
         @media (max-width: 768px) {
-          .hero-section {
-            justify-content: center;
-          }
-          .hero-content {
-            text-align: center;
-            padding: 0 24px;
-          }
           .hero-title {
-            font-size: 44px;
+            font-size: 2.8rem;
+          }
+          .hero-title .gold {
+            font-size: 1.4rem;
           }
           .hero-sub {
-            font-size: 16px;
-            margin: 0 auto 36px;
+            font-size: 1.1rem;
           }
-          .hero-badge {
-            font-size: 11px;
-            padding: 6px 18px;
+          .hero-btn {
+            padding: 14px 32px;
+            font-size: 1rem;
           }
-          .hero-buttons {
-            justify-content: center;
+          .scroll-indicator {
+            bottom: 20px;
           }
         }
 
         @media (max-width: 480px) {
+          .hero {
+            min-height: 100vh;
+          }
           .hero-title {
-            font-size: 32px;
+            font-size: 2rem;
+          }
+          .hero-title .gold {
+            font-size: 1.1rem;
           }
           .hero-sub {
-            font-size: 14px;
+            font-size: 1rem;
           }
-          .hero-buttons {
-            flex-direction: column;
-            align-items: center;
-          }
-          .btn-primary,
-          .btn-secondary {
-            width: 100%;
-            text-align: center;
+          .hero-btn {
             padding: 12px 24px;
+            font-size: 0.9rem;
           }
-          .scroll-indicator {
-            display: none;
+          .scroll-indicator .mouse {
+            width: 20px;
+            height: 32px;
+          }
+          .scroll-indicator .mouse .wheel {
+            height: 6px;
           }
         }
       `}</style>
 
-      <section className="hero-section">
-        <div className="hero-overlay"></div>
-
+      <section className="hero">
         <div className="hero-content">
-          <div className="hero-badge">✦ LUXURY COLLECTION</div>
           <h1 className="hero-title">
             VILLA ALPHA<br />
             <span className="gold">INTERNATIONAL HOTEL</span>
@@ -249,10 +208,12 @@ const Hero = () => {
             Where elegance meets comfort — experience world-class hospitality
             in the heart of the city.
           </p>
-          
+          <a href="#rooms" className="hero-btn">
+            Explore Rooms <ArrowRight size={20} />
+          </a>
         </div>
 
-        {/* Scroll Indicator - Clickable */}
+        {/* Scroll indicator */}
         <div className="scroll-indicator" onClick={scrollToNextSection}>
           <div className="mouse">
             <div className="wheel"></div>
