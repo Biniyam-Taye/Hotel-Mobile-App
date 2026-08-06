@@ -10,14 +10,18 @@ import RoomsPage from './pages/RoomsPage';
 import HospitalityPage from './pages/HospitalityPage';
 import ExperiencePage from './pages/ExperiencePage';
 import AboutPage from './pages/AboutPage';
-import Footer from './components/Footer';  // ← Import Footer
+import FAQPage from './pages/FAQPage';
+import PrivacyPage from './pages/PrivacyPage';
+import TermsPage from './pages/TermsPage';
+import ContactPage from './pages/ContactPage';
+import Footer from './components/Footer';
 
 function App() {
   return (
     <BrowserRouter>
       <div>
         <Navbar />
-        <div >
+        <div style={{ paddingTop: '85px' }}>
           <Routes>
             <Route path="/" element={
               <>
@@ -31,10 +35,14 @@ function App() {
             <Route path="/hospitality" element={<HospitalityPage />} />
             <Route path="/experience" element={<ExperiencePage />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/faq" element={<FAQPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/contact" element={<ContactPage />} />
             <Route path="/room/:id" element={<RoomDetail />} />
           </Routes>
         </div>
-        <Footer />  {/* ← Footer appears on ALL pages */}
+        <Footer />
       </div>
     </BrowserRouter>
   );

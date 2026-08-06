@@ -1,6 +1,6 @@
 // src/pages/FAQPage.jsx
 import { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
 
 const FAQPage = () => {
   const [openIndex, setOpenIndex] = useState(null);
@@ -167,7 +167,7 @@ const FAQPage = () => {
           <h1>Frequently Asked Questions</h1>
           <p>
             Find answers to the most common questions about your stay at Villa Alpha.
-            Can't find what you're looking for? Contact us directly.
+            Can't find what you're looking for? <a href="/contact" style={{ color: '#d4af37', textDecoration: 'none' }}>Contact us</a> directly.
           </p>
         </div>
 

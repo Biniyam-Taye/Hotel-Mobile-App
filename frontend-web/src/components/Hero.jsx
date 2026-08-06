@@ -12,7 +12,7 @@ const Hero = () => {
           width: 100%;
           display: flex;
           align-items: center;
-          justify-content: center;
+          justify-content: flex-start; /* Changed from center to flex-start (left) */
           background: url(${hotelImage}) center/cover no-repeat;
           overflow: hidden;
         }
@@ -26,10 +26,11 @@ const Hero = () => {
         .hero-content {
           position: relative;
           z-index: 10;
-          text-align: center;
+          text-align: left; /* Changed from center to left */
           color: #ffffff;
           max-width: 800px;
-          padding: 0 24px;
+          padding: 0 60px; /* Added more left padding */
+          margin-left: 0; /* Ensure it stays left */
         }
 
         /* Badge / Tag */
@@ -67,7 +68,7 @@ const Hero = () => {
           font-size: 18px;
           color: rgba(255, 255, 255, 0.8);
           max-width: 560px;
-          margin: 0 auto 36px;
+          margin: 0 0 36px 0; /* Changed from margin: 0 auto to left aligned */
           line-height: 1.8;
           font-weight: 300;
           letter-spacing: 0.5px;
@@ -77,7 +78,7 @@ const Hero = () => {
         .hero-buttons {
           display: flex;
           gap: 16px;
-          justify-content: center;
+          justify-content: flex-start; /* Changed from center to flex-start (left) */
           flex-wrap: wrap;
         }
 
@@ -169,15 +170,26 @@ const Hero = () => {
 
         /* Responsive */
         @media (max-width: 768px) {
+          .hero-section {
+            justify-content: center; /* Center on mobile for better readability */
+          }
+          .hero-content {
+            text-align: center;
+            padding: 0 24px;
+          }
           .hero-title {
             font-size: 44px;
           }
           .hero-sub {
             font-size: 16px;
+            margin: 0 auto 36px;
           }
           .hero-badge {
             font-size: 11px;
             padding: 6px 18px;
+          }
+          .hero-buttons {
+            justify-content: center;
           }
         }
 
