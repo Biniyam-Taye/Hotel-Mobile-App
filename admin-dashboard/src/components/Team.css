@@ -1,9 +1,19 @@
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideInDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 .team-container {
   display: flex;
   flex-direction: column;
   gap: 24px;
   height: 100%;
   overflow-y: auto;
+  animation: fadeInUp 0.4s ease both;
 }
 
 /* Page Header */
@@ -60,6 +70,13 @@
   padding: 24px;
   text-align: center;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s ease;
+  animation: fadeInUp 0.4s ease both;
+  cursor: default;
+}
+.team-stat-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.08);
 }
 
 .stat-number {
@@ -149,7 +166,7 @@
 
 .team-table tbody tr {
   border-bottom: 1px solid var(--border-color);
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .team-table tbody tr:last-child {
@@ -158,6 +175,7 @@
 
 .team-table tbody tr:hover {
   background-color: #fafafc;
+  transform: translateX(4px);
 }
 
 .team-table tbody td {
@@ -276,19 +294,19 @@
   background-color: #d4f7e5;
   color: #1a8048;
 }
-.btn-approve:hover { background-color: #b8f0d5; }
+.btn-approve:hover { background-color: #b8f0d5; transform: scale(1.05); }
 
 .btn-suspend {
   background-color: #fde8d8;
   color: #c0450d;
 }
-.btn-suspend:hover { background-color: #fad5c0; }
+.btn-suspend:hover { background-color: #fad5c0; transform: scale(1.05); }
 
 .btn-remove {
   background-color: #fde8e8;
   color: #c0220d;
 }
-.btn-remove:hover { background-color: #facccc; }
+.btn-remove:hover { background-color: #facccc; transform: scale(1.05); }
 
 .no-results {
   text-align: center;

@@ -1,3 +1,17 @@
+/* ── Animations ───────────────────────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(18px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
 /* ── Page Layout ──────────────────────────────────────────────── */
 .cal-page {
   display: flex;
@@ -15,6 +29,7 @@
   border-radius: 24px;
   padding: 28px;
   overflow-y: auto;
+  animation: fadeInUp 0.45s ease both;
 }
 
 .cal-sidebar {
@@ -23,6 +38,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  animation: slideInRight 0.45s 0.1s ease both;
 }
 
 /* ── Header ───────────────────────────────────────────────────── */
@@ -56,9 +72,9 @@
   color: var(--text-dark);
   cursor: pointer;
   font-family: 'Inter', sans-serif;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
 }
-.cal-today-btn:hover { background: #f7f7f9; }
+.cal-today-btn:hover { background: #f7f7f9; transform: scale(1.05); }
 
 .cal-header-right {
   display: flex;
@@ -100,10 +116,11 @@
   font-weight: 600;
   cursor: pointer;
   font-family: 'Inter', sans-serif;
-  transition: all 0.2s;
+  transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
   box-shadow: 0 4px 12px rgba(250, 90, 42, 0.35);
 }
-.cal-add-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(250, 90, 42, 0.45); }
+.cal-add-btn:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 8px 20px rgba(250, 90, 42, 0.5); }
+.cal-add-btn:active { transform: scale(0.97); }
 
 /* ── Google Connect ───────────────────────────────────────────── */
 .google-connect-area { display: flex; align-items: center; }
@@ -172,14 +189,14 @@
   border-radius: 14px;
   padding: 10px 8px 6px;
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
   display: flex;
   flex-direction: column;
   gap: 3px;
   background: transparent;
 }
 .cal-cell.empty { cursor: default; }
-.cal-cell:not(.empty):hover { background-color: #f7f7f9; }
+.cal-cell:not(.empty):hover { background-color: #f7f7f9; transform: scale(1.03); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
 
 .cal-cell.today .cal-day-num {
   background: var(--primary-orange);
@@ -283,7 +300,11 @@
   border-radius: 14px;
   padding: 12px 16px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  animation: fadeInUp 0.3s ease both;
 }
+.sel-event-row:hover { transform: translateX(4px); box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
 
 .sel-event-accent {
   width: 4px;
@@ -325,7 +346,10 @@
   background: var(--card-bg);
   border-radius: 20px;
   padding: 22px 20px;
+  animation: slideInRight 0.4s ease both;
 }
+.cal-sidebar-card:nth-child(2) { animation-delay: 0.1s; }
+.cal-sidebar-card:nth-child(3) { animation-delay: 0.2s; }
 
 .sidebar-card-title {
   font-size: 14px;
@@ -344,9 +368,9 @@
   padding: 10px 12px;
   border-radius: 12px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.2s ease;
 }
-.upcoming-item:hover { background: #f7f7f9; }
+.upcoming-item:hover { background: #f7f7f9; transform: translateX(4px); }
 
 .upcoming-accent {
   width: 4px;
@@ -409,6 +433,7 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
+  animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
 }
 
 .modal-header {

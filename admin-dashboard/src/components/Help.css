@@ -1,3 +1,12 @@
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
 /* ── Page Layout ──────────────────────────────────────────────── */
 .help-page {
   display: flex;
@@ -5,6 +14,7 @@
   gap: 24px;
   height: 100%;
   overflow-y: auto;
+  animation: fadeInUp 0.4s ease both;
 }
 
 /* ── Compact Top Bar ──────────────────────────────────────────── */
@@ -100,9 +110,9 @@
   color: var(--text-light);
   cursor: pointer;
   font-family: 'Inter', sans-serif;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
 }
-.help-cat-btn:hover { border-color: #6366f1; color: #6366f1; }
+.help-cat-btn:hover { border-color: #6366f1; color: #6366f1; transform: scale(1.05); }
 .help-cat-btn.active {
   background: #6366f1;
   border-color: #6366f1;
@@ -212,12 +222,13 @@
   border-radius: 14px;
   border: 1.5px solid var(--border-color);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  animation: fadeInUp 0.4s ease both;
 }
 .guide-card:hover {
   border-color: #c5c5d8;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
-  transform: translateX(3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  transform: translateX(6px);
 }
 
 .guide-icon {
@@ -240,6 +251,12 @@
   background: var(--card-bg);
   border-radius: 20px;
   padding: 22px;
+  animation: slideInRight 0.4s ease both;
+  transition: box-shadow 0.25s ease;
+}
+
+.help-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
 .help-card-title {
@@ -263,9 +280,9 @@
   cursor: pointer;
   font-family: 'Inter', sans-serif;
   width: 100%;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.2s ease;
 }
-.topic-item:hover { background: #f7f7f9; }
+.topic-item:hover { background: #f7f7f9; transform: translateX(4px); }
 
 .topic-icon {
   width: 34px;
