@@ -41,10 +41,10 @@ const Sidebar = () => {
               <Mail size={20} />
               <span className="nav-label">Messages</span>
             </NavLink>
-            <div className="nav-item">
+            <NavLink to="/documents" className={({isActive}) => `nav-item ${isActive ? 'active' : ''}`}>
               <FileText size={20} />
               <span className="nav-label">Documents</span>
-            </div>
+            </NavLink>
             <NavLink to="/team" className={({isActive}) => `nav-item ${isActive ? 'active' : ''}`}>
               <Users size={20} />
               <span className="nav-label">Team</span>
