@@ -49,10 +49,10 @@ const Sidebar = () => {
               <Users size={20} />
               <span className="nav-label">Team</span>
             </NavLink>
-            <div className="nav-item">
+            <NavLink to="/settings" className={({isActive}) => `nav-item ${isActive ? 'active' : ''}`}>
               <Settings size={20} />
               <span className="nav-label">Settings</span>
-            </div>
+            </NavLink>
           </nav>
         </div>
 
