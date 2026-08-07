@@ -5,56 +5,39 @@ import { Search, Bell, AlertCircle, ChevronDown } from 'lucide-react';
 
 const Header = () => {
   return (
-    <header className="top-navigation">
-      
-      {/* 1. Main Nav Pill */}
-      <nav className="nav-pill">
-        <NavLink to="/" className={({ isActive }) => `nav-pill-item ${isActive ? 'active' : ''}`} end>
-          Overview
-        </NavLink>
-        <NavLink to="/calendar" className={({ isActive }) => `nav-pill-item ${isActive ? 'active' : ''}`}>
-          Activity
-        </NavLink>
-        <NavLink to="/team" className={({ isActive }) => `nav-pill-item ${isActive ? 'active' : ''}`}>
-          Manage
-        </NavLink>
-        <NavLink to="/documents" className={({ isActive }) => `nav-pill-item ${isActive ? 'active' : ''}`}>
-          Program
-        </NavLink>
-        <NavLink to="/settings" className={({ isActive }) => `nav-pill-item ${isActive ? 'active' : ''}`}>
-          Account
-        </NavLink>
-        <NavLink to="/help" className={({ isActive }) => `nav-pill-item ${isActive ? 'active' : ''}`}>
-          Reports
-        </NavLink>
+    <header className="header">
+      <nav className="header-nav">
+        <NavLink to="/top/overview" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>Overview</NavLink>
+        <NavLink to="/top/activity" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>Activity</NavLink>
+        <NavLink to="/top/manage" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>Manage</NavLink>
+        <NavLink to="/top/program" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>Program</NavLink>
+        <NavLink to="/top/account" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>Account</NavLink>
+        <NavLink to="/top/reports" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>Reports</NavLink>
       </nav>
       
-      <div className="header-right">
-        {/* 2. Icons Pill */}
-        <div className="icons-pill">
-          <button className="icon-btn">
-            <Search size={20} />
-          </button>
-          <button className="icon-btn position-relative">
-            <Bell size={20} />
+      <div className="header-actions">
+        <div className="action-icons">
+          <NavLink to="/top/search" className={({isActive}) => `icon-btn ${isActive ? 'active-icon' : ''}`}>
+            <Search size={22} />
+          </NavLink>
+          <NavLink to="/top/notifications" className={({isActive}) => `icon-btn position-relative ${isActive ? 'active-icon' : ''}`}>
+            <Bell size={22} />
             <span className="notification-dot"></span>
-          </button>
-          <button className="icon-btn">
-            <AlertCircle size={20} />
-          </button>
+          </NavLink>
+          <NavLink to="/top/alerts" className={({isActive}) => `icon-btn ${isActive ? 'active-icon' : ''}`}>
+            <AlertCircle size={22} />
+          </NavLink>
         </div>
         
-        {/* 3. Profile Pill */}
-        <div className="profile-pill">
-          <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="User" className="profile-avatar" />
-          <div className="profile-info">
-            <span className="profile-name">Sajibur Rahman</span>
-            <span className="profile-email">sajibur.rahman@gm...</span>
+        <div className="user-profile">
+          <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="User" className="avatar" />
+          <div className="user-info">
+            <span className="user-name">Sajibur Rahman</span>
+            <span className="user-email">sajibur.rahman@gm...</span>
           </div>
-          <ChevronDown size={14} className="profile-chevron" />
+          <ChevronDown size={16} className="text-light" />
         </div>
       </div>
-      
     </header>
   );
 };
