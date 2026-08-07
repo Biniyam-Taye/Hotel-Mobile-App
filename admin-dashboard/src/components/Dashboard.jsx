@@ -61,33 +61,44 @@ const Dashboard = () => {
               <span className="text-sm font-medium">Wallets</span>
               <span className="text-xs text-light">Total 6 wallets</span>
             </div>
-            <div className="wallets-list">
-              <div className="wallet-item">
-                <div className="flex items-center gap-2 mb-2">
-                  <img src="https://flagcdn.com/w20/us.png" alt="USD" width="16" />
-                  <span className="font-semibold text-sm">USD</span>
+            <div className="wallets-list-modern">
+              <div className="wallet-row">
+                <div className="flex items-center gap-3">
+                  <div className="flag-icon-wrapper">
+                    <img src="https://flagcdn.com/w20/us.png" alt="USD" width="16" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm text-dark">USD Wallet</div>
+                    <div className="text-[11px] text-green">Active</div>
+                  </div>
                 </div>
-                <div className="font-bold mb-1">$22,678.00</div>
-                <div className="text-[10px] text-light mb-2">Limit is $50k a month</div>
-                <span className="text-[10px] text-green font-medium">Active</span>
+                <div className="font-bold text-sm">$22,678.00</div>
               </div>
-              <div className="wallet-item">
-                <div className="flex items-center gap-2 mb-2">
-                  <img src="https://flagcdn.com/w20/eu.png" alt="EUR" width="16" />
-                  <span className="font-semibold text-sm">EUR</span>
+
+              <div className="wallet-row">
+                <div className="flex items-center gap-3">
+                  <div className="flag-icon-wrapper">
+                    <img src="https://flagcdn.com/w20/eu.png" alt="EUR" width="16" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm text-dark">EUR Wallet</div>
+                    <div className="text-[11px] text-green">Active</div>
+                  </div>
                 </div>
-                <div className="font-bold mb-1">€18,345.00</div>
-                <div className="text-[10px] text-light mb-2">Limit is €30k a month</div>
-                <span className="text-[10px] text-green font-medium">Active</span>
+                <div className="font-bold text-sm">€18,345.00</div>
               </div>
-              <div className="wallet-item">
-                <div className="flex items-center gap-2 mb-2">
-                  <img src="https://flagcdn.com/w20/gb.png" alt="GBP" width="16" />
-                  <span className="font-semibold text-sm">GBP</span>
+
+              <div className="wallet-row">
+                <div className="flex items-center gap-3">
+                  <div className="flag-icon-wrapper opacity-50">
+                    <img src="https://flagcdn.com/w20/gb.png" alt="GBP" width="16" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm text-dark opacity-50">GBP Wallet</div>
+                    <div className="text-[11px] text-red">Inactive</div>
+                  </div>
                 </div>
-                <div className="font-bold mb-1">£15,000.00</div>
-                <div className="text-[10px] text-light mb-2">Limit is £25k a month</div>
-                <span className="text-[10px] text-red font-medium">Inactive</span>
+                <div className="font-bold text-sm opacity-50">£15,000.00</div>
               </div>
             </div>
           </div>
