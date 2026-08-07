@@ -205,55 +205,51 @@ const Dashboard = () => {
               <span className="text-[10px] text-light">$5,500.00</span>
             </div>
 
-            <div className="flex justify-between items-center mt-6 mb-4">
+            <div className="my-cards-header">
               <div className="flex items-center gap-2">
                 <CreditCard size={18} />
                 <h3 className="font-semibold text-sm">My Cards</h3>
               </div>
-              <button className="btn btn-outline text-xs py-1 px-3">+ Add new</button>
+              <button className="add-new-btn">+ Add new</button>
             </div>
             
-            <div className="cards-list">
-              <div className="cc-dark">
-                <div className="flex justify-between items-center mb-6">
-                  <div className="flex items-center gap-1 bg-white/20 px-2 py-1 rounded text-[10px]">
-                     <span className="dot bg-white"></span> Active
-                  </div>
-                  <div className="circles">
-                    <span className="circle-red"></span>
-                    <span className="circle-orange"></span>
+            <div className="modern-cards-list">
+              <div className="modern-cc modern-cc-dark">
+                <div className="cc-top">
+                  <div className="cc-badge bg-white-trans">Active</div>
+                  <div className="mc-circles">
+                    <span className="mc-red"></span>
+                    <span className="mc-orange"></span>
                   </div>
                 </div>
-                <div className="cc-info">
-                  <div className="text-[10px] opacity-70">Card Number</div>
-                  <div className="font-medium text-sm mb-4">**** **** **** 6782</div>
-                  <div className="flex gap-6">
-                    <div>
-                      <div className="text-[10px] opacity-70">EXP</div>
-                      <div className="text-xs font-medium">09/29</div>
-                    </div>
-                    <div>
-                      <div className="text-[10px] opacity-70">CVV</div>
-                      <div className="text-xs font-medium">611</div>
-                    </div>
+                <div className="cc-middle">
+                  <div className="cc-label">Card Number</div>
+                  <div className="cc-number">**** **** **** 6782</div>
+                </div>
+                <div className="cc-bottom">
+                  <div className="cc-info-block">
+                    <div className="cc-label">EXP</div>
+                    <div className="cc-val">09/29</div>
+                  </div>
+                  <div className="cc-info-block">
+                    <div className="cc-label">CVV</div>
+                    <div className="cc-val">611</div>
                   </div>
                 </div>
               </div>
               
-              <div className="cc-orange">
-                <div className="flex justify-between items-center mb-6">
-                  <div className="flex items-center gap-1 bg-white/20 px-2 py-1 rounded text-[10px]">
-                     <span className="dot bg-white"></span> Active
-                  </div>
-                  <div className="circles">
-                     <span className="circle-white opacity-50"></span>
-                     <span className="circle-white"></span>
+              <div className="modern-cc modern-cc-orange">
+                <div className="cc-top">
+                  <div className="cc-badge bg-white-trans">Active</div>
+                  <div className="mc-circles">
+                     <span className="mc-white-dim"></span>
+                     <span className="mc-white"></span>
                   </div>
                 </div>
-                 <div className="cc-info mt-auto">
-                    <div className="text-[10px] opacity-80">Card Number</div>
-                    <div className="font-medium text-sm">**** **** **** 4356</div>
-                 </div>
+                <div className="cc-middle mt-auto">
+                    <div className="cc-label">Card Number</div>
+                    <div className="cc-number-small">**** 4356</div>
+                </div>
               </div>
             </div>
           </div>
