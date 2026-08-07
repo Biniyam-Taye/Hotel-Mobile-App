@@ -17,14 +17,14 @@ const Header = () => {
       <div className="header-actions">
         <div className="action-icons">
           <button className="icon-btn">
-            <Search size={18} />
+            <Search size={22} />
           </button>
           <button className="icon-btn position-relative">
-            <Bell size={18} />
+            <Bell size={22} />
             <span className="notification-dot"></span>
           </button>
           <button className="icon-btn">
-            <AlertCircle size={18} />
+            <AlertCircle size={22} />
           </button>
         </div>
         
