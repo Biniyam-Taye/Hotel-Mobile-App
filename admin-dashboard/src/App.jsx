@@ -9,6 +9,7 @@ import Team from './components/Team'
 import Calendar from './components/Calendar'
 import Documents from './components/Documents'
 import Help from './components/Help'
+import Settings from './components/Settings'
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/documents" element={<Documents />} />
               <Route path="/help" element={<Help />} />
+              <Route path="/settings" element={<Settings />} />
             </Routes>
           </main>
         </div>
