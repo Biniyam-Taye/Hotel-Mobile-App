@@ -329,20 +329,15 @@ const Help = () => {
   // ── Help Index View ──
   return (
     <div className="help-page">
-      {/* Hero */}
-      <div className="help-hero">
-        <div className="help-hero-text">
-          <h1>How can we help you?</h1>
-          <p>Search our knowledge base or browse categories below.</p>
+      {/* Compact Header */}
+      <div className="help-top-bar">
+        <div>
+          <h1 className="help-page-title">Help & Support</h1>
+          <p className="help-page-sub">Browse articles and guides for hotel owners.</p>
         </div>
-        <div className="help-hero-search">
-          <Search size={18} className="h-search-icon" />
+        <div className="help-inline-search">
+          <Search size={16} />
           <input placeholder="Search for answers..." value={search} onChange={e => setSearch(e.target.value)} />
-        </div>
-        <div className="help-stats">
-          <div className="help-stat"><CheckCircle size={15} /><span>9 articles</span></div>
-          <div className="help-stat"><Video size={15} /><span>6 guides</span></div>
-          <div className="help-stat"><MessageCircle size={15} /><span>Live chat available</span></div>
         </div>
       </div>
 
