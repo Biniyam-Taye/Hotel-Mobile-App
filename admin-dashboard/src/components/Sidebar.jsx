@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import './Sidebar.css';
-import { LayoutGrid, Calendar, Mail, FileText, Users, Box, Settings, HelpCircle, LogOut, ChevronRight, ChevronLeft } from 'lucide-react';
+import { LayoutGrid, Calendar, Mail, FileText, Users, Settings, HelpCircle, LogOut, ChevronRight, ChevronLeft } from 'lucide-react';
 
 const Sidebar = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -50,10 +50,6 @@ const Sidebar = () => {
               <span className="nav-label">Team</span>
             </NavLink>
             <div className="nav-item">
-              <Box size={20} />
-              <span className="nav-label">Products</span>
-            </div>
-            <div className="nav-item">
               <Settings size={20} />
               <span className="nav-label">Settings</span>
             </div>
@@ -61,10 +57,10 @@ const Sidebar = () => {
         </div>
 
         <div className="sidebar-bottom">
-          <div className="nav-item">
+          <NavLink to="/help" className={({isActive}) => `nav-item ${isActive ? 'active' : ''}`}>
             <HelpCircle size={20} />
             <span className="nav-label">Help</span>
-          </div>
+          </NavLink>
           <div className="nav-item">
             <LogOut size={20} />
             <span className="nav-label">Logout</span>

@@ -8,6 +8,7 @@ import Messages from './components/Messages'
 import Team from './components/Team'
 import Calendar from './components/Calendar'
 import Documents from './components/Documents'
+import Help from './components/Help'
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
               <Route path="/team" element={<Team />} />
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/documents" element={<Documents />} />
+              <Route path="/help" element={<Help />} />
             </Routes>
           </main>
         </div>
