@@ -33,10 +33,10 @@ const Sidebar = () => {
               <LayoutGrid size={20} />
               <span className="nav-label">Overview</span>
             </NavLink>
-            <div className="nav-item">
+            <NavLink to="/calendar" className={({isActive}) => `nav-item ${isActive ? 'active' : ''}`}>
               <Calendar size={20} />
               <span className="nav-label">Calendar</span>
-            </div>
+            </NavLink>
             <NavLink to="/messages" className={({isActive}) => `nav-item ${isActive ? 'active' : ''}`}>
               <Mail size={20} />
               <span className="nav-label">Messages</span>
