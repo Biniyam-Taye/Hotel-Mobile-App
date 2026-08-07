@@ -1,0 +1,298 @@
+.team-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* Page Header */
+.team-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.team-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 4px;
+}
+
+.team-subtitle {
+  font-size: 13px;
+  color: var(--text-light);
+}
+
+.invite-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--primary-orange), #ff8c5a);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  padding: 12px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 14px rgba(250, 90, 42, 0.35);
+}
+
+.invite-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(250, 90, 42, 0.45);
+}
+
+/* Stats Row */
+.team-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.team-stat-card {
+  background-color: var(--card-bg);
+  border-radius: 20px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+}
+
+.stat-number {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-dark);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.stat-number.text-green { color: #2ecc71; }
+.stat-number.text-orange { color: var(--primary-orange); }
+.stat-number.text-red { color: #e74c3c; }
+
+.stat-label {
+  font-size: 13px;
+  color: var(--text-light);
+  font-weight: 500;
+}
+
+/* Table Card */
+.team-table-card {
+  background-color: var(--card-bg);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+  flex: 1;
+}
+
+.team-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px 28px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.team-table-header h3 {
+  font-size: 16px;
+  color: var(--text-dark);
+}
+
+.team-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #f7f7f9;
+  border-radius: 12px;
+  padding: 10px 16px;
+  min-width: 240px;
+}
+
+.team-search input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 13px;
+  color: var(--text-dark);
+  font-family: 'Inter', sans-serif;
+  width: 100%;
+}
+
+.team-search input::placeholder {
+  color: var(--text-light);
+}
+
+.team-table-wrapper {
+  overflow-x: auto;
+}
+
+.team-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.team-table thead th {
+  padding: 14px 28px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  background-color: #fafafc;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.team-table tbody tr {
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.2s ease;
+}
+
+.team-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.team-table tbody tr:hover {
+  background-color: #fafafc;
+}
+
+.team-table tbody td {
+  padding: 16px 28px;
+  vertical-align: middle;
+}
+
+/* Member Cell */
+.member-cell {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.member-avatar {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.member-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-dark);
+  margin-bottom: 2px;
+}
+
+.member-email {
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+/* Role Badge */
+.role-badge {
+  background-color: #f0f0f7;
+  color: #555;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-badge::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.badge-active {
+  background-color: #d4f7e5;
+  color: #1a8048;
+}
+.badge-active::before { background-color: #2ecc71; }
+
+.badge-suspended {
+  background-color: #fde8d8;
+  color: #c0450d;
+}
+.badge-suspended::before { background-color: var(--primary-orange); }
+
+.badge-pending {
+  background-color: #fdf6d4;
+  color: #9a7000;
+}
+.badge-pending::before { background-color: #f0c000; }
+
+.joined-date {
+  font-size: 13px;
+  color: var(--text-light);
+}
+
+/* Action Buttons */
+.action-btns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  border-radius: 10px;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-approve {
+  background-color: #d4f7e5;
+  color: #1a8048;
+}
+.btn-approve:hover { background-color: #b8f0d5; }
+
+.btn-suspend {
+  background-color: #fde8d8;
+  color: #c0450d;
+}
+.btn-suspend:hover { background-color: #fad5c0; }
+
+.btn-remove {
+  background-color: #fde8e8;
+  color: #c0220d;
+}
+.btn-remove:hover { background-color: #facccc; }
+
+.no-results {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-light);
+  font-size: 14px;
+}
