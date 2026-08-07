@@ -1,60 +1,89 @@
 import React, { useState } from 'react';
 import './TopNavPages.css';
-import { AlertCircle, Server, Database, ShieldAlert } from 'lucide-react';
+import { Server, Database, ShieldAlert, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
 
 const Alerts = () => {
   const [metrics] = useState([
-    { name: 'Server Health', status: 'Optimal', icon: Server, color: 'badge-green', load: '32%' },
-    { name: 'Database API', status: 'Warning', icon: Database, color: 'badge-orange', load: '85%' },
-    { name: 'Firewall', status: 'Critical', icon: ShieldAlert, color: 'badge-red', load: '100%' },
+    { id: 1, name: 'Server Health', desc: 'Main application cluster', status: 'Optimal', icon: Server, statusIcon: CheckCircle, color: '#10b981', time: 'Updated just now' },
+    { id: 2, name: 'Database API', desc: 'Read/Write operations latency', status: 'Warning', icon: Database, statusIcon: AlertTriangle, color: '#f59e0b', time: 'Updated 2 mins ago' },
+    { id: 3, name: 'Firewall', desc: 'Inbound traffic inspection', status: 'Critical', icon: ShieldAlert, statusIcon: XCircle, color: '#ef4444', time: 'Updated 5 mins ago' },
   ]);
 
   return (
-    <div className="topnav-page">
-      <div className="topnav-header" style={{ '--theme-color': '#e74c3c' }}>
-        <div className="topnav-icon-wrap">
-          <AlertCircle size={32} />
-        </div>
-        <div className="topnav-title">
-          <h1>System Alerts</h1>
-          <p>Critical infrastructure and security notifications.</p>
-        </div>
+    <div className="topnav-page" style={{ padding: '40px', maxWidth: '900px', margin: '0 auto' }}>
+      
+      <div style={{ marginBottom: '40px', textAlign: 'center' }}>
+        <h1 style={{ fontSize: '28px', fontWeight: '700', color: 'var(--text-dark)', marginBottom: '8px' }}>System Status</h1>
+        <p style={{ fontSize: '15px', color: 'var(--text-light)' }}>Monitor your core infrastructure and security alerts.</p>
       </div>
 
-      <div className="topnav-content">
-        <h3 style={{ color: 'var(--text-dark)', marginTop: '10px' }}>Infrastructure Status</h3>
-        <div className="topnav-grid">
-          {metrics.map((metric, i) => {
-            const Icon = metric.icon;
-            return (
-              <div key={i} className="topnav-card" style={{ borderTop: `4px solid ${metric.status === 'Optimal' ? '#2ecc71' : metric.status === 'Warning' ? '#f39c12' : '#e74c3c'}` }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ color: 'var(--text-light)' }}>
-                      <Icon size={24} />
-                    </div>
-                    <h3 style={{ margin: 0 }}>{metric.name}</h3>
-                  </div>
-                  <span className={`topnav-badge ${metric.color}`}>{metric.status}</span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        {metrics.map((metric) => {
+          const MainIcon = metric.icon;
+          const StatusIcon = metric.statusIcon;
+          
+          return (
+            <div key={metric.id} style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'space-between',
+              padding: '24px', 
+              background: 'white', 
+              borderRadius: '16px', 
+              boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
+              border: '1px solid #f1f5f9',
+              transition: 'transform 0.2s ease',
+              cursor: 'pointer'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+            >
+              
+              <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                <div style={{ 
+                  width: '48px', height: '48px', 
+                  background: '#f8fafc', 
+                  borderRadius: '12px', 
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: 'var(--text-dark)'
+                }}>
+                  <MainIcon size={24} />
                 </div>
                 
-                <div style={{ marginTop: '16px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '13px', color: 'var(--text-light)' }}>
-                    <span>Current Load</span>
-                    <strong>{metric.load}</strong>
-                  </div>
-                  <div style={{ width: '100%', height: '6px', background: '#f1f5f9', borderRadius: '4px', overflow: 'hidden' }}>
-                    <div style={{ 
-                      width: metric.load, height: '100%', 
-                      background: metric.status === 'Optimal' ? '#2ecc71' : metric.status === 'Warning' ? '#f39c12' : '#e74c3c' 
-                    }}></div>
-                  </div>
+                <div>
+                  <h3 style={{ margin: '0 0 4px 0', fontSize: '16px', fontWeight: '600', color: 'var(--text-dark)' }}>
+                    {metric.name}
+                  </h3>
+                  <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-light)' }}>
+                    {metric.desc}
+                  </p>
                 </div>
               </div>
-            );
-          })}
-        </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+                <span style={{ fontSize: '13px', color: 'var(--text-light)' }}>
+                  {metric.time}
+                </span>
+                
+                <div style={{ 
+                  display: 'flex', alignItems: 'center', gap: '8px', 
+                  padding: '8px 16px', 
+                  borderRadius: '30px', 
+                  background: `${metric.color}15`, // 15% opacity background
+                  color: metric.color,
+                  fontWeight: '600',
+                  fontSize: '14px'
+                }}>
+                  <StatusIcon size={16} />
+                  {metric.status}
+                </div>
+              </div>
+
+            </div>
+          );
+        })}
       </div>
+
     </div>
   );
 };
