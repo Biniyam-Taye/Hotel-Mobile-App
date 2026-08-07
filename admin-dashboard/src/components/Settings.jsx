@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './Settings.css';
 import { 
-  User, Building, Shield, Bell, CreditCard, 
+  User, Building, Shield, Bell, Settings as SettingsIcon, 
   Camera, Check, Mail, Phone, Lock, 
   ToggleLeft, ToggleRight, MapPin, Globe, Star
 } from 'lucide-react';
@@ -236,6 +236,56 @@ const Settings = () => {
           </div>
         );
 
+      case 'preferences':
+        return (
+          <div className="settings-section">
+            <h2 className="settings-title">Preferences</h2>
+            <p className="settings-subtitle">Customize your interface and local settings.</p>
+            
+            <div className="settings-card">
+              <div className="form-grid">
+                <div className="form-group">
+                  <label>Language</label>
+                  <div className="input-with-icon">
+                    <Globe size={18} className="input-icon" />
+                    <select defaultValue="en">
+                      <option value="en">English (US)</option>
+                      <option value="uk">English (UK)</option>
+                      <option value="es">Spanish</option>
+                      <option value="fr">French</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label>Default Currency</label>
+                  <div className="input-with-icon">
+                    <SettingsIcon size={18} className="input-icon" />
+                    <select defaultValue="usd">
+                      <option value="usd">USD ($)</option>
+                      <option value="eur">EUR (€)</option>
+                      <option value="gbp">GBP (£)</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label>Date Format</label>
+                  <div className="input-with-icon">
+                    <SettingsIcon size={18} className="input-icon" />
+                    <select defaultValue="mdy">
+                      <option value="mdy">MM/DD/YYYY</option>
+                      <option value="dmy">DD/MM/YYYY</option>
+                      <option value="ymd">YYYY-MM-DD</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div className="settings-actions">
+                <button className="btn-save"><Check size={16} /> Save Preferences</button>
+              </div>
+            </div>
+          </div>
+        );
+
       default:
         return null;
     }
@@ -273,10 +323,10 @@ const Settings = () => {
               <Bell size={18} /> Notifications
             </button>
             <button 
-              className={`settings-menu-item ${activeTab === 'billing' ? 'active' : ''}`}
-              onClick={() => setActiveTab('billing')}
+              className={`settings-menu-item ${activeTab === 'preferences' ? 'active' : ''}`}
+              onClick={() => setActiveTab('preferences')}
             >
-              <CreditCard size={18} /> Billing & Plans
+              <SettingsIcon size={18} /> Preferences
             </button>
           </div>
         </div>
