@@ -2,7 +2,6 @@
 import { ArrowRight } from 'lucide-react';
 
 const Hero = () => {
-  // Smooth scroll to the next section (e.g., rooms)
   const scrollToNextSection = () => {
     const nextSection = document.getElementById('rooms');
     if (nextSection) {
@@ -15,30 +14,30 @@ const Hero = () => {
       <style>{`
         .hero {
           position: relative;
-          min-height: 100vh; /* Full viewport height */
+          min-height: 100vh;
           display: flex;
           align-items: center;
-          justify-content: center;
-          text-align: center;
+          justify-content: flex-start; /* Align content to left */
+          text-align: left;            /* Left align text */
           color: #ffffff;
-          padding: 0 24px;
+          padding: 0 48px;             /* Left padding for content */
           background: url('https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')
             center/cover no-repeat;
-          background-attachment: fixed; /* Optional parallax effect */
+          background-attachment: fixed;
         }
 
         .hero::before {
           content: '';
           position: absolute;
           inset: 0;
-          background: linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.7));
+          background: linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%);
           z-index: 0;
         }
 
         .hero-content {
           position: relative;
           z-index: 1;
-          max-width: 800px;
+          max-width: 600px;
           padding: 20px;
         }
 
@@ -93,7 +92,7 @@ const Hero = () => {
           box-shadow: 0 8px 30px rgba(212, 175, 55, 0.6);
         }
 
-        /* ----- SCROLL INDICATOR ----- */
+        /* Scroll indicator (centered at bottom) */
         .scroll-indicator {
           position: absolute;
           bottom: 40px;
@@ -151,8 +150,25 @@ const Hero = () => {
           60% { transform: translateX(-50%) translateY(-4px); }
         }
 
-        /* ----- RESPONSIVE ----- */
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+          .hero {
+            padding: 0 32px;
+          }
+          .hero-content {
+            max-width: 500px;
+          }
+        }
+
         @media (max-width: 768px) {
+          .hero {
+            padding: 0 24px;
+            justify-content: center;  /* Center on tablets */
+            text-align: center;
+          }
+          .hero-content {
+            max-width: 100%;
+          }
           .hero-title {
             font-size: 2.8rem;
           }
@@ -174,6 +190,9 @@ const Hero = () => {
         @media (max-width: 480px) {
           .hero {
             min-height: 100vh;
+            padding: 0 16px;
+            justify-content: center;
+            text-align: center;
           }
           .hero-title {
             font-size: 2rem;
