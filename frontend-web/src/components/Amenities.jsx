@@ -152,7 +152,7 @@ const Amenities = () => {
           gap: 14px;
         }
 
-        /* ===== SECTION DIVIDER / INTRO ===== */
+        /* ===== SECTION DIVIDER ===== */
         .amenities-divider {
           text-align: center;
           padding: 40px 24px 30px;
@@ -176,16 +176,16 @@ const Amenities = () => {
           margin: 0;
         }
 
-        /* ===== COMBINED CARD ===== */
+        /* ===== COMBINED CARD - WITH SPACING ===== */
         .combined-card {
           display: grid;
           grid-template-columns: 1fr;
-          gap: 0;
+          gap: 20px; /* Added gap between cards */
           border-radius: 16px;
           overflow: hidden;
-          background: #1a1a1a;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-          border: 1px solid rgba(0,0,0,0.04);
+          background: transparent; /* Removed background */
+          box-shadow: none; /* Removed shadow */
+          border: none; /* Removed border */
         }
 
         .combined-item {
@@ -193,12 +193,14 @@ const Amenities = () => {
           height: 280px;
           overflow: hidden;
           cursor: default;
-          transition: transform 0.4s ease;
+          transition: transform 0.4s ease, box-shadow 0.4s ease;
+          border-radius: 16px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
 
         .combined-item:hover {
-          transform: scale(1.02);
-          z-index: 2;
+          transform: translateY(-6px);
+          box-shadow: 0 12px 40px rgba(0,0,0,0.15);
         }
 
         .combined-item .item-image {
@@ -215,7 +217,7 @@ const Amenities = () => {
         .combined-item .item-overlay {
           position: absolute;
           inset: 0;
-          background: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.75) 100%);
+          background: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.8) 100%);
           display: flex;
           flex-direction: column;
           justify-content: flex-end;
@@ -271,13 +273,10 @@ const Amenities = () => {
         @media (min-width: 768px) {
           .combined-card {
             grid-template-columns: repeat(3, 1fr);
-            gap: 0;
+            gap: 24px; /* More spacing on tablet/desktop */
           }
           .combined-item {
             height: 320px;
-          }
-          .combined-item:not(:last-child) {
-            border-right: 1px solid rgba(255,255,255,0.06);
           }
         }
 
@@ -293,6 +292,9 @@ const Amenities = () => {
           }
           .combined-item .item-overlay h4 {
             font-size: 22px;
+          }
+          .combined-card {
+            gap: 30px; /* Even more spacing on desktop */
           }
         }
 
@@ -354,6 +356,9 @@ const Amenities = () => {
           .amenities-divider h3 {
             font-size: 22px;
           }
+          .combined-card {
+            gap: 16px;
+          }
         }
       `}</style>
 
@@ -394,7 +399,7 @@ const Amenities = () => {
           </div>
         </div>
 
-        {/* ===== SIMPLE DIVIDER: ONLY THE HEADING ===== */}
+        {/* ===== DIVIDER ===== */}
         <div className="amenities-container">
           <div className="amenities-divider">
             <div className="label">✦ Wellness & Leisure</div>
@@ -402,7 +407,7 @@ const Amenities = () => {
           </div>
         </div>
 
-        {/* ===== COMBINED CARD: Pool + Spa + Gym ===== */}
+        {/* ===== COMBINED CARD: Pool + Spa + Gym WITH SPACING ===== */}
         <div className="amenities-container">
           <div className="combined-card">
             {/* Pool */}
@@ -439,7 +444,7 @@ const Amenities = () => {
               </div>
             </div>
 
-            {/* Gym - FIXED: changed from /gym to /fitness */}
+            {/* Gym */}
             <div className="combined-item">
               <img
                 src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"

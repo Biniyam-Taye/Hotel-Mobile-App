@@ -16,10 +16,14 @@ import PrivacyPage from './pages/PrivacyPage';
 import TermsPage from './pages/TermsPage';
 import ContactPage from './pages/ContactPage';
 import RestaurantPage from './pages/RestaurantPage';
-import PoolPage from './pages/PoolPage';          // ← Add
-import SpaPage from './pages/SpaPage';            // ← Add
-import FitnessPage from './pages/FitnessPage';    // ← Add
+import PoolPage from './pages/PoolPage';          
+import SpaPage from './pages/SpaPage';            
+import FitnessPage from './pages/FitnessPage';    
 import Footer from './components/Footer';
+import Testimonials from './components/Testimonials';
+import Offers from './components/Offers';
+// ADD THIS IMPORT:
+import OfferDetail from './components/OfferDetail'; 
 
 function App() {
   return (
@@ -32,9 +36,12 @@ function App() {
               <>
                 <Hero />
                 <Stats />
+                <Offers />
                 <About />
                  <Home />
                 <Amenities />
+                 <Testimonials />
+                 
             
               </>
             } />
@@ -51,6 +58,9 @@ function App() {
             <Route path="/spa" element={<SpaPage />} />
             <Route path="/fitness" element={<FitnessPage />} />
             <Route path="/room/:id" element={<RoomDetail />} />
+            
+            {/* ADD THIS NEW ROUTE: */}
+            <Route path="/offers/:id" element={<OfferDetail />} />
           </Routes>
         </div>
         <Footer />
