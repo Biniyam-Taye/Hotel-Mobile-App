@@ -2,6 +2,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Clock } from 'lucide-react';
 
+
 const OfferDetail = () => {
   const { id } = useParams();
 

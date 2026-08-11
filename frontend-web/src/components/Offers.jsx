@@ -77,14 +77,17 @@ const Offers = () => {
           padding: 80px 24px;
           background: #ffffff;
         }
+
         .offers-container {
           max-width: 1200px;
           margin: 0 auto;
         }
+
         .offers-header {
           text-align: center;
           margin-bottom: 48px;
         }
+
         .offers-header .label {
           display: inline-block;
           color: #d4af37;
@@ -94,6 +97,7 @@ const Offers = () => {
           text-transform: uppercase;
           margin-bottom: 8px;
         }
+
         .offers-header h2 {
           font-family: 'Georgia', 'Times New Roman', serif;
           font-size: 40px;
@@ -101,6 +105,7 @@ const Offers = () => {
           color: #1a1a1a;
           margin-bottom: 12px;
         }
+
         .offers-header p {
           color: #6b7280;
           font-size: 16px;
@@ -108,11 +113,13 @@ const Offers = () => {
           margin: 0 auto;
           line-height: 1.6;
         }
+
         .offers-grid {
           display: grid;
           grid-template-columns: 1fr;
           gap: 24px;
         }
+
         .offer-card {
           background: #ffffff;
           border-radius: 16px;
@@ -123,26 +130,31 @@ const Offers = () => {
           display: flex;
           flex-direction: column;
         }
+
         .offer-card:hover {
           transform: translateY(-8px);
           border-color: rgba(212, 175, 55, 0.2);
           box-shadow: 0 16px 48px rgba(0,0,0,0.08);
         }
+
         .offer-card .offer-image {
           position: relative;
           height: 180px;
           overflow: hidden;
           background: #f3f4f6;
         }
+
         .offer-card .offer-image img {
           width: 100%;
           height: 100%;
           object-fit: cover;
           transition: transform 0.6s ease;
         }
+
         .offer-card:hover .offer-image img {
           transform: scale(1.06);
         }
+
         .offer-card .offer-image .discount-badge {
           position: absolute;
           top: 12px;
@@ -155,6 +167,7 @@ const Offers = () => {
           font-size: 13px;
           box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
         }
+
         .offer-card .offer-image .popular-badge {
           position: absolute;
           top: 12px;
@@ -168,12 +181,14 @@ const Offers = () => {
           text-transform: uppercase;
           letter-spacing: 1px;
         }
+
         .offer-card .offer-details {
           padding: 18px 20px 20px;
           flex: 1;
           display: flex;
           flex-direction: column;
         }
+
         .offer-card .offer-details .offer-icon {
           display: inline-flex;
           align-items: center;
@@ -185,12 +200,14 @@ const Offers = () => {
           color: #d4af37;
           margin-bottom: 10px;
         }
+
         .offer-card .offer-details .offer-title {
           font-size: 18px;
           font-weight: 700;
           color: #1a1a1a;
           margin: 0 0 2px;
         }
+
         .offer-card .offer-details .offer-subtitle {
           font-size: 12px;
           color: #d4af37;
@@ -199,6 +216,7 @@ const Offers = () => {
           letter-spacing: 0.5px;
           margin-bottom: 6px;
         }
+
         .offer-card .offer-details .offer-description {
           font-size: 13px;
           color: #6b7280;
@@ -210,6 +228,7 @@ const Offers = () => {
           -webkit-box-orient: vertical;
           overflow: hidden;
         }
+
         .offer-card .offer-details .offer-footer {
           display: flex;
           justify-content: space-between;
@@ -219,6 +238,7 @@ const Offers = () => {
           flex-wrap: wrap;
           gap: 8px;
         }
+
         .offer-card .offer-details .offer-footer .valid {
           font-size: 11px;
           color: #9ca3af;
@@ -226,6 +246,7 @@ const Offers = () => {
           align-items: center;
           gap: 4px;
         }
+
         .offer-card .offer-details .offer-footer .btn-book {
           display: inline-flex;
           align-items: center;
@@ -242,11 +263,60 @@ const Offers = () => {
           text-decoration: none;
           font-family: 'Poppins', sans-serif;
         }
+
         .offer-card .offer-details .offer-footer .btn-book:hover {
           background: #c5a028;
           transform: translateY(-2px);
           box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
         }
+
+        /* --- EXPLORE ALL BUTTON --- */
+        .explore-all-wrapper {
+          display: flex;
+          justify-content: center;
+          margin-top: 60px;
+        }
+
+        .explore-all-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 14px;
+          padding: 16px 36px;
+          border: 2px solid #b83a32;
+          border-radius: 9999px;
+          color: #b83a32;
+          background: transparent;
+          font-weight: 700;
+          font-size: 18px;
+          text-decoration: none;
+          transition: all 0.3s ease;
+          font-family: 'Poppins', sans-serif;
+        }
+
+        .explore-all-btn:hover {
+          background: #b83a32;
+          color: #ffffff;
+          transform: translateY(-3px);
+          box-shadow: 0 4px 15px rgba(184, 58, 50, 0.3);
+        }
+
+        .explore-all-btn .arrow-circle {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          border: 2px solid #b83a32;
+          transition: all 0.3s ease;
+        }
+
+        .explore-all-btn:hover .arrow-circle {
+          background: #ffffff;
+          border-color: #ffffff;
+          color: #b83a32;
+        }
+
         @media (min-width: 1024px) {
           .offers-grid {
             grid-template-columns: repeat(4, 1fr);
@@ -259,6 +329,7 @@ const Offers = () => {
             padding: 100px 24px;
           }
         }
+
         @media (min-width: 640px) and (max-width: 1023px) {
           .offers-grid {
             grid-template-columns: repeat(2, 1fr);
@@ -268,6 +339,7 @@ const Offers = () => {
             height: 200px;
           }
         }
+
         @media (max-width: 480px) {
           .offers-section {
             padding: 60px 16px;
@@ -290,6 +362,10 @@ const Offers = () => {
           }
           .offer-card .offer-details .offer-footer .btn-book {
             justify-content: center;
+          }
+          .explore-all-btn {
+            font-size: 15px;
+            padding: 14px 24px;
           }
         }
 
@@ -360,8 +436,6 @@ const Offers = () => {
           font-weight: 400;
           color: #6b7280;
         }
-        
-        /* --- PACKAGE DETAILS INSIDE MODAL --- */
         .modal-package-details {
           background: #f8f9fa;
           padding: 16px;
@@ -383,13 +457,11 @@ const Offers = () => {
           line-height: 1.6;
           margin: 0;
         }
-
         .modal-divider {
           height: 1px;
           background: #e5e7eb;
           margin: 16px 0 20px 0;
         }
-
         .form-group {
           margin-bottom: 16px;
         }
@@ -501,6 +573,15 @@ const Offers = () => {
               </Link>
             ))}
           </div>
+
+          <div className="explore-all-wrapper">
+            <Link to="/offers" className="explore-all-btn">
+              Explore All Offers
+              <span className="arrow-circle">
+                <ArrowRight size={18} />
+              </span>
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -516,7 +597,6 @@ const Offers = () => {
             ETB {selectedOffer?.price} <span>/ night</span>
           </div>
 
-          {/* --- PACKAGE DETAILS DISPLAYED HERE --- */}
           <div className="modal-package-details">
             <div className="modal-subtitle">{selectedOffer?.subtitle}</div>
             <p className="modal-desc">{selectedOffer?.description}</p>

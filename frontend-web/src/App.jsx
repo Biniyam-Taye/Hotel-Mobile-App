@@ -24,12 +24,14 @@ import Testimonials from './components/Testimonials';
 import Offers from './components/Offers';
 // ADD THIS IMPORT:
 import OfferDetail from './components/OfferDetail'; 
+import ScrollToTop from './components/ScrollToTop';
 
 function App() {
   return (
     <BrowserRouter>
       <div>
         <Navbar />
+         <ScrollToTop /> 
         <div >
           <Routes>
             <Route path="/" element={

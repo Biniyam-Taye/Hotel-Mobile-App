@@ -13,34 +13,6 @@ const Home = () => {
 
   const rooms = [
     {
-      id: 1,
-      name: 'Deluxe Suite',
-      priceUSD: 250,
-      priceETB: 250 * usdToEtb,
-      capacity: 2,
-      bedType: 'King Size Bed',
-      size: '45 m²',
-      shortDescription: 'Elegant suite with stunning city views and premium amenities.',
-      features: ['Free Wi-Fi', 'Flat-screen TV', 'Air Conditioning', 'Coffee Maker', 'Mini Bar', 'Bathtub'],
-      image: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      popular: true,
-      longDescription: 'The Deluxe Suite offers an unparalleled experience with breathtaking city views. Step into a world of elegance where every detail has been carefully curated for your comfort.'
-    },
-    {
-      id: 2,
-      name: 'Executive Room',
-      priceUSD: 180,
-      priceETB: 180 * usdToEtb,
-      capacity: 2,
-      bedType: 'Queen Size Bed',
-      size: '32 m²',
-      shortDescription: 'Modern room designed for business travelers with workspace.',
-      features: ['Free Wi-Fi', 'Flat-screen TV', 'Air Conditioning', 'Coffee Maker', 'Work Desk'],
-      image: 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      popular: false,
-      longDescription: 'The Executive Room is designed with the modern business traveler in mind. Featuring a dedicated workspace with ergonomic chair and high-speed internet.'
-    },
-    {
       id: 3,
       name: 'Presidential Suite',
       priceUSD: 450,
@@ -255,21 +227,6 @@ const Home = () => {
           line-height: 1;
         }
 
-        .room-card .room-details .room-meta {
-          display: flex;
-          gap: 12px;
-          margin: 6px 0 10px;
-          font-size: 13px;
-          color: #6b7280;
-          flex-wrap: wrap;
-        }
-
-        .room-card .room-details .room-meta span {
-          display: flex;
-          align-items: center;
-          gap: 4px;
-        }
-
         .room-card .room-details .short-description {
           color: #4b5563;
           font-size: 14px;
@@ -281,7 +238,6 @@ const Home = () => {
           overflow: hidden;
         }
 
-        /* ---- NEW BUTTON STYLES ---- */
         .room-card .room-details .action-buttons {
           display: flex;
           gap: 12px;
@@ -327,7 +283,54 @@ const Home = () => {
           box-shadow: 0 4px 20px rgba(212, 175, 55, 0.35);
         }
 
-        /* -------- MODAL STYLES (same as RoomDetail) -------- */
+        /* -------- EXPLORE ALL BUTTON -------- */
+        .explore-all-wrapper {
+          display: flex;
+          justify-content: center;
+          margin-top: 60px;
+        }
+
+        .explore-all-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 14px;
+          padding: 16px 36px;
+          border: 2px solid #b83a32;
+          border-radius: 9999px;
+          color: #b83a32;
+          background: transparent;
+          font-weight: 700;
+          font-size: 18px;
+          text-decoration: none;
+          transition: all 0.3s ease;
+          font-family: 'Poppins', sans-serif;
+        }
+
+        .explore-all-btn:hover {
+          background: #b83a32;
+          color: #ffffff;
+          transform: translateY(-3px);
+          box-shadow: 0 4px 15px rgba(184, 58, 50, 0.3);
+        }
+
+        .explore-all-btn .arrow-circle {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          border: 2px solid #b83a32;
+          transition: all 0.3s ease;
+        }
+
+        .explore-all-btn:hover .arrow-circle {
+          background: #ffffff;
+          border-color: #ffffff;
+          color: #b83a32;
+        }
+
+        /* -------- MODAL STYLES -------- */
         .modal-overlay {
           position: fixed;
           inset: 0;
@@ -461,7 +464,7 @@ const Home = () => {
 
         @media (min-width: 1024px) {
           .rooms-grid {
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
           }
         }
 
@@ -500,6 +503,10 @@ const Home = () => {
           .room-card .room-details .action-buttons .btn {
             width: 100%;
           }
+          .explore-all-btn {
+            font-size: 15px;
+            padding: 14px 24px;
+          }
         }
       `}</style>
 
@@ -532,16 +539,8 @@ const Home = () => {
                       <span className="per-night">/ night</span>
                     </div>
                   </div>
-                  <div className="room-meta">
-                    <span><Users size={14} /> {room.capacity} Guests</span>
-                    <span>•</span>
-                    <span><Bed size={14} /> {room.bedType}</span>
-                    <span>•</span>
-                    <span><Maximize size={14} /> {room.size}</span>
-                  </div>
                   <p className="short-description">{room.shortDescription}</p>
 
-                  {/* ---- Two buttons side by side ---- */}
                   <div className="action-buttons">
                     <Link to={`/room/${room.id}`} className="btn btn-view">
                       View Details <ArrowRight size={12} />
@@ -556,6 +555,16 @@ const Home = () => {
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Added "Explore All Rooms" Button */}
+          <div className="explore-all-wrapper">
+            <Link to="/rooms" className="explore-all-btn">
+              Explore All Rooms
+              <span className="arrow-circle">
+                <ArrowRight size={18} />
+              </span>
+            </Link>
           </div>
         </div>
       </section>
