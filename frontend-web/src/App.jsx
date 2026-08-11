@@ -22,9 +22,11 @@ import FitnessPage from './pages/FitnessPage';
 import Footer from './components/Footer';
 import Testimonials from './components/Testimonials';
 import Offers from './components/Offers';
-// ADD THIS IMPORT:
 import OfferDetail from './components/OfferDetail'; 
 import ScrollToTop from './components/ScrollToTop';
+
+// ADD THIS IMPORT:
+import OffersPage from './pages/OffersPage'; 
 
 function App() {
   return (
@@ -61,8 +63,11 @@ function App() {
             <Route path="/fitness" element={<FitnessPage />} />
             <Route path="/room/:id" element={<RoomDetail />} />
             
-            {/* ADD THIS NEW ROUTE: */}
+            {/* Route for Individual Offer Details */}
             <Route path="/offers/:id" element={<OfferDetail />} />
+
+            {/* ADD THIS NEW ROUTE FOR THE FULL LIST PAGE: */}
+            <Route path="/offers" element={<OffersPage />} />
           </Routes>
         </div>
         <Footer />
