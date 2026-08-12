@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import {
   Wifi, Tv, AirVent, Coffee, Car, Users, Bath,
-  ArrowRight, Star, Bed, Maximize, Utensils, Dumbbell, Sparkles, Calendar
+  ArrowRight, Star, Bed, Maximize, Utensils, Dumbbell, Sparkles, Calendar,
+  MapPin // Added MapPin for the location icon
 } from 'lucide-react';
 
 const Home = () => {
@@ -20,6 +21,8 @@ const Home = () => {
       capacity: 4,
       bedType: 'King Size Bed + Sofa Bed',
       size: '85 m²',
+      rating: 4.8,
+      location: 'Adama · Bekele Mola Hotels',
       shortDescription: 'Our most luxurious suite with private terrace and butler service.',
       features: ['Free Wi-Fi', 'Smart TV', 'Air Conditioning', 'Coffee Maker', 'Mini Bar', 'Bathtub', 'Private Terrace'],
       image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
@@ -34,6 +37,8 @@ const Home = () => {
       capacity: 2,
       bedType: 'Double Bed',
       size: '24 m²',
+      rating: 4.3,
+      location: 'Adama · Bekele Mola Hotels',
       shortDescription: 'Comfortable room with all essential amenities for a pleasant stay.',
       features: ['Free Wi-Fi', 'Flat-screen TV', 'Air Conditioning', 'Coffee Maker'],
       image: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
@@ -48,6 +53,8 @@ const Home = () => {
       capacity: 5,
       bedType: 'King Size Bed + 2 Twin Beds',
       size: '65 m²',
+      rating: 4.7,
+      location: 'Adama · Bekele Mola Hotels',
       shortDescription: 'Spacious suite designed for families with children\'s entertainment area.',
       features: ['Free Wi-Fi', 'Smart TV', 'Air Conditioning', 'Coffee Maker', 'Mini Bar', 'Game Console'],
       image: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
@@ -62,6 +69,8 @@ const Home = () => {
       capacity: 2,
       bedType: 'King Size Bed',
       size: '55 m²',
+      rating: 4.9,
+      location: 'Adama · Bekele Mola Hotels',
       shortDescription: 'Romantic suite with jacuzzi, rose petals, and sunset views.',
       features: ['Free Wi-Fi', 'Smart TV', 'Air Conditioning', 'Coffee Maker', 'Jacuzzi', 'Mini Bar'],
       image: 'https://images.unsplash.com/photo-1591088398332-8a7791972843?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
@@ -190,53 +199,64 @@ const Home = () => {
           padding: 20px 24px 24px;
         }
 
+        /* --- START: NEW TYPOGRAPHY STYLES --- */
         .room-card .room-details .room-header {
           display: flex;
           justify-content: space-between;
           align-items: flex-start;
-          margin-bottom: 4px;
+          margin-bottom: 6px;
         }
 
         .room-card .room-details .room-header h3 {
-          font-size: 20px;
+          font-family: 'Georgia', 'Times New Roman', serif; /* Updated to Serif */
+          font-size: 22px;
           font-weight: 700;
           color: #1a1a1a;
           margin: 0;
+          letter-spacing: -0.5px;
         }
 
-        .room-card .room-details .room-header .price {
-          text-align: right;
-        }
-
-        .room-card .room-details .room-header .price .amount {
-          font-size: 22px;
+        .rating-badge {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          background: #ffffff;
+          border: 1px solid #ffb347;
+          color: #ffb347;
+          padding: 4px 12px;
+          border-radius: 9999px;
+          font-size: 13px;
           font-weight: 700;
-          color: #d4af37;
+          font-family: 'Poppins', sans-serif;
+          margin-top: 2px;
         }
-
-        .room-card .room-details .room-header .price .currency {
-          font-size: 14px;
-          font-weight: 600;
-          color: #6b7280;
-        }
-
-        .room-card .room-details .room-header .price .per-night {
-          font-size: 12px;
-          color: #6b7280;
-          display: block;
-          line-height: 1;
+        .rating-badge .star {
+          fill: #ffb347;
+          color: #ffb347;
         }
 
         .room-card .room-details .short-description {
-          color: #4b5563;
+          font-family: 'Poppins', sans-serif; /* Updated to Sans-Serif */
+          color: #6b7280;
           font-size: 14px;
           line-height: 1.6;
-          margin: 4px 0 16px;
+          margin: 4px 0 8px 0;
           display: -webkit-box;
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
         }
+
+        .room-card .room-details .location {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-family: 'Poppins', sans-serif;
+          font-size: 12px;
+          color: #9ca3af;
+          margin-bottom: 16px;
+        }
+        /* --- END: NEW TYPOGRAPHY STYLES --- */
 
         .room-card .room-details .action-buttons {
           display: flex;
@@ -283,7 +303,7 @@ const Home = () => {
           box-shadow: 0 4px 20px rgba(212, 175, 55, 0.35);
         }
 
-        /* GOLD "EXPLORE ALL" BUTTON */
+        /* -------- GOLD "EXPLORE ALL" BUTTON -------- */
         .explore-all-wrapper {
           display: flex;
           justify-content: center;
@@ -478,10 +498,10 @@ const Home = () => {
           .room-card .room-details .room-header {
             flex-direction: column;
             align-items: flex-start;
+            gap: 6px;
           }
-          .room-card .room-details .room-header .price {
-            text-align: left;
-            margin-top: 2px;
+          .rating-badge {
+            margin-top: 0;
           }
           .room-card .room-image {
             height: 200px;
@@ -512,7 +532,6 @@ const Home = () => {
 
       <section className="rooms-section" id="rooms">
         <div className="rooms-container">
-          {/* --- UPDATED ROOMS HEADER WITH GOLD TEXT --- */}
           <div className="rooms-header">
             <div className="label">✦ ACCOMMODATIONS</div>
             <h2>Luxury <span style={{ color: '#d4af37' }}>Rooms & Suites</span></h2>
@@ -532,15 +551,21 @@ const Home = () => {
                   )}
                 </div>
                 <div className="room-details">
+                  
+                  {/* --- UPDATED HEADER: SERIF FONT + RATING BADGE --- */}
                   <div className="room-header">
                     <h3>{room.name}</h3>
-                    <div className="price">
-                      <span className="amount">{formatPrice(room.priceETB)}</span>
-                      <span className="currency"> ETB</span>
-                      <span className="per-night">/ night</span>
+                    <div className="rating-badge">
+                      <span className="star"><Star size={12} fill="#ffb347" /></span> {room.rating}
                     </div>
                   </div>
+
                   <p className="short-description">{room.shortDescription}</p>
+
+                  {/* --- NEW LOCATION LINE --- */}
+                  <div className="location">
+                    <MapPin size={14} /> {room.location}
+                  </div>
 
                   <div className="action-buttons">
                     <Link to={`/room/${room.id}`} className="btn btn-view">

@@ -289,8 +289,7 @@ const Navbar = () => {
             <Link to="/experience">Experience</Link>
             <Link to="/about">About</Link>
             
-            <Link to="/login" className="nav-link">Login</Link>
-            <Link to="/signup" className="nav-link signup-btn">Sign Up</Link>
+            
           </div>
 
           <div className="auth-buttons">

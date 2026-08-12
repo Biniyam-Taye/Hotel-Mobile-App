@@ -21,6 +21,7 @@ const LoginPage = () => {
       <style>{`
         .login-page {
           display: flex;
+          flex-direction: column;
           align-items: center;
           justify-content: center;
           min-height: 80vh;
@@ -165,6 +166,25 @@ const LoginPage = () => {
           text-decoration: underline;
         }
 
+        /* --- NEW BACK TO HOME LINK --- */
+        .back-home {
+          margin-top: 24px;
+          font-size: 14px;
+        }
+        .back-home a {
+          color: #d4af37;
+          font-weight: 500;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          transition: all 0.3s ease;
+        }
+        .back-home a:hover {
+          color: #c5a028;
+          transform: translateX(-4px);
+        }
+
         @media (max-width: 480px) {
           .login-card {
             padding: 32px 20px;
@@ -224,6 +244,11 @@ const LoginPage = () => {
           <div className="signup-prompt">
             Don't have an account? <Link to="/signup">Sign Up</Link>
           </div>
+        </div>
+
+        {/* --- ADDED BACK TO HOME LINK --- */}
+        <div className="back-home">
+          <Link to="/">← Back to Home</Link>
         </div>
       </div>
     </>
