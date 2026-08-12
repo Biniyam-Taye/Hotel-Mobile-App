@@ -262,7 +262,8 @@ const About = () => {
           {/* Header */}
           <div className="about-header">
             <div className="label">✦ ABOUT VILLA ALPHA</div>
-            <h2>Discover Our Story</h2>
+            {/* --- UPDATED TWO-TONE TITLE --- */}
+            <h2>Discover <span style={{ color: '#d4af37' }}>Our Story</span></h2>
             <p>
               Learn more about our commitment to luxury, comfort, and 
               world-class hospitality.

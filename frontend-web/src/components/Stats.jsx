@@ -339,6 +339,7 @@ const Stats = () => {
             <div className="label">
               <Sparkles size={14} /> Our Legacy
             </div>
+            {/* REVERTED BACK TO MATCH THE ELEGANT WHITE/GOLD THEME */}
             <h2>Excellence in Hospitality</h2>
             <p>
               Since our founding, we've been dedicated to providing 

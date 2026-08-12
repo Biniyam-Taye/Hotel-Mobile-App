@@ -283,7 +283,7 @@ const Home = () => {
           box-shadow: 0 4px 20px rgba(212, 175, 55, 0.35);
         }
 
-        /* -------- EXPLORE ALL BUTTON -------- */
+        /* GOLD "EXPLORE ALL" BUTTON */
         .explore-all-wrapper {
           display: flex;
           justify-content: center;
@@ -295,9 +295,9 @@ const Home = () => {
           align-items: center;
           gap: 14px;
           padding: 16px 36px;
-          border: 2px solid #b83a32;
+          border: 2px solid #d4af37;
           border-radius: 9999px;
-          color: #b83a32;
+          color: #d4af37;
           background: transparent;
           font-weight: 700;
           font-size: 18px;
@@ -307,10 +307,10 @@ const Home = () => {
         }
 
         .explore-all-btn:hover {
-          background: #b83a32;
-          color: #ffffff;
+          background: #d4af37;
+          color: #1a1a1a;
           transform: translateY(-3px);
-          box-shadow: 0 4px 15px rgba(184, 58, 50, 0.3);
+          box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
         }
 
         .explore-all-btn .arrow-circle {
@@ -320,14 +320,14 @@ const Home = () => {
           width: 36px;
           height: 36px;
           border-radius: 50%;
-          border: 2px solid #b83a32;
+          border: 2px solid #d4af37;
           transition: all 0.3s ease;
         }
 
         .explore-all-btn:hover .arrow-circle {
-          background: #ffffff;
-          border-color: #ffffff;
-          color: #b83a32;
+          background: #1a1a1a;
+          border-color: #1a1a1a;
+          color: #d4af37;
         }
 
         /* -------- MODAL STYLES -------- */
@@ -512,9 +512,10 @@ const Home = () => {
 
       <section className="rooms-section" id="rooms">
         <div className="rooms-container">
+          {/* --- UPDATED ROOMS HEADER WITH GOLD TEXT --- */}
           <div className="rooms-header">
             <div className="label">✦ ACCOMMODATIONS</div>
-            <h2>Luxury Rooms & Suites</h2>
+            <h2>Luxury <span style={{ color: '#d4af37' }}>Rooms & Suites</span></h2>
             <p>
               Experience comfort and elegance in our beautifully designed rooms,
               each crafted to provide the perfect stay.
@@ -557,7 +558,6 @@ const Home = () => {
             ))}
           </div>
 
-          {/* Added "Explore All Rooms" Button */}
           <div className="explore-all-wrapper">
             <Link to="/rooms" className="explore-all-btn">
               Explore All Rooms

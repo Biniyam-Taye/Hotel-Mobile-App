@@ -37,7 +37,6 @@ const Amenities = () => {
           line-height: 1.6;
         }
 
-        /* ===== COMBINED CARD GRID ===== */
         .combined-card {
           display: grid;
           grid-template-columns: 1fr;
@@ -131,7 +130,7 @@ const Amenities = () => {
           gap: 12px;
         }
 
-        /* ===== EXPLORE ALL HOSPITALITY BUTTON ===== */
+        /* --- MATCHING GOLD EXPLORE ALL BUTTON --- */
         .explore-all-wrapper {
           display: flex;
           justify-content: center;
@@ -143,9 +142,9 @@ const Amenities = () => {
           align-items: center;
           gap: 14px;
           padding: 16px 36px;
-          border: 2px solid #b83a32;
+          border: 2px solid #d4af37;
           border-radius: 9999px;
-          color: #b83a32;
+          color: #d4af37;
           background: transparent;
           font-weight: 700;
           font-size: 18px;
@@ -155,10 +154,10 @@ const Amenities = () => {
         }
 
         .explore-all-btn:hover {
-          background: #b83a32;
-          color: #ffffff;
+          background: #d4af37;
+          color: #1a1a1a;
           transform: translateY(-3px);
-          box-shadow: 0 4px 15px rgba(184, 58, 50, 0.3);
+          box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
         }
 
         .explore-all-btn .arrow-circle {
@@ -168,17 +167,16 @@ const Amenities = () => {
           width: 36px;
           height: 36px;
           border-radius: 50%;
-          border: 2px solid #b83a32;
+          border: 2px solid #d4af37;
           transition: all 0.3s ease;
         }
 
         .explore-all-btn:hover .arrow-circle {
-          background: #ffffff;
-          border-color: #ffffff;
-          color: #b83a32;
+          background: #1a1a1a;
+          border-color: #1a1a1a;
+          color: #d4af37;
         }
 
-        /* ===== MEDIA QUERIES ===== */
         @media (min-width: 1024px) {
           .combined-card {
             grid-template-columns: repeat(4, 1fr);
@@ -236,20 +234,17 @@ const Amenities = () => {
 
       <section className="amenities-section" id="amenities">
         <div className="amenities-container">
-          {/* ===== HEADER ===== */}
           <div className="amenities-header">
-            <h2>Hotel <span style={{ color: '#c94d41' }}>Hospitality</span></h2>
+            {/* FIXED HOSPITALITY COLOR TO GOLD */}
+            <h2>Hotel <span style={{ color: '#d4af37' }}>Hospitality</span></h2>
             <p>
               Discover dining, spa, massage, tours, and premium services from our partner hotels — crafted for unforgettable stays.
             </p>
           </div>
         </div>
 
-        {/* ===== 4 CARDS GRID: Restaurant + Pool + Spa + Gym ===== */}
         <div className="amenities-container">
           <div className="combined-card">
-            
-            {/* Restaurant */}
             <div className="combined-item">
               <img
                 src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
@@ -266,7 +261,6 @@ const Amenities = () => {
               </div>
             </div>
 
-            {/* Pool */}
             <div className="combined-item">
               <img
                 src="https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
@@ -283,7 +277,6 @@ const Amenities = () => {
               </div>
             </div>
 
-            {/* Spa */}
             <div className="combined-item">
               <img
                 src="https://images.unsplash.com/photo-1544161515-4ab6ce6db874?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
@@ -300,7 +293,6 @@ const Amenities = () => {
               </div>
             </div>
 
-            {/* Gym */}
             <div className="combined-item">
               <img
                 src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
@@ -316,10 +308,8 @@ const Amenities = () => {
                 </a>
               </div>
             </div>
-
           </div>
 
-          {/* Explore All Hospitality Button */}
           <div className="explore-all-wrapper">
             <Link to="/hospitality" className="explore-all-btn">
               Explore All Hospitality
@@ -328,7 +318,6 @@ const Amenities = () => {
               </span>
             </Link>
           </div>
-
         </div>
       </section>
     </>

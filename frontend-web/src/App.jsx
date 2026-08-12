@@ -1,5 +1,5 @@
 // src/App.jsx
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'; // Added useLocation
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Stats from './components/Stats';
@@ -24,54 +24,74 @@ import Testimonials from './components/Testimonials';
 import Offers from './components/Offers';
 import OfferDetail from './components/OfferDetail'; 
 import ScrollToTop from './components/ScrollToTop';
-
-// ADD THIS IMPORT:
 import OffersPage from './pages/OffersPage'; 
+import LoginPage from './pages/LoginPage';     // Added
+import SignUpPage from './pages/SignUpPage';   // Added
+
+// Create a Layout component to conditionally show Navbar/Footer
+const Layout = ({ children }) => {
+  const location = useLocation();
+  
+  // List of routes where we DO NOT want the Navbar and Footer to show
+  const hideNavAndFooter = ['/login', '/signup'];
+
+  // Check if current path is in the list
+  const shouldHide = hideNavAndFooter.includes(location.pathname);
+
+  return (
+    <div>
+      {/* Only render Navbar if we shouldn't hide it */}
+      {!shouldHide && <Navbar />}
+      
+      <ScrollToTop /> 
+      
+      <div>
+        {children}
+      </div>
+
+      {/* Only render Footer if we shouldn't hide it */}
+      {!shouldHide && <Footer />}
+    </div>
+  );
+};
 
 function App() {
   return (
     <BrowserRouter>
-      <div>
-        <Navbar />
-         <ScrollToTop /> 
-        <div >
-          <Routes>
-            <Route path="/" element={
-              <>
-                <Hero />
-                <Stats />
-                <Offers />
-                <About />
-                 <Home />
-                <Amenities />
-                 <Testimonials />
-                 
-            
-              </>
-            } />
-            <Route path="/rooms" element={<RoomsPage />} />
-            <Route path="/hospitality" element={<HospitalityPage />} />
-            <Route path="/experience" element={<ExperiencePage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/faq" element={<FAQPage />} />
-            <Route path="/privacy" element={<PrivacyPage />} />
-            <Route path="/terms" element={<TermsPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/restaurant" element={<RestaurantPage />} />
-            <Route path="/pool" element={<PoolPage />} />
-            <Route path="/spa" element={<SpaPage />} />
-            <Route path="/fitness" element={<FitnessPage />} />
-            <Route path="/room/:id" element={<RoomDetail />} />
-            
-            {/* Route for Individual Offer Details */}
-            <Route path="/offers/:id" element={<OfferDetail />} />
-
-            {/* ADD THIS NEW ROUTE FOR THE FULL LIST PAGE: */}
-            <Route path="/offers" element={<OffersPage />} />
-          </Routes>
-        </div>
-        <Footer />
-      </div>
+      <Layout>
+        <Routes>
+          <Route path="/" element={
+            <>
+              <Hero />
+              <Stats />
+              <Offers />
+              <About />
+               <Home />
+              <Amenities />
+               <Testimonials />
+            </>
+          } />
+          <Route path="/rooms" element={<RoomsPage />} />
+          <Route path="/hospitality" element={<HospitalityPage />} />
+          <Route path="/experience" element={<ExperiencePage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/faq" element={<FAQPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/restaurant" element={<RestaurantPage />} />
+          <Route path="/pool" element={<PoolPage />} />
+          <Route path="/spa" element={<SpaPage />} />
+          <Route path="/fitness" element={<FitnessPage />} />
+          <Route path="/room/:id" element={<RoomDetail />} />
+          <Route path="/offers/:id" element={<OfferDetail />} />
+          <Route path="/offers" element={<OffersPage />} />
+          
+          {/* New Auth Routes (No Navbar/Footer) */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
+        </Routes>
+      </Layout>
     </BrowserRouter>
   );
 }

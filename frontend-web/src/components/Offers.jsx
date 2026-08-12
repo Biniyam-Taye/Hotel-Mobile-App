@@ -270,7 +270,7 @@ const Offers = () => {
           box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
         }
 
-        /* --- EXPLORE ALL BUTTON --- */
+        /* --- GOLD EXPLORE ALL BUTTON --- */
         .explore-all-wrapper {
           display: flex;
           justify-content: center;
@@ -282,9 +282,9 @@ const Offers = () => {
           align-items: center;
           gap: 14px;
           padding: 16px 36px;
-          border: 2px solid #b83a32;
+          border: 2px solid #d4af37; /* Changed to Gold */
           border-radius: 9999px;
-          color: #b83a32;
+          color: #d4af37; /* Changed to Gold */
           background: transparent;
           font-weight: 700;
           font-size: 18px;
@@ -294,10 +294,10 @@ const Offers = () => {
         }
 
         .explore-all-btn:hover {
-          background: #b83a32;
-          color: #ffffff;
+          background: #d4af37; /* Changed to Gold */
+          color: #1a1a1a; /* Changed to Dark text */
           transform: translateY(-3px);
-          box-shadow: 0 4px 15px rgba(184, 58, 50, 0.3);
+          box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3); /* Changed to Gold shadow */
         }
 
         .explore-all-btn .arrow-circle {
@@ -307,14 +307,14 @@ const Offers = () => {
           width: 36px;
           height: 36px;
           border-radius: 50%;
-          border: 2px solid #b83a32;
+          border: 2px solid #d4af37; /* Changed to Gold */
           transition: all 0.3s ease;
         }
 
         .explore-all-btn:hover .arrow-circle {
-          background: #ffffff;
-          border-color: #ffffff;
-          color: #b83a32;
+          background: #1a1a1a; /* Changed to Dark background */
+          border-color: #1a1a1a; /* Changed to Dark border */
+          color: #d4af37; /* Changed to Gold arrow */
         }
 
         @media (min-width: 1024px) {
@@ -526,7 +526,7 @@ const Offers = () => {
         <div className="offers-container">
           <div className="offers-header">
             <div className="label">✦ Special Offers</div>
-            <h2>Exclusive Deals & Packages</h2>
+            <h2>Exclusive <span style={{ color: '#d4af37' }}>Deals & Packages</span></h2>
             <p>
               Make your stay even more memorable with our handpicked offers.
               Book now to enjoy these limited-time benefits.
