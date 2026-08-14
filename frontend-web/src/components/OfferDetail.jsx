@@ -331,12 +331,45 @@ const OfferDetail = () => {
         @media (min-width: 768px) {
           .highlights-grid { grid-template-columns: repeat(4, 1fr); }
         }
+
+        /* --- UPDATED PACKAGE HIGHLIGHT CARD HOVER EFFECTS --- */
         .highlight-card {
           background: #f8fafc;
           padding: 24px 20px;
           border-radius: 20px;
           text-align: left;
+          position: relative; /* Required for the top bar */
+          overflow: hidden; /* Keeps the top gradient inside rounded corners */
+          transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+          cursor: default;
         }
+
+        /* 1. The sliding top gradient bar */
+        .highlight-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 4px;
+          /* Matches the number badge gradient */
+          background: linear-gradient(135deg, #f97316 0%, #ec4899 100%);
+          transform: scaleX(0);
+          transform-origin: left;
+          transition: transform 0.4s ease;
+          z-index: 1;
+        }
+
+        .highlight-card:hover::before {
+          transform: scaleX(1); /* Slides the bar across */
+        }
+
+        .highlight-card:hover {
+          transform: translateY(-8px); /* Lifts the card */
+          box-shadow: 0 16px 40px rgba(0,0,0,0.06);
+        }
+
+        /* 2. The Number Badge */
         .highlight-card .number-badge {
           background: linear-gradient(135deg, #f97316 0%, #ec4899 100%);
           color: white;
@@ -349,7 +382,14 @@ const OfferDetail = () => {
           font-weight: 700;
           font-size: 14px;
           margin-bottom: 12px;
+          transition: transform 0.4s ease, box-shadow 0.4s ease;
         }
+
+        .highlight-card:hover .number-badge {
+          transform: scale(1.05);
+          box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+        }
+
         .highlight-card h4 {
           font-size: 16px;
           font-weight: 700;
@@ -362,12 +402,19 @@ const OfferDetail = () => {
           line-height: 1.5;
           margin: 0;
         }
+
+        /* 3. The Bottom Expanding Line */
         .highlight-card .bottom-line {
           height: 4px;
           width: 30px;
           margin-top: 16px;
           border-radius: 99px;
           background: linear-gradient(90deg, #f97316 0%, #ec4899 100%);
+          transition: width 0.4s ease; /* Added transition */
+        }
+
+        .highlight-card:hover .bottom-line {
+          width: 100%; /* Expands to full width */
         }
 
         @media (max-width: 480px) {

@@ -26,31 +26,7 @@ const Testimonials = () => {
       rating: 5,
       quote: 'The perfect getaway. The room was immaculate, the food was divine, and the location was ideal for exploring. Every detail was thoughtfully curated.',
       image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
-    },
-    // {
-    //   id: 4,
-    //   name: 'Michael Okafor',
-    //   location: 'Lagos, Nigeria',
-    //   rating: 4,
-    //   quote: 'An exceptional hotel with a warm, welcoming atmosphere. The concierge team was incredibly helpful in arranging tours and dinner reservations. A true gem.',
-    //   image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
-    // },
-    // {
-    //   id: 5,
-    //   name: 'Aisha Mohammed',
-    //   location: 'Addis Ababa, Ethiopia',
-    //   rating: 5,
-    //   quote: 'I was blown away by the hospitality. The rooms are beautiful, the food is delicious, and the staff genuinely care. This is now my favorite hotel in the region.',
-    //   image: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
-    // },
-    // {
-    //   id: 6,
-    //   name: 'James Wilson',
-    //   location: 'Sydney, Australia',
-    //   rating: 5,
-    //   quote: 'The luxury and comfort here are unmatched. The pool area is stunning, and the gym is top-notch. I’ve traveled extensively, and Villa Alpha stands out as one of the best.',
-    //   image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
-    // }
+    }
   ];
 
   // Render stars based on rating
@@ -61,8 +37,8 @@ const Testimonials = () => {
         <Star
           key={i}
           size={16}
-          fill={i < rating ? '#d4af37' : '#e5e7eb'}
-          color={i < rating ? '#d4af37' : '#e5e7eb'}
+          fill={i < rating ? '#f97316' : '#e5e7eb'} /* Changed gold to orange to match screenshot */
+          color={i < rating ? '#f97316' : '#e5e7eb'}
         />
       );
     }
@@ -120,27 +96,70 @@ const Testimonials = () => {
           gap: 24px;
         }
 
+        /* ===== UPDATED CARD STYLES ===== */
         .testimonial-card {
           background: #ffffff;
           border-radius: 16px;
           padding: 28px 24px;
           box-shadow: 0 2px 10px rgba(0,0,0,0.04);
           border: 1px solid rgba(212, 175, 55, 0.06);
-          transition: all 0.4s ease;
+          transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
           position: relative;
+          overflow: hidden; /* Keeps the top gradient bar inside rounded corners */
+          transform: translateY(0);
+        }
+
+        /* 1. The Sliding Gradient Top Bar */
+        .testimonial-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 4px;
+          /* Matches the yellow -> orange -> pink -> purple from your screenshot */
+          background: linear-gradient(to right, #f59e0b, #f97316, #ec4899, #8b5cf6);
+          transform: scaleX(0);
+          transform-origin: left;
+          transition: transform 0.4s ease;
+          z-index: 1;
+        }
+
+        .testimonial-card:hover::before {
+          transform: scaleX(1); /* Slides the bar in */
         }
 
         .testimonial-card:hover {
-          transform: translateY(-6px);
+          transform: translateY(-8px); /* Lifts the card */
           border-color: rgba(212, 175, 55, 0.15);
-          box-shadow: 0 12px 40px rgba(0,0,0,0.06);
+          box-shadow: 0 12px 40px rgba(0,0,0,0.08);
         }
 
+        /* 2. The Large Quote Icon */
         .testimonial-card .quote-icon {
           position: absolute;
           top: 20px;
           right: 24px;
-          color: rgba(212, 175, 55, 0.1);
+          color: #e5e7eb; /* Default light gray */
+          transition: color 0.4s ease;
+        }
+
+        .testimonial-card:hover .quote-icon {
+          color: #c94d41; /* Turns deep red on hover (matching your brand) */
+        }
+
+        /* 3. Profile Image */
+        .testimonial-card .profile img {
+          width: 56px;
+          height: 56px;
+          border-radius: 50%;
+          object-fit: cover;
+          border: 2px solid rgba(212, 175, 55, 0.1);
+          transition: border-color 0.4s ease;
+        }
+
+        .testimonial-card:hover .profile img {
+          border-color: #c94d41; /* Red border around image on hover */
         }
 
         .testimonial-card .profile {
@@ -150,18 +169,16 @@ const Testimonials = () => {
           margin-bottom: 14px;
         }
 
-        .testimonial-card .profile img {
-          width: 56px;
-          height: 56px;
-          border-radius: 50%;
-          object-fit: cover;
-          border: 2px solid rgba(212, 175, 55, 0.1);
-        }
-
         .testimonial-card .profile .info .name {
           font-size: 16px;
           font-weight: 700;
           color: #1a1a1a;
+          transition: color 0.4s ease;
+        }
+
+        /* 4. The Author's Name */
+        .testimonial-card:hover .profile .info .name {
+          color: #c94d41; /* Turns deep red on hover */
         }
 
         .testimonial-card .profile .info .location {
@@ -169,6 +186,7 @@ const Testimonials = () => {
           color: #6b7280;
         }
 
+        /* 5. Stars */
         .testimonial-card .stars {
           display: flex;
           gap: 2px;
