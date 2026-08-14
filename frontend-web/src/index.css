@@ -13,3 +13,36 @@ body {
   margin: 0;
   font-family: 'Poppins', sans-serif;
 }
+/* =========================================
+   GLOBAL TEXT HOVER EFFECTS
+   ========================================= */
+
+/* 1. Smooth transition for links and buttons */
+a, button, .nav-link, .btn {
+  transition: all 0.3s ease !important;
+}
+
+/* 2. Hover effect for all text links (turns them premium gold) */
+a:hover, .nav-link:hover {
+  color: #d4af37 !important; 
+  text-decoration: none;
+}
+
+/* 3. Hover effect for Headings (elegant lift and gold glow) */
+h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
+  transform: translateY(-2px);
+  text-shadow: 0 4px 15px rgba(212, 175, 55, 0.15);
+  transition: all 0.3s ease;
+}
+
+/* 4. Subtle hover scale for buttons (doesn't override your existing colors) */
+.btn:hover, button:hover, .hero-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+/* 5. Bonus: Beautiful Gold text selection when users highlight words */
+::selection {
+  background: #d4af37;
+  color: #1a1a1a;
+}

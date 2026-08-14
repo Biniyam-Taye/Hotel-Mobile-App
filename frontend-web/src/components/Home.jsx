@@ -128,6 +128,7 @@ const Home = () => {
           font-family: 'Montserrat', sans-serif;
         }
 
+        /* --- UPDATED TITLE HOVER EFFECT (Background Pop) --- */
         .rooms-header h2 {
           font-family: 'Montserrat', sans-serif;
           font-size: 40px;
@@ -135,6 +136,16 @@ const Home = () => {
           color: #1a1a1a;
           margin-bottom: 12px;
           line-height: 1.2;
+          display: inline-block;
+          padding: 0 8px;
+          border-radius: 4px;
+          transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          cursor: default;
+        }
+
+        .rooms-header h2:hover {
+          background: rgba(212, 175, 55, 0.08);
+          transform: scale(1.02);
         }
 
         .rooms-header p {
@@ -152,10 +163,11 @@ const Home = () => {
           gap: 30px;
         }
 
+        /* --- UPDATED ROOM CARD HOVER EFFECT (Bottom Colored Line) --- */
         .room-card {
           background: #ffffff;
           border-radius: 24px;
-          overflow: hidden;
+          overflow: hidden; /* Ensures the colored line stays inside the corners */
           box-shadow: 0 4px 16px rgba(0,0,0,0.04);
           border: 1px solid rgba(0,0,0,0.03);
           transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -165,12 +177,31 @@ const Home = () => {
           cursor: default;
           display: flex;
           flex-direction: column;
+          position: relative; /* Required for the bottom line */
         }
 
         .room-card:hover {
           transform: translateY(-10px);
           box-shadow: 0 20px 40px rgba(0,0,0,0.08);
           border-color: rgba(212, 175, 55, 0.2);
+        }
+
+        /* The sliding colored bottom line */
+        .room-card::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 0;
+          height: 5px;
+          border-radius: 0 0 24px 24px; /* Matches the card's bottom rounded corners */
+          background: var(--card-line-color, #d4af37); /* Defaults to Gold if no color is passed */
+          transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          z-index: 2;
+        }
+
+        .room-card:hover::after {
+          width: 100%;
         }
 
         /* --- IMAGE & BADGE OVERLAYS --- */
@@ -208,7 +239,6 @@ const Home = () => {
           font-family: 'Montserrat', sans-serif;
         }
 
-        /* --- PRICE BADGE ADDED BACK TO IMAGE OVERLAY --- */
         .room-card .room-image .price-badge {
           position: absolute;
           top: 16px;
@@ -247,11 +277,10 @@ const Home = () => {
           margin-bottom: 6px;
         }
 
-        /* --- MINIMIZED TITLE FONT WEIGHT (600) --- */
         .room-card .room-details .room-header h3 {
           font-family: 'Montserrat', sans-serif;
           font-size: 20px;
-          font-weight: 600; /* Reduced from 800 */
+          font-weight: 600;
           text-transform: uppercase;
           letter-spacing: 1.5px;
           color: #1a1a1a;
@@ -290,7 +319,6 @@ const Home = () => {
           overflow: hidden;
         }
 
-        /* --- PRICE & ACTIONS FOOTER --- */
         .room-card .room-details .card-footer {
           margin-top: auto;
           display: flex;
@@ -343,7 +371,6 @@ const Home = () => {
           box-shadow: 0 4px 20px rgba(212, 175, 55, 0.35);
         }
 
-        /* -------- EXPLORE ALL BUTTON -------- */
         .explore-all-wrapper {
           display: flex;
           justify-content: center;
@@ -432,7 +459,7 @@ const Home = () => {
         .modal-content h3 {
           font-family: 'Montserrat', sans-serif;
           font-size: 24px;
-          font-weight: 600; /* Minimized weight in modal too */
+          font-weight: 600;
           text-transform: uppercase;
           letter-spacing: 1.5px;
           color: #1a1a1a;
@@ -559,7 +586,8 @@ const Home = () => {
 
           <div className="rooms-grid">
             {rooms.map((room) => (
-              <div key={room.id} className="room-card">
+              /* Added the inline style for the colored line. Defaults to Gold (#d4af37) */
+              <div key={room.id} className="room-card" style={{ '--card-line-color': '#d4af37' }}>
                 <div className="room-image">
                   <img src={room.image} alt={room.name} />
                   
@@ -583,7 +611,6 @@ const Home = () => {
                   </div>
                   <p className="short-description">{room.shortDescription}</p>
                   
-                  {/* PRICE & ACTIONS FOOTER (Price removed from here) */}
                   <div className="card-footer">
                     <div className="action-buttons">
                       <Link to={`/room/${room.id}`} className="btn btn-view">

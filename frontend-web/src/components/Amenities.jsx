@@ -27,6 +27,16 @@ const Amenities = () => {
           font-weight: 700;
           color: #1a1a1a;
           margin-bottom: 12px;
+          display: inline-block; /* Needed for the background hover effect */
+          transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          padding: 0 8px;
+          border-radius: 4px;
+          cursor: default;
+        }
+
+        .amenities-header h2:hover {
+          background: rgba(212, 175, 55, 0.08);
+          transform: scale(1.02);
         }
 
         .amenities-header p {
@@ -48,6 +58,7 @@ const Amenities = () => {
           border: none;
         }
 
+        /* ===== UPDATED CARD STYLES FOR THE BOTTOM LINE ===== */
         .combined-item {
           position: relative;
           height: 280px;
@@ -61,6 +72,24 @@ const Amenities = () => {
         .combined-item:hover {
           transform: translateY(-6px);
           box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+
+        /* The colored bottom line */
+        .combined-item::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 0;
+          height: 5px;
+          border-radius: 0 0 16px 16px; /* Matches the bottom rounded corners */
+          background: var(--card-line-color, #d4af37); /* Defaults to Gold if no color is passed */
+          transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          z-index: 2;
+        }
+
+        .combined-item:hover::after {
+          width: 100%;
         }
 
         .combined-item .item-image {
@@ -235,7 +264,7 @@ const Amenities = () => {
       <section className="amenities-section" id="amenities">
         <div className="amenities-container">
           <div className="amenities-header">
-            {/* FIXED HOSPITALITY COLOR TO GOLD */}
+            {/* If you hover this text, it gets a subtle gold background */}
             <h2>Hotel <span style={{ color: '#d4af37' }}>Hospitality</span></h2>
             <p>
               Discover dining, spa, massage, tours, and premium services from our partner hotels — crafted for unforgettable stays.
@@ -245,7 +274,9 @@ const Amenities = () => {
 
         <div className="amenities-container">
           <div className="combined-card">
-            <div className="combined-item">
+            
+            {/* 1. RESTAURANT: Red line */}
+            <div className="combined-item" style={{ '--card-line-color': '#c94d41' }}>
               <img
                 src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
                 alt="Restaurant & Bar"
@@ -261,7 +292,8 @@ const Amenities = () => {
               </div>
             </div>
 
-            <div className="combined-item">
+            {/* 2. POOL: Blue line */}
+            <div className="combined-item" style={{ '--card-line-color': '#3b82f6' }}>
               <img
                 src="https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
                 alt="Swimming Pool"
@@ -277,7 +309,8 @@ const Amenities = () => {
               </div>
             </div>
 
-            <div className="combined-item">
+            {/* 3. SPA: Purple line */}
+            <div className="combined-item" style={{ '--card-line-color': '#8b5cf6' }}>
               <img
                 src="https://images.unsplash.com/photo-1544161515-4ab6ce6db874?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
                 alt="Spa & Wellness"
@@ -293,7 +326,8 @@ const Amenities = () => {
               </div>
             </div>
 
-            <div className="combined-item">
+            {/* 4. GYM: Green line */}
+            <div className="combined-item" style={{ '--card-line-color': '#10b981' }}>
               <img
                 src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
                 alt="Fitness Gym"

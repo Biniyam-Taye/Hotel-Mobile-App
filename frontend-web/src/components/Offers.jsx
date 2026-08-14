@@ -98,12 +98,23 @@ const Offers = () => {
           margin-bottom: 8px;
         }
 
+        /* --- UPDATED TITLE HOVER EFFECT --- */
         .offers-header h2 {
           font-family: 'Georgia', 'Times New Roman', serif;
           font-size: 40px;
           font-weight: 700;
           color: #1a1a1a;
           margin-bottom: 12px;
+          display: inline-block;
+          padding: 0 8px;
+          border-radius: 4px;
+          transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          cursor: default;
+        }
+
+        .offers-header h2:hover {
+          background: rgba(212, 175, 55, 0.08);
+          transform: scale(1.02);
         }
 
         .offers-header p {
@@ -120,6 +131,7 @@ const Offers = () => {
           gap: 24px;
         }
 
+        /* --- UPDATED OFFER CARD HOVER EFFECT (Bottom Colored Line) --- */
         .offer-card {
           background: #ffffff;
           border-radius: 16px;
@@ -129,12 +141,31 @@ const Offers = () => {
           transition: all 0.4s ease;
           display: flex;
           flex-direction: column;
+          position: relative; /* Required for the colored line */
         }
 
         .offer-card:hover {
           transform: translateY(-8px);
           border-color: rgba(212, 175, 55, 0.2);
           box-shadow: 0 16px 48px rgba(0,0,0,0.08);
+        }
+
+        /* The sliding colored bottom line */
+        .offer-card::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 0;
+          height: 5px;
+          border-radius: 0 0 16px 16px; /* Matches the card's bottom rounded corners */
+          background: var(--card-line-color, #d4af37); /* Defaults to Gold */
+          transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          z-index: 2;
+        }
+
+        .offer-card:hover::after {
+          width: 100%;
         }
 
         .offer-card .offer-image {
@@ -282,9 +313,9 @@ const Offers = () => {
           align-items: center;
           gap: 14px;
           padding: 16px 36px;
-          border: 2px solid #d4af37; /* Changed to Gold */
+          border: 2px solid #d4af37;
           border-radius: 9999px;
-          color: #d4af37; /* Changed to Gold */
+          color: #d4af37;
           background: transparent;
           font-weight: 700;
           font-size: 18px;
@@ -294,10 +325,10 @@ const Offers = () => {
         }
 
         .explore-all-btn:hover {
-          background: #d4af37; /* Changed to Gold */
-          color: #1a1a1a; /* Changed to Dark text */
+          background: #d4af37;
+          color: #1a1a1a;
           transform: translateY(-3px);
-          box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3); /* Changed to Gold shadow */
+          box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
         }
 
         .explore-all-btn .arrow-circle {
@@ -307,14 +338,14 @@ const Offers = () => {
           width: 36px;
           height: 36px;
           border-radius: 50%;
-          border: 2px solid #d4af37; /* Changed to Gold */
+          border: 2px solid #d4af37;
           transition: all 0.3s ease;
         }
 
         .explore-all-btn:hover .arrow-circle {
-          background: #1a1a1a; /* Changed to Dark background */
-          border-color: #1a1a1a; /* Changed to Dark border */
-          color: #d4af37; /* Changed to Gold arrow */
+          background: #1a1a1a;
+          border-color: #1a1a1a;
+          color: #d4af37;
         }
 
         @media (min-width: 1024px) {
@@ -539,7 +570,7 @@ const Offers = () => {
                 key={offer.id} 
                 to={`/offers/${offer.id}`} 
                 className="offer-card" 
-                style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column' }}
+                style={{ '--card-line-color': '#d4af37', textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column' }}
               >
                 <div className="offer-image">
                   <img src={offer.image} alt={offer.title} />
