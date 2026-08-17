@@ -87,12 +87,6 @@ function App() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const topNavLinks = [
-    { label: 'Dashboard', path: '/' },
-    { label: 'Reservations', path: '/reservations' },
-    { label: 'Rooms', path: '/rooms' },
-    { label: 'Offers', path: '/content/offers' },
-  ];
 
   const notifications = [
     { id: 1, text: 'New booking from John Doe', time: '5 min ago', unread: true },
@@ -109,23 +103,9 @@ function App() {
           <img src="/logo.png" alt="Hotel Logo" style={{ height: '48px', objectFit: 'contain' }} />
         </div>
 
-        {/* Center Nav Links */}
-        <nav className="top-nav-links">
-          {topNavLinks.map(link => {
-            const isActive = location.pathname === link.path ||
-              (link.path !== '/' && location.pathname.startsWith(link.path));
-            return (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`top-nav-link${isActive ? ' active' : ''}`}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
-        </nav>
-        
+        {/* Spacer */}
+        <div style={{ flex: 1, minWidth: '8rem' }} />
+
         {/* Right Actions */}
         <div className="nav-actions">
           {/* Notifications */}

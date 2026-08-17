@@ -49,6 +49,7 @@ body {
   background-color: var(--main-bg);
   display: flex;
   flex-direction: column;
+  align-items: stretch;
   overflow: hidden;
 }
 
@@ -57,11 +58,15 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.6rem 1.5rem;
-  margin: 1rem 1.5rem 0.5rem 1.5rem;
+  align-self: center;
+  gap: 0.75rem;
+  padding: 0.45rem 2.5rem;
+  margin: 1rem auto 0.5rem;
+  width: fit-content;
+  min-width: 520px;
   background-color: #111827;
-  border-radius: 1rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-radius: 9999px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), 0 2px 6px rgba(0,0,0,0.1);
 }
 
 .logo-area {
@@ -159,8 +164,8 @@ body {
   border: none;
   background: transparent;
   cursor: pointer;
-  padding: 0.35rem 0.75rem 0.35rem 0.35rem;
-  border-radius: 0.75rem;
+  padding: 0.3rem 0.625rem 0.3rem 0.3rem;
+  border-radius: 9999px;
   transition: background-color 0.18s;
   border-left: 1px solid #374151;
   margin-left: 0.25rem;
