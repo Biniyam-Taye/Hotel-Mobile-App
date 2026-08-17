@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Star, ThumbsUp, MessageCircle, TrendingUp, Filter, Search, Reply, Flag } from 'lucide-react';
+import { Star, ThumbsUp, MessageCircle, Filter, Search, Reply, Flag, Trophy, Mail } from 'lucide-react';
 
 const mockReviews = [
   {
@@ -111,13 +111,13 @@ export default function ReviewsPage() {
       {/* Stats Row */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
         {[
-          { label: 'Average Rating', value: avgRating, sub: 'Out of 5.0', icon: '⭐', color: '#fef3c7', border: '#fde68a' },
-          { label: 'Total Reviews', value: totalReviews, sub: 'All time', icon: '💬', color: '#dbeafe', border: '#bfdbfe' },
-          { label: '5-Star Reviews', value: fiveStars, sub: `${Math.round((fiveStars / totalReviews) * 100)}% of total`, icon: '🏆', color: '#dcfce7', border: '#bbf7d0' },
-          { label: 'Awaiting Reply', value: reviews.filter(r => !r.replied).length, sub: 'Need response', icon: '✉️', color: '#fce7f3', border: '#fbcfe8' },
+          { label: 'Average Rating', value: avgRating, sub: 'Out of 5.0', Icon: Star, iconColor: '#d97706', color: '#fef3c7', border: '#fde68a' },
+          { label: 'Total Reviews', value: totalReviews, sub: 'All time', Icon: MessageCircle, iconColor: '#1d4ed8', color: '#dbeafe', border: '#bfdbfe' },
+          { label: '5-Star Reviews', value: fiveStars, sub: `${Math.round((fiveStars / totalReviews) * 100)}% of total`, Icon: Trophy, iconColor: '#065f46', color: '#dcfce7', border: '#bbf7d0' },
+          { label: 'Awaiting Reply', value: reviews.filter(r => !r.replied).length, sub: 'Need response', Icon: Mail, iconColor: '#9d174d', color: '#fce7f3', border: '#fbcfe8' },
         ].map(s => (
           <div key={s.label} style={{ background: s.color, border: `1px solid ${s.border}`, borderRadius: '1rem', padding: '1.25rem' }}>
-            <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{s.icon}</div>
+            <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem', color: s.iconColor }}><s.Icon size={24} /></div>
             <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#111827', lineHeight: 1 }}>{s.value}</div>
             <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#374151', marginTop: '0.25rem' }}>{s.label}</div>
             <div style={{ fontSize: '0.7rem', color: '#6b7280', marginTop: '0.125rem' }}>{s.sub}</div>
