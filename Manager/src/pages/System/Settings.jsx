@@ -10,8 +10,6 @@ const tabs = [
   { id: 'profile', label: 'Profile', icon: User },
   { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'security', label: 'Security', icon: Shield },
-  { id: 'appearance', label: 'Appearance', icon: Palette },
-  { id: 'billing', label: 'Billing', icon: CreditCard },
 ];
 
 function Toggle({ checked, onChange }) {

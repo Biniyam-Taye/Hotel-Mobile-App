@@ -17,6 +17,8 @@ import RestaurantMenu from './pages/Hospitality/RestaurantMenu';
 import HotelServices from './pages/Hospitality/HotelServices';
 import FacilitiesAmenities from './pages/Hospitality/FacilitiesAmenities';
 import OffersCoupons from './pages/Content/OffersCoupons';
+import NotificationsPage from './pages/System/Notifications';
+import SettingsPage from './pages/System/Settings';
 
 const navGroups = [
   {
@@ -58,8 +60,8 @@ const navGroups = [
   {
     label: 'System',
     items: [
-      { icon: MessageSquare, label: 'Notifications' },
-      { icon: Settings, label: 'Settings' },
+      { icon: MessageSquare, label: 'Notifications', path: '/system/notifications' },
+      { icon: Settings, label: 'Settings', path: '/system/settings' },
     ],
   },
 ];
@@ -233,6 +235,8 @@ function App() {
             <Route path="/hospitality/services" element={<HotelServices />} />
             <Route path="/hospitality/facilities" element={<FacilitiesAmenities />} />
             <Route path="/content/offers" element={<OffersCoupons />} />
+            <Route path="/system/notifications" element={<NotificationsPage />} />
+            <Route path="/system/settings" element={<SettingsPage />} />
             {/* Catch-all for undefined routes that just renders the overview for now */}
             <Route path="*" element={<DashboardOverview />} />
           </Routes>
