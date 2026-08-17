@@ -19,6 +19,8 @@ import FacilitiesAmenities from './pages/Hospitality/FacilitiesAmenities';
 import OffersCoupons from './pages/Content/OffersCoupons';
 import NotificationsPage from './pages/System/Notifications';
 import SettingsPage from './pages/System/Settings';
+import ReviewsPage from './pages/Insights/Reviews';
+import ReportsPage from './pages/Insights/Reports';
 
 const navGroups = [
   {
@@ -53,8 +55,8 @@ const navGroups = [
   {
     label: 'Insights',
     items: [
-      { icon: Star, label: 'Reviews' },
-      { icon: BarChart3, label: 'Analytics & Reports' },
+      { icon: Star, label: 'Reviews', path: '/insights/reviews' },
+      { icon: BarChart3, label: 'Reports', path: '/insights/reports' },
     ],
   },
   {
@@ -237,6 +239,8 @@ function App() {
             <Route path="/content/offers" element={<OffersCoupons />} />
             <Route path="/system/notifications" element={<NotificationsPage />} />
             <Route path="/system/settings" element={<SettingsPage />} />
+            <Route path="/insights/reviews" element={<ReviewsPage />} />
+            <Route path="/insights/reports" element={<ReportsPage />} />
             {/* Catch-all for undefined routes that just renders the overview for now */}
             <Route path="*" element={<DashboardOverview />} />
           </Routes>
