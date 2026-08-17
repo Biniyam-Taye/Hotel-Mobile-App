@@ -13,6 +13,9 @@ import './index.css';
 import DashboardOverview from './pages/DashboardOverview';
 import RoomsList from './pages/Rooms/RoomsList';
 import RoomCategoriesList from './pages/RoomCategories/RoomCategoriesList';
+import RestaurantMenu from './pages/Hospitality/RestaurantMenu';
+import HotelServices from './pages/Hospitality/HotelServices';
+import FacilitiesAmenities from './pages/Hospitality/FacilitiesAmenities';
 
 const navGroups = [
   {
@@ -32,9 +35,9 @@ const navGroups = [
   {
     label: 'Hospitality',
     items: [
-      { icon: Utensils, label: 'Restaurant & Menu' },
-      { icon: ConciergeBell, label: 'Hotel Services' },
-      { icon: Dumbbell, label: 'Facilities & Amenities' },
+      { icon: Utensils, label: 'Restaurant & Menu', path: '/hospitality/restaurant' },
+      { icon: ConciergeBell, label: 'Hotel Services', path: '/hospitality/services' },
+      { icon: Dumbbell, label: 'Facilities & Amenities', path: '/hospitality/facilities' },
     ],
   },
   {
@@ -157,6 +160,9 @@ function App() {
             <Route path="/" element={<DashboardOverview />} />
             <Route path="/rooms" element={<RoomsList />} />
             <Route path="/room-categories" element={<RoomCategoriesList />} />
+            <Route path="/hospitality/restaurant" element={<RestaurantMenu />} />
+            <Route path="/hospitality/services" element={<HotelServices />} />
+            <Route path="/hospitality/facilities" element={<FacilitiesAmenities />} />
             {/* Catch-all for undefined routes that just renders the overview for now */}
             <Route path="*" element={<DashboardOverview />} />
           </Routes>
