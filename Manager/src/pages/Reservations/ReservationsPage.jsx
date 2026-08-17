@@ -289,6 +289,16 @@ export default function ReservationsPage() {
     { label: 'Cancelled',   value: reservations.filter(r => r.status === 'cancelled').length,   color: '#fee2e2', iconColor: '#dc2626' },
   ];
 
+  const handleSave = (form) => {
+    if (formMode === 'new') {
+      const newId = 'BK-' + (9000 + Math.floor(Math.random() * 999));
+      setReservations(prev => [{ ...form, id: newId, avatar: 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=60&q=80', nights: form.nights || 1 }, ...prev]);
+    } else {
+      setReservations(prev => prev.map(r => r.id === formMode.id ? { ...r, ...form } : r));
+    }
+    setFormMode(null);
+  };
+
   return (
     <section className="dashboard-section" style={{ paddingBottom: '3rem' }}>
 
