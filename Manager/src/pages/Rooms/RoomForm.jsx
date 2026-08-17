@@ -15,7 +15,8 @@ export default function RoomForm({ initialData, onSave, onCancel }) {
       status: 'Available',
       publishStatus: 'Draft',
       isFeatured: false,
-      image: '',
+      mainImage: initialData?.mainImage || initialData?.image || '',
+      detailImages: initialData?.detailImages || ['', '', ''],
       location: 'Adama',
       bedType: '',
       roomSize: '',
@@ -24,7 +25,8 @@ export default function RoomForm({ initialData, onSave, onCancel }) {
     }
   );
 
-  const [imagePreview, setImagePreview] = useState(initialData?.image || null);
+  const [mainImagePreview, setMainImagePreview] = useState(initialData?.mainImage || initialData?.image || null);
+  const [detailImagePreviews, setDetailImagePreviews] = useState(initialData?.detailImages || [null, null, null]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -45,14 +47,44 @@ export default function RoomForm({ initialData, onSave, onCancel }) {
     });
   };
 
-  const handleImageChange = (e) => {
+  const handleMainImageChange = (e) => {
     // Mock image upload
     const file = e.target.files[0];
     if (file) {
       const dummyUrl = 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=800&q=80';
-      setImagePreview(dummyUrl);
-      setFormData(prev => ({ ...prev, image: dummyUrl }));
+      setMainImagePreview(dummyUrl);
+      setFormData(prev => ({ ...prev, mainImage: dummyUrl }));
     }
+  };
+
+  const handleDetailImageChange = (index, e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const dummyUrls = [
+        'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=800&q=80'
+      ];
+      const newUrl = dummyUrls[index % 3];
+      
+      const newPreviews = [...detailImagePreviews];
+      newPreviews[index] = newUrl;
+      setDetailImagePreviews(newPreviews);
+      
+      const newDetailImages = [...formData.detailImages];
+      newDetailImages[index] = newUrl;
+      setFormData(prev => ({ ...prev, detailImages: newDetailImages }));
+    }
+  };
+
+  const removeDetailImage = (index) => {
+    const newPreviews = [...detailImagePreviews];
+    newPreviews[index] = null;
+    setDetailImagePreviews(newPreviews);
+    
+    const newDetailImages = [...formData.detailImages];
+    newDetailImages[index] = '';
+    setFormData(prev => ({ ...prev, detailImages: newDetailImages }));
   };
 
   const handleSubmit = (e) => {
@@ -63,15 +95,15 @@ export default function RoomForm({ initialData, onSave, onCancel }) {
   return (
     <form onSubmit={handleSubmit} className="custom-form">
       <div className="form-group">
-        <label>Room Image</label>
+        <label>Main Room Image</label>
         <div className="image-upload-area">
-          {imagePreview ? (
+          {mainImagePreview ? (
             <div className="image-preview-wrapper">
-              <img src={imagePreview} alt="Preview" />
+              <img src={mainImagePreview} alt="Main Preview" />
               <button 
                 type="button" 
                 className="remove-image-btn"
-                onClick={() => { setImagePreview(null); setFormData(prev => ({...prev, image: ''})); }}
+                onClick={() => { setMainImagePreview(null); setFormData(prev => ({...prev, mainImage: ''})); }}
               >
                 <X size={16} />
               </button>
@@ -79,10 +111,38 @@ export default function RoomForm({ initialData, onSave, onCancel }) {
           ) : (
             <label className="upload-placeholder">
               <UploadCloud size={32} color="#9ca3af" />
-              <span>Click to upload image</span>
-              <input type="file" accept="image/*" onChange={handleImageChange} hidden />
+              <span>Click to upload main image</span>
+              <input type="file" accept="image/*" onChange={handleMainImageChange} hidden />
             </label>
           )}
+        </div>
+      </div>
+
+      <div className="form-group">
+        <label>Detail Images (3 Photos)</label>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+          {[0, 1, 2].map((index) => (
+            <div key={index} className="image-upload-area" style={{ minHeight: '120px' }}>
+              {detailImagePreviews[index] ? (
+                <div className="image-preview-wrapper" style={{ height: '100%' }}>
+                  <img src={detailImagePreviews[index]} alt={`Detail ${index + 1}`} style={{ height: '100%', objectFit: 'cover' }} />
+                  <button 
+                    type="button" 
+                    className="remove-image-btn"
+                    onClick={() => removeDetailImage(index)}
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              ) : (
+                <label className="upload-placeholder" style={{ padding: '1rem' }}>
+                  <UploadCloud size={24} color="#9ca3af" />
+                  <span style={{ fontSize: '0.75rem', marginTop: '0.5rem' }}>Detail {index + 1}</span>
+                  <input type="file" accept="image/*" onChange={(e) => handleDetailImageChange(index, e)} hidden />
+                </label>
+              )}
+            </div>
+          ))}
         </div>
       </div>
 
