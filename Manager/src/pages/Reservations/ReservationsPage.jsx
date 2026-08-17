@@ -143,11 +143,132 @@ const paymentConfig = {
 
 const filterStatuses = ['All', 'Confirmed', 'Pending', 'Checked In', 'Checked Out', 'Cancelled'];
 
+const roomOptions = ['Presidential Suite', 'Deluxe Ocean Suite', 'Executive Suite', 'Executive Room', 'Family Connecting Room', 'Garden View Room', 'Standard Twin'];
+const statusOptions = ['confirmed', 'pending', 'checked-in', 'checked-out', 'cancelled'];
+const paymentOptions = ['paid', 'deposit', 'refunded'];
+
+const emptyForm = {
+  guest: '', email: '', phone: '', room: roomOptions[0], roomNo: '',
+  type: 'Standard', guests: 1, checkIn: '', checkOut: '', nights: 1,
+  amount: '', status: 'confirmed', payment: 'paid',
+};
+
+function FormModal({ initial, onClose, onSave }) {
+  const [form, setForm] = useState(initial || emptyForm);
+  const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
+
+  const labelStyle = { fontSize: '0.78rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '0.35rem' };
+  const inputStyle = { width: '100%', padding: '0.6rem 0.875rem', borderRadius: '0.625rem', border: '1px solid #e5e7eb', fontSize: '0.875rem', outline: 'none', fontFamily: 'inherit', color: '#111827', boxSizing: 'border-box' };
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '1rem' }} onClick={onClose}>
+      <div style={{ background: 'white', borderRadius: '1.5rem', padding: '2rem', width: '100%', maxWidth: 580, boxShadow: '0 25px 50px rgba(0,0,0,0.2)', animation: 'dropIn 0.2s ease', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
+
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+          <div>
+            <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700, color: '#111827' }}>{initial ? 'Edit Reservation' : 'New Reservation'}</h2>
+            <p style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', color: '#9ca3af' }}>{initial ? `Editing ${initial.id}` : 'Fill in guest and booking details'}</p>
+          </div>
+          <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: '50%', border: 'none', background: '#f3f4f6', cursor: 'pointer', fontSize: '1rem', color: '#6b7280', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.125rem' }}>
+
+          {/* Guest Info */}
+          <div style={{ background: '#f9fafb', borderRadius: '1rem', padding: '1.25rem' }}>
+            <p style={{ margin: '0 0 1rem', fontSize: '0.8rem', fontWeight: 700, color: '#374151', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Guest Information</p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem' }}>
+              <div style={{ gridColumn: '1/-1' }}>
+                <label style={labelStyle}>Full Name *</label>
+                <input style={inputStyle} placeholder="e.g. Dawit Bekele" value={form.guest} onChange={e => set('guest', e.target.value)} />
+              </div>
+              <div>
+                <label style={labelStyle}>Email</label>
+                <input style={inputStyle} type="email" placeholder="guest@email.com" value={form.email} onChange={e => set('email', e.target.value)} />
+              </div>
+              <div>
+                <label style={labelStyle}>Phone</label>
+                <input style={inputStyle} placeholder="+251 91 234 5678" value={form.phone} onChange={e => set('phone', e.target.value)} />
+              </div>
+              <div>
+                <label style={labelStyle}>No. of Guests</label>
+                <input style={inputStyle} type="number" min={1} max={10} value={form.guests} onChange={e => set('guests', Number(e.target.value))} />
+              </div>
+            </div>
+          </div>
+
+          {/* Room Info */}
+          <div style={{ background: '#f9fafb', borderRadius: '1rem', padding: '1.25rem' }}>
+            <p style={{ margin: '0 0 1rem', fontSize: '0.8rem', fontWeight: 700, color: '#374151', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Room Details</p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem' }}>
+              <div style={{ gridColumn: '1/-1' }}>
+                <label style={labelStyle}>Room Type *</label>
+                <select style={inputStyle} value={form.room} onChange={e => set('room', e.target.value)}>
+                  {roomOptions.map(r => <option key={r} value={r}>{r}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={labelStyle}>Room Number</label>
+                <input style={inputStyle} placeholder="e.g. 501" value={form.roomNo} onChange={e => set('roomNo', e.target.value)} />
+              </div>
+              <div>
+                <label style={labelStyle}>Room Category</label>
+                <input style={inputStyle} placeholder="e.g. Suite" value={form.type} onChange={e => set('type', e.target.value)} />
+              </div>
+            </div>
+          </div>
+
+          {/* Stay Details */}
+          <div style={{ background: '#f9fafb', borderRadius: '1rem', padding: '1.25rem' }}>
+            <p style={{ margin: '0 0 1rem', fontSize: '0.8rem', fontWeight: 700, color: '#374151', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Stay & Payment</p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem' }}>
+              <div>
+                <label style={labelStyle}>Check-in Date *</label>
+                <input style={inputStyle} type="date" value={form.checkIn} onChange={e => set('checkIn', e.target.value)} />
+              </div>
+              <div>
+                <label style={labelStyle}>Check-out Date *</label>
+                <input style={inputStyle} type="date" value={form.checkOut} onChange={e => set('checkOut', e.target.value)} />
+              </div>
+              <div>
+                <label style={labelStyle}>Total Amount (ETB)</label>
+                <input style={inputStyle} placeholder="e.g. 4800" value={form.amount} onChange={e => set('amount', e.target.value)} />
+              </div>
+              <div>
+                <label style={labelStyle}>Payment Status</label>
+                <select style={inputStyle} value={form.payment} onChange={e => set('payment', e.target.value)}>
+                  {paymentOptions.map(p => <option key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</option>)}
+                </select>
+              </div>
+              <div style={{ gridColumn: '1/-1' }}>
+                <label style={labelStyle}>Reservation Status</label>
+                <select style={inputStyle} value={form.status} onChange={e => set('status', e.target.value)}>
+                  {statusOptions.map(s => <option key={s} value={s}>{s.replace('-', ' ').replace(/\b\w/g, c => c.toUpperCase())}</option>)}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer Buttons */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', paddingTop: '0.5rem' }}>
+            <button className="secondary-btn" onClick={onClose}>Cancel</button>
+            <button className="primary-btn" onClick={() => onSave(form)} style={{ background: 'linear-gradient(135deg,#3b82f6,#2563eb)', borderRadius: '0.75rem', padding: '0.65rem 1.5rem' }}>
+              {initial ? 'Save Changes' : 'Create Reservation'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ReservationsPage() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [selected, setSelected] = useState(null);
-  const [reservations] = useState(mockReservations);
+  const [formMode, setFormMode] = useState(null); // null | 'new' | reservation object
+  const [reservations, setReservations] = useState(mockReservations);
 
   const filtered = reservations.filter(r => {
     const matchSearch =
@@ -179,7 +300,7 @@ export default function ReservationsPage() {
           </h1>
           <p style={{ fontSize: '0.85rem', color: '#9ca3af', marginTop: '0.25rem' }}>Manage all guest bookings and stays</p>
         </div>
-        <button className="primary-btn" style={{ borderRadius: '0.75rem', padding: '0.65rem 1.25rem' }}>
+        <button className="primary-btn" onClick={() => setFormMode('new')} style={{ borderRadius: '0.75rem', padding: '0.65rem 1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <Plus size={16} /> New Reservation
         </button>
       </div>
@@ -311,7 +432,11 @@ export default function ReservationsPage() {
                       >
                         <Eye size={14} />
                       </button>
-                      <button style={{ width: 30, height: 30, borderRadius: '0.5rem', border: 'none', background: '#f3f4f6', color: '#6b7280', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Edit">
+                      <button
+                        onClick={() => setFormMode(r)}
+                        style={{ width: 30, height: 30, borderRadius: '0.5rem', border: 'none', background: '#f3f4f6', color: '#6b7280', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        title="Edit"
+                      >
                         <Edit size={14} />
                       </button>
                       <button style={{ width: 30, height: 30, borderRadius: '0.5rem', border: 'none', background: '#fff0f0', color: '#dc2626', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Cancel">
@@ -384,6 +509,14 @@ export default function ReservationsPage() {
             </div>
           </div>
         </div>
+      )}
+      {/* Form Modal — New or Edit */}
+      {formMode && (
+        <FormModal
+          initial={formMode === 'new' ? null : formMode}
+          onClose={() => setFormMode(null)}
+          onSave={handleSave}
+        />
       )}
     </section>
   );
