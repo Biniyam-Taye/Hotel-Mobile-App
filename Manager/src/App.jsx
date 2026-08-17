@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
-  Bell, Plus, Search, ChevronDown, LayoutDashboard, 
+  Bell, Plus, ChevronDown, LayoutDashboard, 
   CalendarCheck, DoorOpen, Tags, Utensils, ConciergeBell, 
-  Dumbbell, TicketPercent, Globe, Image as ImageIcon, Star, 
+  Dumbbell, TicketPercent, Globe, Star, 
   BarChart3, Settings, TrendingUp, Users,
-  MessageSquare, Hotel, ChevronRight
+  MessageSquare, Hotel, ChevronRight, LogOut, User, HelpCircle
 } from 'lucide-react';
 import './index.css';
 
@@ -66,40 +66,110 @@ const navGroups = [
 
 function App() {
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const profileRef = useRef(null);
+  const notifRef = useRef(null);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handler = (e) => {
+      if (profileRef.current && !profileRef.current.contains(e.target)) setProfileOpen(false);
+      if (notifRef.current && !notifRef.current.contains(e.target)) setNotifOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const topNavLinks = [
+    { label: 'Dashboard', path: '/' },
+    { label: 'Reservations', path: '/reservations' },
+    { label: 'Rooms', path: '/rooms' },
+    { label: 'Offers', path: '/content/offers' },
+  ];
+
+  const notifications = [
+    { id: 1, text: 'New booking from John Doe', time: '5 min ago', unread: true },
+    { id: 2, text: 'Room 204 checkout pending', time: '30 min ago', unread: true },
+    { id: 3, text: 'Maintenance request resolved', time: '1 hr ago', unread: false },
+  ];
 
   return (
     <div className="app-container">
       {/* Top Header */}
       <header className="top-header">
+        {/* Logo */}
         <div className="logo-area">
           <img src="/logo.png" alt="Hotel Logo" style={{ height: '48px', objectFit: 'contain' }} />
         </div>
+
+        {/* Center Nav Links */}
+        <nav className="top-nav-links">
+          {topNavLinks.map(link => {
+            const isActive = location.pathname === link.path ||
+              (link.path !== '/' && location.pathname.startsWith(link.path));
+            return (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`top-nav-link${isActive ? ' active' : ''}`}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
+        </nav>
         
-        <div className="top-search-bar">
-          <Search size={16} />
-          <input type="text" placeholder="Search reservations, rooms, or guests..." />
-        </div>
-        
+        {/* Right Actions */}
         <div className="nav-actions">
-          <div className="icon-btn">
-            <Plus size={20} />
+          {/* Notifications */}
+          <div className="icon-btn-wrapper" ref={notifRef}>
+            <button className="icon-btn" onClick={() => { setNotifOpen(v => !v); setProfileOpen(false); }}>
+              <Bell size={20} />
+              <span className="notification-badge">3</span>
+            </button>
+            {notifOpen && (
+              <div className="dropdown-panel notif-panel">
+                <div className="dropdown-header">Notifications</div>
+                {notifications.map(n => (
+                  <div key={n.id} className={`notif-item${n.unread ? ' unread' : ''}`}>
+                    <div className="notif-dot" style={{ backgroundColor: n.unread ? '#3b82f6' : 'transparent' }} />
+                    <div>
+                      <p className="notif-text">{n.text}</p>
+                      <span className="notif-time">{n.time}</span>
+                    </div>
+                  </div>
+                ))}
+                <div className="dropdown-footer">View all notifications</div>
+              </div>
+            )}
           </div>
-          <div className="icon-btn">
-            <Bell size={20} />
-            <span className="notification-badge">3</span>
-          </div>
-          <div className="user-profile">
-            <img 
-              src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=150&q=80" 
-              alt="Manager Profile" 
-              className="user-avatar"
-            />
-            <div className="user-info">
-              <span className="user-name">Sarah Jenkins</span>
-              <span className="user-email">General Manager</span>
-            </div>
-            <ChevronDown size={16} color="#a1a1aa" />
+
+          {/* User Profile */}
+          <div className="icon-btn-wrapper" ref={profileRef}>
+            <button className="user-profile" onClick={() => { setProfileOpen(v => !v); setNotifOpen(false); }}>
+              <img 
+                src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=150&q=80" 
+                alt="Manager Profile" 
+                className="user-avatar"
+              />
+              <div className="user-info">
+                <span className="user-name">Sarah Jenkins</span>
+                <span className="user-email">General Manager</span>
+              </div>
+              <ChevronDown size={14} color="#a1a1aa" style={{ transition: 'transform 0.2s', transform: profileOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+            </button>
+            {profileOpen && (
+              <div className="dropdown-panel profile-panel">
+                <div className="dropdown-header">My Account</div>
+                <Link to="#" className="dropdown-item"><User size={15} /> Profile Settings</Link>
+                <Link to="#" className="dropdown-item"><HelpCircle size={15} /> Help & Support</Link>
+                <div className="dropdown-divider" />
+                <button className="dropdown-item danger"><LogOut size={15} /> Sign Out</button>
+              </div>
+            )}
           </div>
         </div>
       </header>
