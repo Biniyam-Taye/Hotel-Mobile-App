@@ -46,7 +46,6 @@ const navGroups = [
     items: [
       { icon: Globe, label: 'Website Content' },
       { icon: TicketPercent, label: 'Offers & Coupons', path: '/content/offers' },
-      { icon: ImageIcon, label: 'Gallery / Media' },
     ],
   },
   {
