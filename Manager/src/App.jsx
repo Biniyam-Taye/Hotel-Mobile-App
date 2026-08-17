@@ -21,6 +21,7 @@ import NotificationsPage from './pages/System/Notifications';
 import SettingsPage from './pages/System/Settings';
 import ReviewsPage from './pages/Insights/Reviews';
 import ReportsPage from './pages/Insights/Reports';
+import ReservationsPage from './pages/Reservations/ReservationsPage';
 
 const navGroups = [
   {
@@ -203,6 +204,7 @@ function App() {
         <div className="content-layout">
           <Routes>
             <Route path="/" element={<DashboardOverview />} />
+            <Route path="/reservations" element={<ReservationsPage />} />
             <Route path="/rooms" element={<RoomsList />} />
             <Route path="/room-categories" element={<RoomCategoriesList />} />
             <Route path="/hospitality/restaurant" element={<RestaurantMenu />} />
