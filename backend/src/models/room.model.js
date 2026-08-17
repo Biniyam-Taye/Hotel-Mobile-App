@@ -11,12 +11,26 @@ const roomSchema = new mongoose.Schema(
     description: {
       type: String,
       required: [true, 'Please add a description'],
-      maxlength: [1000, 'Description can not be more than 1000 characters'],
+      maxlength: [2000, 'Description can not be more than 2000 characters'],
+    },
+    location: {
+      type: String,
+      default: 'Adama',
+    },
+    bedType: {
+      type: String,
+    },
+    roomSize: {
+      type: Number,
     },
     pricePerNight: {
       type: Number,
       required: [true, 'Please add a price per night'],
       min: [0, 'Price must be greater than or equal to 0'],
+    },
+    discountPrice: {
+      type: Number,
+      min: [0, 'Discount price must be greater than or equal to 0'],
     },
     capacity: {
       adults: {
@@ -46,6 +60,16 @@ const roomSchema = new mongoose.Schema(
     isAvailable: {
       type: Boolean,
       default: true,
+    },
+    rating: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 5,
+    },
+    reviewCount: {
+      type: Number,
+      default: 0,
     },
   },
   {
