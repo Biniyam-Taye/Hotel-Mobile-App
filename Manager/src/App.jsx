@@ -73,7 +73,7 @@ function App() {
       {/* Top Header */}
       <header className="top-header">
         <div className="logo-area">
-          <img src="/logo.png" alt="Hotel Logo" style={{ height: '32px', objectFit: 'contain' }} />
+          <img src="/logo.png" alt="Hotel Logo" style={{ height: '48px', objectFit: 'contain' }} />
         </div>
         
         <div className="top-search-bar">

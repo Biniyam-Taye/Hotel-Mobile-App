@@ -46,7 +46,7 @@ body {
 .app-container {
   width: 100vw;
   height: 100vh;
-  background-color: var(--app-bg);
+  background-color: var(--main-bg);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -57,8 +57,11 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.25rem 2rem;
-  border-bottom: 1px solid #1f2937;
+  padding: 0.75rem 1.5rem;
+  margin: 1rem 1.5rem 0.5rem 1.5rem;
+  background-color: #111827;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .logo-area {
@@ -181,9 +184,11 @@ body {
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
               min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
               padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 0 1rem 1rem 0;
+  border-radius: 1rem;
   box-shadow: 2px 0 16px rgba(0, 0, 0, 0.06);
   flex-shrink: 0;
+  margin-left: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .left-sidebar.expanded {
