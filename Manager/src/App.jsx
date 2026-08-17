@@ -96,118 +96,110 @@ function App() {
 
   return (
     <div className="app-container">
-      {/* Top Header */}
-      <header className="top-header">
-        {/* Logo */}
-        <div className="logo-area">
-          <img src="/logo.png" alt="Hotel Logo" style={{ height: '48px', objectFit: 'contain' }} />
+
+      {/* Left Sidebar — full height */}
+      <aside className={`left-sidebar${sidebarExpanded ? ' expanded' : ''}`}>
+        <div className="sidebar-nav">
+          {navGroups.map((group) => (
+            <div className="sidebar-group" key={group.label}>
+              {sidebarExpanded && (
+                <span className="sidebar-group-title">{group.label}</span>
+              )}
+              {group.items.map((item) => {
+                const Icon = item.icon;
+                const isActive = location.pathname === item.path ||
+                  (item.path !== '/' && location.pathname.startsWith(item.path));
+                return (
+                  <Link
+                    to={item.path || '#'}
+                    key={item.label}
+                    className={`sidebar-item${isActive ? ' active' : ''}`}
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <span className="sidebar-item-icon"><Icon size={22} /></span>
+                    {sidebarExpanded && <span className="sidebar-item-label">{item.label}</span>}
+                    <span className="sidebar-tooltip">{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
         </div>
+        <button
+          className="sidebar-toggle"
+          onClick={() => setSidebarExpanded((v) => !v)}
+          aria-label={sidebarExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
+        >
+          <ChevronRight
+            size={16}
+            className={`toggle-arrow${sidebarExpanded ? ' rotated' : ''}`}
+          />
+        </button>
+      </aside>
 
-        {/* Spacer */}
-        <div style={{ flex: 1, minWidth: '8rem' }} />
+      {/* Right Column — navbar + content */}
+      <div className="right-column">
 
-        {/* Right Actions */}
-        <div className="nav-actions">
-          {/* Notifications */}
-          <div className="icon-btn-wrapper" ref={notifRef}>
-            <button className="icon-btn" onClick={() => { setNotifOpen(v => !v); setProfileOpen(false); }}>
-              <Bell size={20} />
-              <span className="notification-badge">3</span>
-            </button>
-            {notifOpen && (
-              <div className="dropdown-panel notif-panel">
-                <div className="dropdown-header">Notifications</div>
-                {notifications.map(n => (
-                  <div key={n.id} className={`notif-item${n.unread ? ' unread' : ''}`}>
-                    <div className="notif-dot" style={{ backgroundColor: n.unread ? '#3b82f6' : 'transparent' }} />
-                    <div>
-                      <p className="notif-text">{n.text}</p>
-                      <span className="notif-time">{n.time}</span>
+        {/* Top Header */}
+        <header className="top-header">
+          <div className="logo-area">
+            <img src="/logo.png" alt="Hotel Logo" style={{ height: '48px', objectFit: 'contain' }} />
+          </div>
+
+          <div style={{ flex: 1, minWidth: '8rem' }} />
+
+          <div className="nav-actions">
+            {/* Notifications */}
+            <div className="icon-btn-wrapper" ref={notifRef}>
+              <button className="icon-btn" onClick={() => { setNotifOpen(v => !v); setProfileOpen(false); }}>
+                <Bell size={20} />
+                <span className="notification-badge">3</span>
+              </button>
+              {notifOpen && (
+                <div className="dropdown-panel notif-panel">
+                  <div className="dropdown-header">Notifications</div>
+                  {notifications.map(n => (
+                    <div key={n.id} className={`notif-item${n.unread ? ' unread' : ''}`}>
+                      <div className="notif-dot" style={{ backgroundColor: n.unread ? '#3b82f6' : 'transparent' }} />
+                      <div>
+                        <p className="notif-text">{n.text}</p>
+                        <span className="notif-time">{n.time}</span>
+                      </div>
                     </div>
-                  </div>
-                ))}
-                <div className="dropdown-footer">View all notifications</div>
-              </div>
-            )}
+                  ))}
+                  <div className="dropdown-footer">View all notifications</div>
+                </div>
+              )}
+            </div>
+
+            {/* User Profile */}
+            <div className="icon-btn-wrapper" ref={profileRef}>
+              <button className="user-profile" onClick={() => { setProfileOpen(v => !v); setNotifOpen(false); }}>
+                <img
+                  src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=150&q=80"
+                  alt="Manager Profile"
+                  className="user-avatar"
+                />
+                <div className="user-info">
+                  <span className="user-name">Sarah Jenkins</span>
+                  <span className="user-email">General Manager</span>
+                </div>
+                <ChevronDown size={14} color="#a1a1aa" style={{ transition: 'transform 0.2s', transform: profileOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+              </button>
+              {profileOpen && (
+                <div className="dropdown-panel profile-panel">
+                  <div className="dropdown-header">My Account</div>
+                  <Link to="#" className="dropdown-item"><User size={15} /> Profile Settings</Link>
+                  <Link to="#" className="dropdown-item"><HelpCircle size={15} /> Help & Support</Link>
+                  <div className="dropdown-divider" />
+                  <button className="dropdown-item danger"><LogOut size={15} /> Sign Out</button>
+                </div>
+              )}
+            </div>
           </div>
+        </header>
 
-          {/* User Profile */}
-          <div className="icon-btn-wrapper" ref={profileRef}>
-            <button className="user-profile" onClick={() => { setProfileOpen(v => !v); setNotifOpen(false); }}>
-              <img 
-                src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=150&q=80" 
-                alt="Manager Profile" 
-                className="user-avatar"
-              />
-              <div className="user-info">
-                <span className="user-name">Sarah Jenkins</span>
-                <span className="user-email">General Manager</span>
-              </div>
-              <ChevronDown size={14} color="#a1a1aa" style={{ transition: 'transform 0.2s', transform: profileOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
-            </button>
-            {profileOpen && (
-              <div className="dropdown-panel profile-panel">
-                <div className="dropdown-header">My Account</div>
-                <Link to="#" className="dropdown-item"><User size={15} /> Profile Settings</Link>
-                <Link to="#" className="dropdown-item"><HelpCircle size={15} /> Help & Support</Link>
-                <div className="dropdown-divider" />
-                <button className="dropdown-item danger"><LogOut size={15} /> Sign Out</button>
-              </div>
-            )}
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content Area */}
-      <div className="main-area">
-        
-        {/* Left Sidebar */}
-        <aside className={`left-sidebar${sidebarExpanded ? ' expanded' : ''}`}>
-          
-          {/* Nav Items */}
-          <div className="sidebar-nav">
-            {navGroups.map((group) => (
-              <div className="sidebar-group" key={group.label}>
-                {sidebarExpanded && (
-                  <span className="sidebar-group-title">{group.label}</span>
-                )}
-                {group.items.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = location.pathname === item.path || 
-                    (item.path !== '/' && location.pathname.startsWith(item.path));
-                    
-                  return (
-                    <Link
-                      to={item.path || '#'}
-                      key={item.label}
-                      className={`sidebar-item${isActive ? ' active' : ''}`}
-                      style={{ textDecoration: 'none' }}
-                    >
-                      <span className="sidebar-item-icon"><Icon size={22} /></span>
-                      {sidebarExpanded && <span className="sidebar-item-label">{item.label}</span>}
-                      {/* Tooltip — only visible in collapsed mode via CSS */}
-                      <span className="sidebar-tooltip">{item.label}</span>
-                    </Link>
-                  );
-                })}
-              </div>
-            ))}
-          </div>
-
-          {/* Toggle Button — sits on the right edge of the sidebar */}
-          <button
-            className="sidebar-toggle"
-            onClick={() => setSidebarExpanded((v) => !v)}
-            aria-label={sidebarExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
-          >
-            <ChevronRight
-              size={16}
-              className={`toggle-arrow${sidebarExpanded ? ' rotated' : ''}`}
-            />
-          </button>
-        </aside>
-
-        {/* Content Layout */}
+        {/* Page Content */}
         <div className="content-layout">
           <Routes>
             <Route path="/" element={<DashboardOverview />} />
@@ -221,10 +213,10 @@ function App() {
             <Route path="/system/settings" element={<SettingsPage />} />
             <Route path="/insights/reviews" element={<ReviewsPage />} />
             <Route path="/insights/reports" element={<ReportsPage />} />
-            {/* Catch-all for undefined routes that just renders the overview for now */}
             <Route path="*" element={<DashboardOverview />} />
           </Routes>
         </div>
+
       </div>
     </div>
   );
