@@ -16,6 +16,7 @@ import RoomCategoriesList from './pages/RoomCategories/RoomCategoriesList';
 import RestaurantMenu from './pages/Hospitality/RestaurantMenu';
 import HotelServices from './pages/Hospitality/HotelServices';
 import FacilitiesAmenities from './pages/Hospitality/FacilitiesAmenities';
+import OffersCoupons from './pages/Content/OffersCoupons';
 
 const navGroups = [
   {
@@ -44,7 +45,7 @@ const navGroups = [
     label: 'Content',
     items: [
       { icon: Globe, label: 'Website Content' },
-      { icon: TicketPercent, label: 'Offers & Coupons' },
+      { icon: TicketPercent, label: 'Offers & Coupons', path: '/content/offers' },
       { icon: ImageIcon, label: 'Gallery / Media' },
     ],
   },
@@ -163,6 +164,7 @@ function App() {
             <Route path="/hospitality/restaurant" element={<RestaurantMenu />} />
             <Route path="/hospitality/services" element={<HotelServices />} />
             <Route path="/hospitality/facilities" element={<FacilitiesAmenities />} />
+            <Route path="/content/offers" element={<OffersCoupons />} />
             {/* Catch-all for undefined routes that just renders the overview for now */}
             <Route path="*" element={<DashboardOverview />} />
           </Routes>
