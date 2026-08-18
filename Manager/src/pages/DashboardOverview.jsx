@@ -16,8 +16,8 @@ const kpiCards = [
     icon: BedDouble,
     gradient: 'linear-gradient(135deg, #1e3a5f 0%, #2d6a9f 100%)',
     iconBg: 'rgba(255,255,255,0.15)',
+    chart: [60, 65, 75, 70, 85, 90, 89],
   },
-
   {
     label: 'Check-ins Today',
     value: '14',
@@ -27,6 +27,7 @@ const kpiCards = [
     icon: CalendarCheck,
     gradient: 'linear-gradient(135deg, #4338ca 0%, #6d28d9 100%)',
     iconBg: 'rgba(255,255,255,0.15)',
+    chart: [8, 12, 15, 10, 18, 22, 14],
   },
   {
     label: 'Occupancy Rate',
@@ -37,6 +38,7 @@ const kpiCards = [
     icon: BarChart3,
     gradient: 'linear-gradient(135deg, #b45309 0%, #d97706 100%)',
     iconBg: 'rgba(255,255,255,0.15)',
+    chart: [62, 65, 68, 64, 70, 75, 71.7],
   },
 ];
 
@@ -109,21 +111,38 @@ export default function DashboardOverview() {
         {kpiCards.map(c => {
           const Icon = c.icon;
           return (
-            <div key={c.label} style={{ borderRadius: '1.25rem', padding: '1.5rem', background: c.gradient, color: 'white', position: 'relative', overflow: 'hidden' }}>
+            <div key={c.label} style={{ borderRadius: '1.25rem', padding: '1.5rem', background: c.gradient, color: 'white', position: 'relative', overflow: 'hidden', display: 'flex', justifyContent: 'space-between' }}>
               <div style={{ position: 'absolute', top: -20, right: -20, width: 90, height: 90, borderRadius: '50%', background: 'rgba(255,255,255,0.07)' }} />
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                <div style={{ width: 40, height: 40, borderRadius: '0.75rem', background: c.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              
+              <div style={{ zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div style={{ width: 40, height: 40, borderRadius: '0.75rem', background: c.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
                   <Icon size={20} color="white" />
                 </div>
-                {c.trend && (
+                <div>
+                  <div style={{ fontSize: '1.8rem', fontWeight: 700, lineHeight: 1 }}>{c.value}</div>
+                  <div style={{ fontSize: '0.75rem', opacity: 0.75, marginTop: '0.3rem' }}>{c.label}</div>
+                  <div style={{ fontSize: '0.7rem', opacity: 0.6, marginTop: '0.2rem' }}>{c.sub}</div>
+                </div>
+              </div>
+
+              <div style={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+                {c.trend ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', background: 'rgba(255,255,255,0.2)', padding: '0.2rem 0.6rem', borderRadius: '9999px', fontSize: '0.72rem', fontWeight: 600 }}>
                     {c.positive ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />} {c.trend}
                   </div>
-                )}
+                ) : <div />}
+                
+                {/* Mini Bar Chart */}
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px', height: '40px' }}>
+                  {c.chart.map((val, i) => {
+                    const max = Math.max(...c.chart);
+                    const height = (val / max) * 100;
+                    return (
+                      <div key={i} style={{ width: '6px', height: `${height}%`, background: 'rgba(255,255,255,0.4)', borderRadius: '3px' }} />
+                    );
+                  })}
+                </div>
               </div>
-              <div style={{ fontSize: '1.8rem', fontWeight: 700, lineHeight: 1 }}>{c.value}</div>
-              <div style={{ fontSize: '0.75rem', opacity: 0.75, marginTop: '0.3rem' }}>{c.label}</div>
-              <div style={{ fontSize: '0.7rem', opacity: 0.6, marginTop: '0.2rem' }}>{c.sub}</div>
             </div>
           );
         })}
@@ -148,7 +167,7 @@ export default function DashboardOverview() {
       </div>
 
       {/* Main Grid: Charts + Tables */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.25rem', marginBottom: '1.25rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem', marginBottom: '1.25rem' }}>
 
         {/* Weekly Occupancy Bar Chart */}
         <div style={{ background: 'white', borderRadius: '1.25rem', padding: '1.5rem', border: '1px solid #f3f4f6', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
@@ -167,7 +186,34 @@ export default function DashboardOverview() {
           </div>
         </div>
 
-
+        {/* Room Status Overview */}
+        <div style={{ background: 'white', borderRadius: '1.25rem', padding: '1.5rem', border: '1px solid #f3f4f6', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 600, color: '#111827' }}>Room Status Overview</h3>
+            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#3b82f6', background: '#eff6ff', padding: '0.2rem 0.7rem', borderRadius: '9999px' }}>124 Total</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {[
+              { label: 'Clean & Ready', value: 62, color: '#10b981' },
+              { label: 'Clean (Needs Inspection)', value: 24, color: '#3b82f6' },
+              { label: 'Occupied / Dirty', value: 35, color: '#f59e0b' },
+              { label: 'Out of Order', value: 3, color: '#ef4444' },
+            ].map(s => (
+              <div key={s.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: s.color }} />
+                  <span style={{ fontSize: '0.825rem', color: '#4b5563', fontWeight: 500 }}>{s.label}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#111827', width: '20px', textAlign: 'right' }}>{s.value}</span>
+                  <div style={{ width: 60, height: 6, borderRadius: 3, background: '#f3f4f6', overflow: 'hidden' }}>
+                    <div style={{ width: `${(s.value / 124) * 100}%`, height: '100%', background: s.color, borderRadius: 3 }} />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
       </div>
 
