@@ -49,7 +49,6 @@ const navGroups = [
   {
     label: 'Content',
     items: [
-      { icon: Globe, label: 'Website Content' },
       { icon: TicketPercent, label: 'Offers & Coupons', path: '/content/offers' },
     ],
   },
@@ -168,7 +167,7 @@ function App() {
                       </div>
                     </div>
                   ))}
-                  <div className="dropdown-footer">View all notifications</div>
+                  <div className="dropdown-footer" onClick={() => { navigate('/system/notifications'); setNotifOpen(false); }} style={{ cursor: 'pointer' }}>View all notifications</div>
                 </div>
               )}
             </div>

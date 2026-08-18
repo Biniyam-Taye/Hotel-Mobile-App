@@ -17,16 +17,7 @@ const kpiCards = [
     gradient: 'linear-gradient(135deg, #1e3a5f 0%, #2d6a9f 100%)',
     iconBg: 'rgba(255,255,255,0.15)',
   },
-  {
-    label: "Today's Revenue",
-    value: 'ETB 8,240',
-    sub: 'vs ETB 7,820 yesterday',
-    trend: '+5.4%',
-    positive: true,
-    icon: CreditCard,
-    gradient: 'linear-gradient(135deg, #065f46 0%, #059669 100%)',
-    iconBg: 'rgba(255,255,255,0.15)',
-  },
+
   {
     label: 'Check-ins Today',
     value: '14',
@@ -114,7 +105,7 @@ export default function DashboardOverview() {
       </div>
 
       {/* KPI Cards (gradient) */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '1.25rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1.25rem' }}>
         {kpiCards.map(c => {
           const Icon = c.icon;
           return (
@@ -157,7 +148,7 @@ export default function DashboardOverview() {
       </div>
 
       {/* Main Grid: Charts + Tables */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem', marginBottom: '1.25rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.25rem', marginBottom: '1.25rem' }}>
 
         {/* Weekly Occupancy Bar Chart */}
         <div style={{ background: 'white', borderRadius: '1.25rem', padding: '1.5rem', border: '1px solid #f3f4f6', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
@@ -176,22 +167,7 @@ export default function DashboardOverview() {
           </div>
         </div>
 
-        {/* Weekly Revenue Bar Chart */}
-        <div style={{ background: 'white', borderRadius: '1.25rem', padding: '1.5rem', border: '1px solid #f3f4f6', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-            <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 600, color: '#111827' }}>Weekly Revenue</h3>
-            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#f59e0b', background: '#fef3c7', padding: '0.2rem 0.7rem', borderRadius: '9999px' }}>ETB 51,040</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'flex-end', gap: '0.5rem', height: 120 }}>
-            {revenueData.map((val, i) => (
-              <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
-                <span style={{ fontSize: '0.65rem', color: '#9ca3af', fontWeight: 500 }}>{(val/1000).toFixed(1)}k</span>
-                <div style={{ width: '100%', borderRadius: '0.4rem 0.4rem 0 0', height: `${(val / maxRev) * 90}px`, background: i === 5 ? 'linear-gradient(180deg,#10b981,#059669)' : '#d1fae5', transition: 'height 0.4s ease' }} />
-                <span style={{ fontSize: '0.68rem', color: '#6b7280' }}>{weekDays[i]}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+
 
       </div>
 
@@ -238,9 +214,8 @@ export default function DashboardOverview() {
                   <p style={{ margin: 0, fontSize: '0.825rem', fontWeight: 600, color: '#111827' }}>{b.name}</p>
                   <p style={{ margin: '0.1rem 0 0', fontSize: '0.7rem', color: '#9ca3af' }}>{b.booking} · {b.dates}</p>
                 </div>
-                <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#111827' }}>{b.amount}</div>
-                  <div style={{ fontSize: '0.68rem', fontWeight: 600, color: b.paid ? '#059669' : '#f59e0b', marginTop: '0.1rem' }}>{b.paid ? '✓ Paid' : '⧖ Deposit'}</div>
+                <div style={{ textAlign: 'right', flexShrink: 0, display: 'flex', alignItems: 'center' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: b.paid ? '#059669' : '#f59e0b', padding: '0.2rem 0.6rem', background: b.paid ? '#d1fae5' : '#fef3c7', borderRadius: '9999px' }}>{b.paid ? '✓ Paid' : '⧖ Deposit'}</div>
                 </div>
               </div>
             ))}

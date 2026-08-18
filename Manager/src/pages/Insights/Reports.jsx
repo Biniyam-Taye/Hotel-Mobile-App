@@ -33,7 +33,6 @@ const sentReports = [
 ];
 
 const quickStats = [
-  { label: 'Total Revenue', value: 'ETB 284,000', change: '+12%', icon: DollarSign, color: '#dcfce7', iconColor: '#16a34a' },
   { label: 'Occupancy Rate', value: '78%', change: '+5%', icon: BedDouble, color: '#dbeafe', iconColor: '#1d4ed8' },
   { label: 'Total Guests', value: '1,240', change: '+8%', icon: Users, color: '#ede9fe', iconColor: '#6d28d9' },
   { label: 'Avg. Stay Length', value: '3.4 nights', change: '+0.2', icon: Calendar, color: '#fef3c7', iconColor: '#b45309' },
@@ -41,7 +40,6 @@ const quickStats = [
 
 const reportTypes = [
   'Monthly Performance Report',
-  'Revenue & Financials Summary',
   'Occupancy & Room Report',
   'Guest Satisfaction Report',
   'Custom Report',
@@ -93,7 +91,7 @@ export default function ReportsPage() {
       </h1>
 
       {/* Quick Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
         {quickStats.map(s => {
           const Icon = s.icon;
           return (
