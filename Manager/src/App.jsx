@@ -189,8 +189,7 @@ function App() {
               {profileOpen && (
                 <div className="dropdown-panel profile-panel">
                   <div className="dropdown-header">My Account</div>
-                  <Link to="#" className="dropdown-item"><User size={15} /> Profile Settings</Link>
-                  <Link to="#" className="dropdown-item"><HelpCircle size={15} /> Help & Support</Link>
+                  <Link to="/system/settings" className="dropdown-item" onClick={() => setProfileOpen(false)}><User size={15} /> Profile Settings</Link>
                   <div className="dropdown-divider" />
                   <button className="dropdown-item danger"><LogOut size={15} /> Sign Out</button>
                 </div>
