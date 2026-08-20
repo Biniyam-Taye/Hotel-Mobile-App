@@ -25,7 +25,6 @@ export default function EventsConferences() {
   // Form State
   const [formData, setFormData] = useState(null);
   const [mainImagePreview, setMainImagePreview] = useState(null);
-  const [specialRates, setSpecialRates] = useState([]);
 
   const getCategoryName = (id) => mockEventCategories.find(c => c.id === id)?.name || 'Unknown';
 
@@ -41,7 +40,6 @@ export default function EventsConferences() {
   const handleAddClick = () => {
     setEditingSpace(null);
     setMainImagePreview(null);
-    setSpecialRates([]);
     setFormData({
       spaceNumber: '',
       name: '',
@@ -64,7 +62,6 @@ export default function EventsConferences() {
   const handleEditClick = (space) => {
     setEditingSpace(space);
     setMainImagePreview(space.image || null);
-    setSpecialRates(space.specialRates || []);
     setFormData({
       ...space,
       price: space.price || '',
@@ -99,7 +96,6 @@ export default function EventsConferences() {
       maxGuests: Number(formData.maxGuests),
       floor: Number(formData.floor),
       spaceSize: formData.spaceSize ? Number(formData.spaceSize) : null,
-      specialRates: specialRates.filter(r => r.date && r.price),
       image: mainImagePreview || 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=800&q=80'
     };
 
@@ -138,35 +134,6 @@ export default function EventsConferences() {
       const dummyUrl = 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=800&q=80';
       setMainImagePreview(dummyUrl);
     }
-  };
-
-  // Special Rates management
-  const addSpecialRate = () => {
-    setSpecialRates(prev => [
-      ...prev,
-      {
-        id: `sr_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
-        date: '',
-        price: '',
-        label: ''
-      }
-    ]);
-  };
-
-  const removeSpecialRate = (id) => {
-    setSpecialRates(prev => prev.filter(r => r.id !== id));
-  };
-
-  const handleSpecialRateChange = (id, field, value) => {
-    setSpecialRates(prev => prev.map(r => {
-      if (r.id === id) {
-        return {
-          ...r,
-          [field]: field === 'price' ? (value ? Number(value) : '') : value
-        };
-      }
-      return r;
-    }));
   };
 
   return (
@@ -501,75 +468,6 @@ export default function EventsConferences() {
                 placeholder="Enter event space description..."
                 style={{ width: '100%', padding: '0.6rem 1rem', borderRadius: '0.5rem', border: '1px solid #e5e7eb', fontFamily: 'inherit', resize: 'vertical' }}
               ></textarea>
-            </div>
-
-            {/* Special Surcharges / Custom Specific Day Rates */}
-            <div className="form-group" style={{ border: '1px solid #e5e7eb', borderRadius: '0.5rem', padding: '1rem', backgroundColor: '#f9fafb' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                <span style={{ fontSize: '0.875rem', fontWeight: 600, color: '#374151', display: 'inline-flex', alignItems: 'center', gap: '0.375rem' }}>
-                  <Calendar size={16} color="#3b82f6" />
-                  Special Specific Day Rates
-                </span>
-                <button 
-                  type="button" 
-                  className="secondary-btn" 
-                  style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
-                  onClick={addSpecialRate}
-                >
-                  + Add Custom Rate
-                </button>
-              </div>
-              
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                {specialRates.length > 0 ? (
-                  specialRates.map((rate, index) => (
-                    <div 
-                      key={rate.id} 
-                      style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 2fr auto', gap: '0.5rem', alignItems: 'center' }}
-                    >
-                      <input 
-                        type="date" 
-                        value={rate.date} 
-                        required
-                        onChange={(e) => handleSpecialRateChange(rate.id, 'date', e.target.value)}
-                        style={{ padding: '0.4rem', fontSize: '0.75rem', borderRadius: '0.375rem', border: '1px solid #d1d5db' }}
-                      />
-                      <div style={{ position: 'relative' }}>
-                        <span style={{ position: 'absolute', left: '6px', top: '50%', transform: 'translateY(-50%)', fontSize: '0.75rem', color: '#9ca3af' }}>$</span>
-                        <input 
-                          type="number" 
-                          value={rate.price} 
-                          required
-                          min="0"
-                          placeholder="Rate"
-                          onChange={(e) => handleSpecialRateChange(rate.id, 'price', e.target.value)}
-                          style={{ padding: '0.4rem 0.4rem 0.4rem 1rem', fontSize: '0.75rem', borderRadius: '0.375rem', border: '1px solid #d1d5db', width: '100%' }}
-                        />
-                      </div>
-                      <input 
-                        type="text" 
-                        value={rate.label} 
-                        placeholder="Reason (e.g. Wedding Sat, Holiday)" 
-                        onChange={(e) => handleSpecialRateChange(rate.id, 'label', e.target.value)}
-                        style={{ padding: '0.4rem', fontSize: '0.75rem', borderRadius: '0.375rem', border: '1px solid #d1d5db' }}
-                      />
-                      <button 
-                        type="button" 
-                        className="action-btn delete" 
-                        style={{ padding: '0.375rem' }}
-                        onClick={() => removeSpecialRate(rate.id)}
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
-                  ))
-                ) : (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#6b7280', fontSize: '0.75rem', padding: '0.5rem 0' }}>
-                    <Info size={14} />
-                    <span>No specific day rates defined yet. Rent pricing will defaults to base rate.</span>
-                  </div>
-                )}
-              </div>
             </div>
 
             {/* Amenities Checklist */}
