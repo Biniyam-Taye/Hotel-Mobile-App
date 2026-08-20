@@ -1,0 +1,650 @@
+import React, { useState } from 'react';
+import { 
+  Plus, Search, Edit, Trash2, Filter, Star, 
+  UploadCloud, X, Calendar, DollarSign, Users, Info
+} from 'lucide-react';
+import { 
+  mockEventSpaces, 
+  mockEventCategories, 
+  eventAmenitiesList 
+} from '../../data/hospitalityMockData';
+import Modal from '../../components/common/Modal';
+
+export default function EventsConferences() {
+  const [spaces, setSpaces] = useState(mockEventSpaces);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [editingSpace, setEditingSpace] = useState(null);
+  
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [spaceToDelete, setSpaceToDelete] = useState(null);
+
+  // Form State
+  const [formData, setFormData] = useState(null);
+  const [mainImagePreview, setMainImagePreview] = useState(null);
+  const [specialRates, setSpecialRates] = useState([]);
+
+  const getCategoryName = (id) => mockEventCategories.find(c => c.id === id)?.name || 'Unknown';
+
+  const filteredSpaces = spaces.filter(space => {
+    const matchesSearch = space.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          space.spaceNumber.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = categoryFilter ? space.categoryId === categoryFilter : true;
+    const matchesStatus = statusFilter ? space.status === statusFilter : true;
+    
+    return matchesSearch && matchesCategory && matchesStatus;
+  });
+
+  const handleAddClick = () => {
+    setEditingSpace(null);
+    setMainImagePreview(null);
+    setSpecialRates([]);
+    setFormData({
+      spaceNumber: '',
+      name: '',
+      categoryId: mockEventCategories[0]?.id || '',
+      price: '',
+      discountedPrice: '',
+      maxGuests: 50,
+      floor: 1,
+      status: 'Available',
+      publishStatus: 'Draft',
+      isFeatured: false,
+      image: '',
+      spaceSize: '',
+      description: '',
+      amenities: []
+    });
+    setIsFormModalOpen(true);
+  };
+
+  const handleEditClick = (space) => {
+    setEditingSpace(space);
+    setMainImagePreview(space.image || null);
+    setSpecialRates(space.specialRates || []);
+    setFormData({
+      ...space,
+      price: space.price || '',
+      discountedPrice: space.discountedPrice || '',
+      floor: space.floor || 1,
+      maxGuests: space.maxGuests || 50,
+      spaceSize: space.spaceSize || '',
+      description: space.description || '',
+      amenities: space.amenities || []
+    });
+    setIsFormModalOpen(true);
+  };
+
+  const handleDeleteClick = (space) => {
+    setSpaceToDelete(space);
+    setIsConfirmModalOpen(true);
+  };
+
+  const confirmDelete = () => {
+    setSpaces(spaces.filter(s => s.id !== spaceToDelete.id));
+    setIsConfirmModalOpen(false);
+    setSpaceToDelete(null);
+  };
+
+  const handleSaveForm = (e) => {
+    e.preventDefault();
+    
+    const finalData = {
+      ...formData,
+      price: Number(formData.price),
+      discountedPrice: formData.discountedPrice ? Number(formData.discountedPrice) : null,
+      maxGuests: Number(formData.maxGuests),
+      floor: Number(formData.floor),
+      spaceSize: formData.spaceSize ? Number(formData.spaceSize) : null,
+      specialRates: specialRates.filter(r => r.date && r.price),
+      image: mainImagePreview || 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=800&q=80'
+    };
+
+    if (editingSpace) {
+      setSpaces(spaces.map(s => s.id === editingSpace.id ? { ...s, ...finalData } : s));
+    } else {
+      const newId = `es${spaces.length + 1}`;
+      setSpaces([...spaces, { id: newId, ...finalData }]);
+    }
+    setIsFormModalOpen(false);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleAmenityChange = (amenityId) => {
+    setFormData(prev => {
+      const current = prev.amenities || [];
+      if (current.includes(amenityId)) {
+        return { ...prev, amenities: current.filter(id => id !== amenityId) };
+      } else {
+        return { ...prev, amenities: [...current, amenityId] };
+      }
+    });
+  };
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Mock upload with standard unsplash conference image
+      const dummyUrl = 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=800&q=80';
+      setMainImagePreview(dummyUrl);
+    }
+  };
+
+  // Special Rates management
+  const addSpecialRate = () => {
+    setSpecialRates(prev => [
+      ...prev,
+      {
+        id: `sr_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+        date: '',
+        price: '',
+        label: ''
+      }
+    ]);
+  };
+
+  const removeSpecialRate = (id) => {
+    setSpecialRates(prev => prev.filter(r => r.id !== id));
+  };
+
+  const handleSpecialRateChange = (id, field, value) => {
+    setSpecialRates(prev => prev.map(r => {
+      if (r.id === id) {
+        return {
+          ...r,
+          [field]: field === 'price' ? (value ? Number(value) : '') : value
+        };
+      }
+      return r;
+    }));
+  };
+
+  return (
+    <section className="dashboard-section">
+      <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h1 className="section-title">Events & Conferences</h1>
+        <button className="primary-btn" onClick={handleAddClick}>
+          <Plus size={18} /> Add New Space
+        </button>
+      </div>
+
+      <div className="data-card" style={{ padding: '1.5rem' }}>
+        {/* Table Filters */}
+        <div className="table-controls" style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+          <div className="search-wrapper" style={{ position: 'relative', flex: '1', minWidth: '220px' }}>
+            <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} />
+            <input 
+              type="text" 
+              placeholder="Search by space name or number..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ width: '100%', padding: '0.6rem 1rem 0.6rem 2.2rem', borderRadius: '0.5rem', border: '1px solid #e5e7eb', fontSize: '0.875rem' }}
+            />
+          </div>
+          
+          <select 
+            value={categoryFilter} 
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            style={{ padding: '0.6rem 1rem', borderRadius: '0.5rem', border: '1px solid #e5e7eb', fontSize: '0.875rem', color: '#374151', minWidth: '160px' }}
+          >
+            <option value="">All Categories</option>
+            {mockEventCategories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+          </select>
+
+          <select 
+            value={statusFilter} 
+            onChange={(e) => setStatusFilter(e.target.value)}
+            style={{ padding: '0.6rem 1rem', borderRadius: '0.5rem', border: '1px solid #e5e7eb', fontSize: '0.875rem', color: '#374151', minWidth: '160px' }}
+          >
+            <option value="">All Statuses</option>
+            <option value="Available">Available</option>
+            <option value="Occupied">Occupied</option>
+            <option value="Maintenance">Maintenance</option>
+          </select>
+        </div>
+
+        {/* Spaces Inventory List */}
+        {filteredSpaces.length > 0 ? (
+          <div className="table-responsive">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Space Details</th>
+                  <th>Category</th>
+                  <th>Base Rate</th>
+                  <th>Floor & Size</th>
+                  <th>Capacity</th>
+                  <th>Special Day Rates</th>
+                  <th>Status</th>
+                  <th align="right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredSpaces.map(space => (
+                  <tr key={space.id}>
+                    <td>
+                      <div className="room-cell">
+                        <img 
+                          src={space.image} 
+                          alt={space.name} 
+                          className="room-image" 
+                          style={{ width: 44, height: 44, borderRadius: '0.375rem', objectFit: 'cover' }} 
+                        />
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <h4 style={{ margin: 0, fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+                              {space.name}
+                            </h4>
+                            {space.isFeatured && <Star size={12} fill="#fbbf24" color="#fbbf24" title="Featured Space" />}
+                          </div>
+                          <p style={{ margin: 0, fontSize: '0.75rem', color: '#6b7280' }}>
+                            Space Code: {space.spaceNumber}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td style={{ fontSize: '0.875rem', color: '#4b5563' }}>
+                      {getCategoryName(space.categoryId)}
+                    </td>
+                    <td>
+                      <div style={{ fontWeight: 600, color: '#111827' }}>
+                        ${space.discountedPrice || space.price}<span style={{ fontSize: '0.75rem', fontWeight: 400, color: '#6b7280' }}>/day</span>
+                      </div>
+                      {space.discountedPrice && (
+                        <div style={{ fontSize: '0.75rem', color: '#9ca3af', textDecoration: 'line-through' }}>
+                          ${space.price}
+                        </div>
+                      )}
+                    </td>
+                    <td style={{ fontSize: '0.875rem', color: '#4b5563' }}>
+                      <div>Fl. {space.floor}</div>
+                      <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>{space.spaceSize || 0} m²</div>
+                    </td>
+                    <td>
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.875rem', color: '#374151' }}>
+                        <Users size={14} color="#6b7280" />
+                        <span>Up to {space.maxGuests} guests</span>
+                      </div>
+                    </td>
+                    <td>
+                      {space.specialRates && space.specialRates.length > 0 ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                          {space.specialRates.map(r => (
+                            <span 
+                              key={r.id || r.date} 
+                              className="status-badge" 
+                              style={{ 
+                                backgroundColor: '#fef3c7', 
+                                color: '#92400e', 
+                                fontSize: '0.7rem', 
+                                display: 'inline-flex', 
+                                padding: '0.125rem 0.5rem',
+                                gap: '0.25rem', 
+                                whiteSpace: 'nowrap',
+                                border: '1px dashed #f59e0b'
+                              }} 
+                              title={r.label}
+                            >
+                              <Calendar size={10} style={{ alignSelf: 'center' }} />
+                              {r.date}: <strong>${r.price}</strong>
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <span style={{ fontSize: '0.825rem', color: '#9ca3af', fontStyle: 'italic' }}>None configured</span>
+                      )}
+                    </td>
+                    <td>
+                      <span className={`status-badge ${space.status.toLowerCase()}`}>
+                        {space.status}
+                      </span>
+                    </td>
+                    <td align="right">
+                      <div className="action-buttons">
+                        <button className="action-btn" title="Edit Space" onClick={() => handleEditClick(space)}>
+                          <Edit size={16} />
+                        </button>
+                        <button className="action-btn delete" title="Delete Space" onClick={() => handleDeleteClick(space)}>
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="empty-state">
+            <Filter size={48} color="#d1d5db" />
+            <h3>No event spaces found</h3>
+            <p>Try adjusting your search filters or add a new space.</p>
+          </div>
+        )}
+      </div>
+
+      {/* Add/Edit Event Space Modal */}
+      {formData && (
+        <Modal 
+          isOpen={isFormModalOpen} 
+          onClose={() => setIsFormModalOpen(false)}
+          title={editingSpace ? `Edit Event Space: ${editingSpace.name}` : "Add New Event Space"}
+          footer={null}
+        >
+          <form onSubmit={handleSaveForm} className="custom-form" style={{ maxWeight: '750px' }}>
+            {/* Image Upload Preview */}
+            <div className="form-group">
+              <label>Space Main Image</label>
+              <div className="image-upload-area">
+                {mainImagePreview ? (
+                  <div className="image-preview-wrapper" style={{ position: 'relative', height: '160px' }}>
+                    <img 
+                      src={mainImagePreview} 
+                      alt="Space Preview" 
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '0.375rem' }} 
+                    />
+                    <button 
+                      type="button" 
+                      className="remove-image-btn"
+                      style={{ position: 'absolute', right: 8, top: 8, padding: '0.25rem', background: 'rgba(255,255,255,0.8)', borderRadius: '50%', border: 'none', cursor: 'pointer' }}
+                      onClick={() => { setMainImagePreview(null); }}
+                    >
+                      <X size={16} color="#ef4444" />
+                    </button>
+                  </div>
+                ) : (
+                  <label className="upload-placeholder">
+                    <UploadCloud size={32} color="#9ca3af" />
+                    <span>Click to upload image</span>
+                    <input type="file" accept="image/*" onChange={handleImageUpload} hidden />
+                  </label>
+                )}
+              </div>
+            </div>
+
+            {/* Basic Info */}
+            <div className="form-row">
+              <div className="form-group">
+                <label>Space Code / Number *</label>
+                <input 
+                  type="text" 
+                  name="spaceNumber" 
+                  value={formData.spaceNumber} 
+                  onChange={handleInputChange} 
+                  required 
+                  placeholder="e.g. GB-100"
+                />
+              </div>
+              <div className="form-group">
+                <label>Space Name *</label>
+                <input 
+                  type="text" 
+                  name="name" 
+                  value={formData.name} 
+                  onChange={handleInputChange} 
+                  required 
+                  placeholder="e.g. Grand Ballroom"
+                />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label>Category *</label>
+                <select 
+                  name="categoryId" 
+                  value={formData.categoryId} 
+                  onChange={handleInputChange} 
+                  required
+                >
+                  {mockEventCategories.map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Floor</label>
+                <input 
+                  type="number" 
+                  name="floor" 
+                  value={formData.floor} 
+                  onChange={handleInputChange} 
+                  min="1"
+                />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label>Base Rent Price ($/day) *</label>
+                <input 
+                  type="number" 
+                  name="price" 
+                  value={formData.price} 
+                  onChange={handleInputChange} 
+                  required 
+                  min="0"
+                  placeholder="e.g. 1000"
+                />
+              </div>
+              <div className="form-group">
+                <label>Discounted Price ($/day)</label>
+                <input 
+                  type="number" 
+                  name="discountedPrice" 
+                  value={formData.discountedPrice} 
+                  onChange={handleInputChange} 
+                  min="0"
+                  placeholder="Optional"
+                />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label>Max Capacity (Guests) *</label>
+                <input 
+                  type="number" 
+                  name="maxGuests" 
+                  value={formData.maxGuests} 
+                  onChange={handleInputChange} 
+                  required 
+                  min="1"
+                  placeholder="e.g. 300"
+                />
+              </div>
+              <div className="form-group">
+                <label>Space Size (m²)</label>
+                <input 
+                  type="number" 
+                  name="spaceSize" 
+                  value={formData.spaceSize} 
+                  onChange={handleInputChange} 
+                  min="1"
+                  placeholder="e.g. 250"
+                />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label>Availability Status</label>
+                <select 
+                  name="status" 
+                  value={formData.status} 
+                  onChange={handleInputChange}
+                >
+                  <option value="Available">Available</option>
+                  <option value="Occupied">Occupied</option>
+                  <option value="Maintenance">Maintenance</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label>Description</label>
+              <textarea 
+                name="description" 
+                value={formData.description} 
+                onChange={handleInputChange} 
+                rows="3"
+                placeholder="Enter event space description..."
+                style={{ width: '100%', padding: '0.6rem 1rem', borderRadius: '0.5rem', border: '1px solid #e5e7eb', fontFamily: 'inherit', resize: 'vertical' }}
+              ></textarea>
+            </div>
+
+            {/* Special Surcharges / Custom Specific Day Rates */}
+            <div className="form-group" style={{ border: '1px solid #e5e7eb', borderRadius: '0.5rem', padding: '1rem', backgroundColor: '#f9fafb' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                <span style={{ fontSize: '0.875rem', fontWeight: 600, color: '#374151', display: 'inline-flex', alignItems: 'center', gap: '0.375rem' }}>
+                  <Calendar size={16} color="#3b82f6" />
+                  Special Specific Day Rates
+                </span>
+                <button 
+                  type="button" 
+                  className="secondary-btn" 
+                  style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
+                  onClick={addSpecialRate}
+                >
+                  + Add Custom Rate
+                </button>
+              </div>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                {specialRates.length > 0 ? (
+                  specialRates.map((rate, index) => (
+                    <div 
+                      key={rate.id} 
+                      style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 2fr auto', gap: '0.5rem', alignItems: 'center' }}
+                    >
+                      <input 
+                        type="date" 
+                        value={rate.date} 
+                        required
+                        onChange={(e) => handleSpecialRateChange(rate.id, 'date', e.target.value)}
+                        style={{ padding: '0.4rem', fontSize: '0.75rem', borderRadius: '0.375rem', border: '1px solid #d1d5db' }}
+                      />
+                      <div style={{ position: 'relative' }}>
+                        <span style={{ position: 'absolute', left: '6px', top: '50%', transform: 'translateY(-50%)', fontSize: '0.75rem', color: '#9ca3af' }}>$</span>
+                        <input 
+                          type="number" 
+                          value={rate.price} 
+                          required
+                          min="0"
+                          placeholder="Rate"
+                          onChange={(e) => handleSpecialRateChange(rate.id, 'price', e.target.value)}
+                          style={{ padding: '0.4rem 0.4rem 0.4rem 1rem', fontSize: '0.75rem', borderRadius: '0.375rem', border: '1px solid #d1d5db', width: '100%' }}
+                        />
+                      </div>
+                      <input 
+                        type="text" 
+                        value={rate.label} 
+                        placeholder="Reason (e.g. Wedding Sat, Holiday)" 
+                        onChange={(e) => handleSpecialRateChange(rate.id, 'label', e.target.value)}
+                        style={{ padding: '0.4rem', fontSize: '0.75rem', borderRadius: '0.375rem', border: '1px solid #d1d5db' }}
+                      />
+                      <button 
+                        type="button" 
+                        className="action-btn delete" 
+                        style={{ padding: '0.375rem' }}
+                        onClick={() => removeSpecialRate(rate.id)}
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#6b7280', fontSize: '0.75rem', padding: '0.5rem 0' }}>
+                    <Info size={14} />
+                    <span>No specific day rates defined yet. Rent pricing will defaults to base rate.</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Amenities Checklist */}
+            <div className="form-group">
+              <label>Amenities / Space Features</label>
+              <div 
+                className="amenities-grid" 
+                style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', 
+                  gap: '0.5rem', 
+                  marginTop: '0.25rem' 
+                }}
+              >
+                {eventAmenitiesList.map(amenity => (
+                  <label 
+                    key={amenity.id} 
+                    className="amenity-checkbox" 
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.825rem', cursor: 'pointer' }}
+                  >
+                    <input 
+                      type="checkbox" 
+                      checked={(formData.amenities || []).includes(amenity.id)}
+                      onChange={() => handleAmenityChange(amenity.id)}
+                    />
+                    <span>{amenity.name}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="form-row" style={{ alignItems: 'center', marginTop: '0.5rem' }}>
+              <label className="amenity-checkbox">
+                <input 
+                  type="checkbox" 
+                  name="isFeatured" 
+                  checked={formData.isFeatured}
+                  onChange={handleInputChange}
+                />
+                <span style={{ fontWeight: 500, color: '#111827' }}>Featured Space</span>
+              </label>
+              
+              <label className="amenity-checkbox">
+                <input 
+                  type="checkbox" 
+                  name="publishStatus" 
+                  checked={formData.publishStatus === 'Published'}
+                  onChange={(e) => setFormData(prev => ({...prev, publishStatus: e.target.checked ? 'Published' : 'Draft'}))}
+                />
+                <span style={{ fontWeight: 500, color: '#111827' }}>Publish immediately</span>
+              </label>
+            </div>
+
+            <div className="form-actions" style={{ marginTop: '1rem' }}>
+              <button type="button" className="secondary-btn" onClick={() => setIsFormModalOpen(false)}>Cancel</button>
+              <button type="submit" className="primary-btn">Save Space Details</button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      <Modal 
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        title="Delete Event Space"
+        footer={
+          <>
+            <button className="secondary-btn" onClick={() => setIsConfirmModalOpen(false)}>Cancel</button>
+            <button className="danger-btn" onClick={confirmDelete}>Delete Space</button>
+          </>
+        }
+      >
+        <p>Are you sure you want to delete <strong>{spaceToDelete?.name}</strong> ({spaceToDelete?.spaceNumber})? This action will remove the space inventory and cannot be undone.</p>
+      </Modal>
+    </section>
+  );
+}

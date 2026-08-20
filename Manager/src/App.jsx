@@ -5,7 +5,8 @@ import {
   CalendarCheck, DoorOpen, Tags, Utensils, ConciergeBell, 
   Dumbbell, TicketPercent, Globe, Star, 
   BarChart3, Settings, TrendingUp, Users,
-  MessageSquare, Hotel, ChevronRight, LogOut, User, HelpCircle
+  MessageSquare, Hotel, ChevronRight, LogOut, User, HelpCircle,
+  Presentation
 } from 'lucide-react';
 import './index.css';
 
@@ -16,6 +17,7 @@ import RoomCategoriesList from './pages/RoomCategories/RoomCategoriesList';
 import RestaurantMenu from './pages/Hospitality/RestaurantMenu';
 import HotelServices from './pages/Hospitality/HotelServices';
 import FacilitiesAmenities from './pages/Hospitality/FacilitiesAmenities';
+import EventsConferences from './pages/Hospitality/EventsConferences';
 import OffersCoupons from './pages/Content/OffersCoupons';
 import NotificationsPage from './pages/System/Notifications';
 import SettingsPage from './pages/System/Settings';
@@ -44,6 +46,7 @@ const navGroups = [
       { icon: Utensils, label: 'Restaurant & Menu', path: '/hospitality/restaurant' },
       { icon: ConciergeBell, label: 'Hotel Services', path: '/hospitality/services' },
       { icon: Dumbbell, label: 'Facilities & Amenities', path: '/hospitality/facilities' },
+      { icon: Presentation, label: 'Events & Conferences', path: '/hospitality/events' },
     ],
   },
   {
@@ -208,6 +211,7 @@ function App() {
             <Route path="/hospitality/restaurant" element={<RestaurantMenu />} />
             <Route path="/hospitality/services" element={<HotelServices />} />
             <Route path="/hospitality/facilities" element={<FacilitiesAmenities />} />
+            <Route path="/hospitality/events" element={<EventsConferences />} />
             <Route path="/content/offers" element={<OffersCoupons />} />
             <Route path="/system/notifications" element={<NotificationsPage />} />
             <Route path="/system/settings" element={<SettingsPage />} />
