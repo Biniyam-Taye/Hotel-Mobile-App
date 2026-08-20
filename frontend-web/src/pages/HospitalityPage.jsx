@@ -2,44 +2,130 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  Utensils, Coffee, Wine, Cake, Dumbbell, Droplets, Sparkles, 
-  Clock, Car, Shirt, Phone, MapPin, Star, ArrowRight,
-  Wifi, Users, Bath
+  ArrowRight, Utensils, Coffee, Wine, Car, Clock, Shirt,
+  Droplets, Dumbbell, Sparkles, MapPin, Star, Search,
+  Filter, SlidersHorizontal, Check, Clock as ClockIcon,
+  Users, Award, ChevronDown, ChevronUp, X
 } from 'lucide-react';
 
 const HospitalityPage = () => {
   const [activeCategory, setActiveCategory] = useState('All');
+  const [activePrice, setActivePrice] = useState('All');
+  const [sortBy, setSortBy] = useState('popular');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const menuItems = [
-    { category: 'Appetizers', name: 'Bruschetta', description: 'Toasted bread with tomato, garlic, and basil', price: '450' },
-    { category: 'Appetizers', name: 'Calamari Fritti', description: 'Crispy fried squid with lemon aioli', price: '550' },
-    { category: 'Main Courses', name: 'Grilled Lamb Chops', description: 'Served with rosemary potatoes and mint sauce', price: '1,200' },
-    { category: 'Main Courses', name: 'Seafood Paella', description: 'Saffron rice with shrimp, mussels, and clams', price: '1,400' },
-    { category: 'Desserts', name: 'Tiramisu', description: 'Classic Italian dessert with coffee and mascarpone', price: '350' },
-    { category: 'Desserts', name: 'Chocolate Fondant', description: 'Warm chocolate cake with vanilla ice cream', price: '400' },
-    { category: 'Drinks', name: 'Signature Cocktails', description: 'Handcrafted by our expert mixologists', price: '400' },
-    { category: 'Drinks', name: 'Fresh Juices', description: 'Seasonal fruit juices and smoothies', price: '200' },
+  const categories = ['All', 'Bar', 'Breakfast', 'Dining', 'Fitness', 'Spa', 'Tour'];
+  const priceRanges = ['All', '100-300', '300-500', '500-1000'];
+  const sortOptions = [
+    { id: 'popular', label: 'Popularity' },
+    { id: 'price-low', label: 'Price Low to High' },
+    { id: 'price-high', label: 'Price High to Low' },
+    { id: 'newest', label: 'Newest First' },
   ];
 
-  const filteredItems = activeCategory === 'All' 
-    ? menuItems 
-    : menuItems.filter(item => item.category === activeCategory);
-
-  const categories = ['All', 'Appetizers', 'Main Courses', 'Desserts', 'Drinks'];
-
-  // Wellness facilities
-  const wellnessFacilities = [
-    { icon: Droplets, title: 'Swimming Pool', description: 'Outdoor pool with sun loungers and poolside bar. Open 7:00 AM – 9:00 PM daily.', link: '/pool' },
-    { icon: Dumbbell, title: 'Fitness Gym', description: 'State‑of‑the‑art equipment with 24/7 access for all guests.', link: '/fitness' },
-    { icon: Sparkles, title: 'Spa & Wellness', description: 'Signature treatments, sauna, and massage therapies for ultimate relaxation.', link: '/spa' },
+  // Services data
+  const services = [
+    {
+      id: 1,
+      provider: 'Bekele Mola Hotels',
+      title: 'Afternoon Tea & Pastries',
+      description: 'Elegant afternoon tea service with a selection of premium teas, fresh pastries, finger sandwiches, and scones.',
+      location: 'Lakeshore Drive, Meki, Meki',
+      price: 650,
+      category: 'Dining',
+      image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=600&auto=format&fit=crop',
+      amenities: ['Premium Teas', 'Fresh Pastries', 'Finger Sandwiches', 'Garden Seating'],
+      popular: true,
+      dateAdded: '2026-08-15'
+    },
+    {
+      id: 2,
+      provider: 'Bekele Mola Hotels',
+      title: 'Cultural City Tour',
+      description: 'Guided half-day tour exploring local landmarks, markets, and hidden gems with an experienced local guide.',
+      location: 'Lakeshore Drive, Meki, Meki',
+      price: 2000,
+      category: 'Tour',
+      image: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=600&auto=format&fit=crop',
+      amenities: ['Local Guide', 'Transport Included', 'Market Visit', 'Photo Stops'],
+      popular: false,
+      dateAdded: '2026-08-10'
+    },
+    {
+      id: 3,
+      provider: 'Villa Alpha Spa',
+      title: 'Signature Spa Package',
+      description: 'Full body massage with essential oils, followed by a rejuvenating facial and herbal tea ritual.',
+      location: 'Main Road, Adama',
+      price: 1500,
+      category: 'Spa',
+      image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=600&auto=format&fit=crop',
+      amenities: ['Massage Therapy', 'Facial Treatment', 'Herbal Tea', 'Sauna Access'],
+      popular: true,
+      dateAdded: '2026-08-18'
+    },
+    {
+      id: 4,
+      provider: 'Villa Alpha Fitness',
+      title: 'Personal Training Session',
+      description: 'One-on-one session with a certified personal trainer tailored to your fitness goals.',
+      location: 'Main Road, Adama',
+      price: 800,
+      category: 'Fitness',
+      image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&auto=format&fit=crop',
+      amenities: ['Certified Trainer', 'Customized Workout', 'Nutrition Advice', 'Progress Tracking'],
+      popular: false,
+      dateAdded: '2026-08-12'
+    },
+    {
+      id: 5,
+      provider: 'Villa Alpha Bar',
+      title: 'Sunset Cocktail Experience',
+      description: 'Enjoy handcrafted cocktails with panoramic sunset views from our rooftop bar.',
+      location: 'Main Road, Adama',
+      price: 400,
+      category: 'Bar',
+      image: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=600&auto=format&fit=crop',
+      amenities: ['Premium Cocktails', 'Sunset Views', 'Live Music', 'Tapas Selection'],
+      popular: true,
+      dateAdded: '2026-08-14'
+    },
+    {
+      id: 6,
+      provider: 'Villa Alpha Dining',
+      title: 'Breakfast Buffet Experience',
+      description: 'Start your day with our extensive breakfast buffet featuring local and international delicacies.',
+      location: 'Main Road, Adama',
+      price: 350,
+      category: 'Breakfast',
+      image: 'https://images.unsplash.com/photo-1553621042-f6e147245754?w=600&auto=format&fit=crop',
+      amenities: ['International Cuisine', 'Local Dishes', 'Fresh Juices', 'Pastry Selection'],
+      popular: false,
+      dateAdded: '2026-08-08'
+    }
   ];
 
-  // Hotel services
-  const hotelServices = [
-    { icon: Phone, title: '24/7 Room Service', description: 'In-room dining with a wide selection of dishes, available around the clock.', image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=400&auto=format&fit=crop' },
-    { icon: Car, title: 'Airport Transport', description: 'Complimentary shuttle service to and from Adama International Airport.', image: 'https://images.unsplash.com/photo-1545459727-91a11aa93888?w=400&auto=format&fit=crop' },
-    { icon: Shirt, title: 'Laundry & Dry Cleaning', description: 'Professional laundry and dry cleaning services with express delivery options.', image: 'https://images.unsplash.com/photo-1545173166-9f3a3a2f79a0?w=400&auto=format&fit=crop' },
-  ];
+  // Filter by category
+  const filteredByCategory = activeCategory === 'All' 
+    ? services 
+    : services.filter(s => s.category === activeCategory);
+
+  // Filter by price
+  const filteredByPrice = filteredByCategory.filter(s => {
+    if (activePrice === 'All') return true;
+    if (activePrice === '100-300') return s.price >= 100 && s.price <= 300;
+    if (activePrice === '300-500') return s.price >= 300 && s.price <= 500;
+    if (activePrice === '500-1000') return s.price >= 500 && s.price <= 1000;
+    return true;
+  });
+
+  // Sort
+  const sortedServices = [...filteredByPrice].sort((a, b) => {
+    if (sortBy === 'price-low') return a.price - b.price;
+    if (sortBy === 'price-high') return b.price - a.price;
+    if (sortBy === 'newest') return new Date(b.dateAdded) - new Date(a.dateAdded);
+    return 0; // popularity (default)
+  });
 
   return (
     <>
@@ -58,7 +144,7 @@ const HospitalityPage = () => {
         /* ===== HEADER ===== */
         .hospitality-header {
           text-align: center;
-          margin-bottom: 48px;
+          margin-bottom: 40px;
         }
 
         .hospitality-header .label {
@@ -87,374 +173,451 @@ const HospitalityPage = () => {
           line-height: 1.6;
         }
 
-        /* ===== SECTION 1: RESTAURANT & MENU ===== */
-        .menu-section {
+        /* ===== MOBILE FILTER TOGGLE ===== */
+        .mobile-filter-toggle {
+          display: none;
+          width: 100%;
+          padding: 12px 20px;
           background: #ffffff;
-          border-radius: 20px;
-          padding: 40px;
-          margin-bottom: 40px;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.04);
           border: 1px solid #e5e7eb;
-        }
-
-        .menu-section .section-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 24px;
-          flex-wrap: wrap;
-          gap: 16px;
-        }
-
-        .menu-section .section-header h2 {
-          font-family: 'Georgia', 'Times New Roman', serif;
-          font-size: 28px;
-          font-weight: 700;
-          color: #1a1a1a;
-          margin: 0;
-        }
-
-        .menu-section .section-header h2 span {
-          color: #d4af37;
-        }
-
-        .menu-categories {
-          display: flex;
-          gap: 8px;
-          flex-wrap: wrap;
-        }
-
-        .menu-categories button {
-          padding: 6px 18px;
-          border: 2px solid #e5e7eb;
-          background: transparent;
-          border-radius: 9999px;
-          font-size: 13px;
-          font-weight: 600;
-          color: #6b7280;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          font-family: 'Poppins', sans-serif;
-        }
-
-        .menu-categories button:hover {
-          border-color: #d4af37;
-          color: #d4af37;
-        }
-
-        .menu-categories button.active {
-          background: #d4af37;
-          border-color: #d4af37;
-          color: #1a1a1a;
-        }
-
-        .menu-items {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 12px;
-        }
-
-        .menu-item {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 14px 16px;
-          background: #f8f9fa;
           border-radius: 12px;
-          transition: all 0.3s ease;
-        }
-
-        .menu-item:hover {
-          background: #fef9e7;
-          transform: translateX(4px);
-        }
-
-        .menu-item .info {
-          flex: 1;
-        }
-
-        .menu-item .info .name {
-          font-size: 16px;
+          font-size: 14px;
           font-weight: 600;
           color: #1a1a1a;
-        }
-
-        .menu-item .info .desc {
-          font-size: 13px;
-          color: #6b7280;
-          margin: 2px 0 0;
-        }
-
-        .menu-item .price-order {
-          display: flex;
-          align-items: center;
-          gap: 16px;
-        }
-
-        .menu-item .price-order .price {
-          font-size: 16px;
-          font-weight: 700;
-          color: #d4af37;
-        }
-
-        .menu-item .price-order .btn-order {
-          padding: 6px 18px;
-          background: #d4af37;
-          color: #1a1a1a;
-          border: none;
-          border-radius: 9999px;
-          font-weight: 600;
-          font-size: 12px;
           cursor: pointer;
-          transition: all 0.3s ease;
           font-family: 'Poppins', sans-serif;
-          text-decoration: none;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 16px;
         }
 
-        .menu-item .price-order .btn-order:hover {
-          background: #c5a028;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        .mobile-filter-toggle:hover {
+          border-color: #d4af37;
         }
 
-        /* ===== SECTION 2: WELLNESS & LEISURE ===== */
-        .wellness-section {
+        /* ===== LAYOUT: CONTENT + SIDEBAR ===== */
+        .hospitality-layout {
+          display: grid;
+          grid-template-columns: 280px 1fr;
+          gap: 32px;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
           background: #ffffff;
-          border-radius: 20px;
-          padding: 40px;
-          margin-bottom: 40px;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+          border-radius: 16px;
+          padding: 24px;
           border: 1px solid #e5e7eb;
+          height: fit-content;
+          position: sticky;
+          top: 100px;
         }
 
-        .wellness-section .section-header {
-          margin-bottom: 24px;
-        }
-
-        .wellness-section .section-header h2 {
-          font-family: 'Georgia', 'Times New Roman', serif;
-          font-size: 28px;
+        .sidebar .sidebar-title {
+          font-size: 14px;
           font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 1px;
           color: #1a1a1a;
-          margin: 0 0 4px;
+          margin-bottom: 12px;
         }
 
-        .wellness-section .section-header h2 span {
-          color: #d4af37;
+        .sidebar .category-list {
+          list-style: none;
+          padding: 0;
+          margin: 0 0 20px 0;
         }
 
-        .wellness-section .section-header p {
+        .sidebar .category-list li {
+          padding: 6px 0;
+          cursor: pointer;
           color: #6b7280;
           font-size: 14px;
+          transition: color 0.3s ease;
+          border-bottom: 1px solid #f1f3f5;
         }
 
-        .wellness-grid {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 20px;
+        .sidebar .category-list li:last-child {
+          border-bottom: none;
         }
 
-        .wellness-card {
+        .sidebar .category-list li:hover {
+          color: #d4af37;
+        }
+
+        .sidebar .category-list li.active {
+          color: #d4af37;
+          font-weight: 600;
+        }
+
+        .sidebar .price-list {
+          list-style: none;
+          padding: 0;
+          margin: 0 0 20px 0;
+        }
+
+        .sidebar .price-list li {
+          padding: 6px 0;
+          cursor: pointer;
+          color: #6b7280;
+          font-size: 14px;
+          transition: color 0.3s ease;
+          border-bottom: 1px solid #f1f3f5;
+        }
+
+        .sidebar .price-list li:last-child {
+          border-bottom: none;
+        }
+
+        .sidebar .price-list li:hover {
+          color: #d4af37;
+        }
+
+        .sidebar .price-list li.active {
+          color: #d4af37;
+          font-weight: 600;
+        }
+
+        .sidebar .divider {
+          border: none;
+          border-top: 1px solid #e5e7eb;
+          margin: 16px 0;
+        }
+
+        /* ===== SORT OPTIONS ===== */
+        .sort-options {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+
+        .sort-option {
           display: flex;
           align-items: center;
-          gap: 20px;
-          padding: 20px 24px;
-          background: #f8f9fa;
-          border-radius: 16px;
-          border: 1px solid #f1f3f5;
-          transition: all 0.4s ease;
-          text-decoration: none;
-          color: inherit;
+          gap: 10px;
+          padding: 6px 0;
+          cursor: pointer;
+          color: #6b7280;
+          font-size: 14px;
+          transition: color 0.3s ease;
+          border-bottom: 1px solid #f1f3f5;
         }
 
-        .wellness-card:hover {
-          transform: translateY(-4px);
-          border-color: rgba(212, 175, 55, 0.2);
-          box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+        .sort-option:last-child {
+          border-bottom: none;
         }
 
-        .wellness-card .icon {
-          display: inline-flex;
+        .sort-option:hover {
+          color: #d4af37;
+        }
+
+        .sort-option.active {
+          color: #d4af37;
+          font-weight: 600;
+        }
+
+        .sort-option .radio-circle {
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          border: 2px solid #d1d5db;
+          display: flex;
           align-items: center;
           justify-content: center;
-          width: 56px;
-          height: 56px;
-          background: rgba(212, 175, 55, 0.1);
+          flex-shrink: 0;
+          transition: all 0.3s ease;
+        }
+
+        .sort-option.active .radio-circle {
+          border-color: #d4af37;
+        }
+
+        .sort-option .radio-circle .inner {
+          width: 8px;
+          height: 8px;
           border-radius: 50%;
-          color: #d4af37;
-          flex-shrink: 0;
+          background: #d4af37;
+          opacity: 0;
+          transition: opacity 0.3s ease;
         }
 
-        .wellness-card .content {
-          flex: 1;
+        .sort-option.active .radio-circle .inner {
+          opacity: 1;
         }
 
-        .wellness-card .content h4 {
-          font-size: 18px;
-          font-weight: 700;
-          color: #1a1a1a;
-          margin: 0 0 2px;
-        }
-
-        .wellness-card .content p {
-          font-size: 14px;
-          color: #6b7280;
-          margin: 0;
-          line-height: 1.5;
-        }
-
-        .wellness-card .arrow {
-          color: #d4af37;
-          flex-shrink: 0;
-        }
-
-        /* ===== SECTION 3: HOTEL SERVICES ===== */
-        .services-section {
-          background: #ffffff;
-          border-radius: 20px;
-          padding: 40px;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-          border: 1px solid #e5e7eb;
-        }
-
-        .services-section .section-header {
-          margin-bottom: 24px;
-        }
-
-        .services-section .section-header h2 {
-          font-family: 'Georgia', 'Times New Roman', serif;
-          font-size: 28px;
-          font-weight: 700;
-          color: #1a1a1a;
-          margin: 0 0 4px;
-        }
-
-        .services-section .section-header h2 span {
-          color: #d4af37;
-        }
-
-        .services-section .section-header p {
-          color: #6b7280;
-          font-size: 14px;
-        }
-
-        .services-grid {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 24px;
-        }
-
+        /* ===== SERVICE CARD ===== */
         .service-card {
           background: #ffffff;
           border-radius: 16px;
           overflow: hidden;
           border: 1px solid #e5e7eb;
           transition: all 0.4s ease;
+          margin-bottom: 24px;
+        }
+
+        .service-card:last-child {
+          margin-bottom: 0;
         }
 
         .service-card:hover {
-          transform: translateY(-6px);
+          transform: translateY(-4px);
           box-shadow: 0 12px 40px rgba(0,0,0,0.06);
           border-color: rgba(212, 175, 55, 0.15);
         }
 
-        .service-card .service-image {
-          height: 180px;
-          overflow: hidden;
+        .service-card .card-inner {
+          display: grid;
+          grid-template-columns: 300px 1fr;
+          gap: 0;
         }
 
-        .service-card .service-image img {
+        .service-card .card-image {
+          height: auto;
+          min-height: 260px;
+          overflow: hidden;
+          position: relative;
+        }
+
+        .service-card .card-image img {
           width: 100%;
           height: 100%;
           object-fit: cover;
           transition: transform 0.6s ease;
         }
 
-        .service-card:hover .service-image img {
+        .service-card:hover .card-image img {
           transform: scale(1.05);
         }
 
-        .service-card .service-body {
-          padding: 20px 24px 24px;
+        .service-card .card-image .popular-badge {
+          position: absolute;
+          top: 16px;
+          right: 16px;
+          background: #d4af37;
+          color: #1a1a1a;
+          padding: 4px 14px;
+          border-radius: 9999px;
+          font-size: 11px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 1px;
         }
 
-        .service-card .service-body .icon {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 44px;
-          height: 44px;
-          background: rgba(212, 175, 55, 0.08);
-          border-radius: 50%;
+        .service-card .card-body {
+          padding: 24px;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .service-card .card-body .provider {
+          font-size: 12px;
+          font-weight: 600;
           color: #d4af37;
-          margin-bottom: 10px;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          margin-bottom: 4px;
         }
 
-        .service-card .service-body h4 {
-          font-size: 18px;
+        .service-card .card-body .title {
+          font-size: 20px;
           font-weight: 700;
           color: #1a1a1a;
-          margin: 0 0 4px;
+          margin: 0 0 8px;
         }
 
-        .service-card .service-body p {
+        .service-card .card-body .description {
           font-size: 14px;
           color: #6b7280;
-          line-height: 1.6;
+          line-height: 1.7;
           margin: 0 0 12px;
+          flex: 1;
         }
 
-        .service-card .service-body .btn-service {
+        .service-card .card-body .location {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 13px;
+          color: #9ca3af;
+          margin-bottom: 12px;
+        }
+
+        .service-card .card-body .location svg {
+          color: #d4af37;
+        }
+
+        .service-card .card-body .amenities {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-bottom: 16px;
+        }
+
+        .service-card .card-body .amenities .amenity {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          padding: 4px 12px;
+          background: #f3f4f6;
+          border-radius: 9999px;
+          font-size: 12px;
+          color: #4b5563;
+        }
+
+        .service-card .card-body .amenities .amenity svg {
+          color: #d4af37;
+        }
+
+        .service-card .card-body .card-footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 12px;
+          margin-top: auto;
+          padding-top: 12px;
+          border-top: 1px solid #f1f3f5;
+        }
+
+        .service-card .card-body .card-footer .price {
+          font-size: 20px;
+          font-weight: 700;
+          color: #d4af37;
+        }
+
+        .service-card .card-body .card-footer .price span {
+          font-size: 14px;
+          font-weight: 400;
+          color: #6b7280;
+        }
+
+        .service-card .card-body .card-footer .btn-order {
           display: inline-flex;
           align-items: center;
           gap: 6px;
-          padding: 6px 20px;
+          padding: 8px 24px;
           background: #d4af37;
           color: #1a1a1a;
           border: none;
           border-radius: 9999px;
           font-weight: 600;
-          font-size: 13px;
+          font-size: 14px;
           cursor: pointer;
           transition: all 0.3s ease;
-          text-decoration: none;
           font-family: 'Poppins', sans-serif;
+          text-decoration: none;
         }
 
-        .service-card .service-body .btn-service:hover {
+        .service-card .card-body .card-footer .btn-order:hover {
           background: #c5a028;
           transform: translateY(-2px);
-          box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+          box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
         }
 
         /* ===== RESPONSIVE ===== */
-        @media (min-width: 768px) {
-          .wellness-grid {
-            grid-template-columns: repeat(3, 1fr);
+
+        /* Tablet: Sidebar collapses */
+        @media (max-width: 1024px) {
+          .hospitality-layout {
+            grid-template-columns: 240px 1fr;
+            gap: 24px;
           }
-          .services-grid {
-            grid-template-columns: repeat(3, 1fr);
-          }
-          .menu-items {
-            grid-template-columns: repeat(2, 1fr);
+          .service-card .card-inner {
+            grid-template-columns: 240px 1fr;
           }
         }
 
+        /* Mobile: Full width, sidebar becomes dropdown */
         @media (max-width: 768px) {
           .hospitality-page {
             padding: 100px 16px 60px;
           }
+
           .hospitality-header h1 {
             font-size: 30px;
           }
-          .menu-section .section-header {
-            flex-direction: column;
-            align-items: flex-start;
+
+          .hospitality-layout {
+            grid-template-columns: 1fr;
+            gap: 16px;
           }
-          .wellness-card {
-            flex-direction: column;
-            text-align: center;
+
+          .mobile-filter-toggle {
+            display: flex;
+          }
+
+          .sidebar {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 85%;
+            max-width: 340px;
+            height: 100vh;
+            border-radius: 0;
+            border: none;
+            box-shadow: -4px 0 30px rgba(0,0,0,0.1);
+            padding: 24px 20px;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: right 0.3s ease;
+            position: fixed;
+            top: 0;
+          }
+
+          .sidebar.open {
+            right: 0;
+          }
+
+          .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 999;
+          }
+
+          .sidebar-overlay.active {
+            display: block;
+          }
+
+          .sidebar-close {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 16px;
+          }
+
+          .sidebar-close button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 4px;
+          }
+
+          .service-card .card-inner {
+            grid-template-columns: 1fr;
+          }
+
+          .service-card .card-image {
+            height: 200px;
+            min-height: 0;
+          }
+
+          .service-card .card-body {
             padding: 20px;
+          }
+
+          .service-card .card-body .title {
+            font-size: 18px;
+          }
+
+          .service-card .card-body .card-footer {
+            flex-direction: column;
+            align-items: stretch;
+          }
+
+          .service-card .card-body .card-footer .btn-order {
+            justify-content: center;
           }
         }
 
@@ -462,118 +625,201 @@ const HospitalityPage = () => {
           .hospitality-page {
             padding: 90px 12px 40px;
           }
+
           .hospitality-header h1 {
             font-size: 24px;
           }
-          .menu-section, .wellness-section, .services-section {
+
+          .hospitality-header p {
+            font-size: 14px;
+          }
+
+          .service-card .card-image {
+            height: 180px;
+          }
+
+          .service-card .card-body {
+            padding: 16px;
+          }
+
+          .service-card .card-body .title {
+            font-size: 16px;
+          }
+
+          .service-card .card-body .description {
+            font-size: 13px;
+          }
+
+          .service-card .card-body .amenities .amenity {
+            font-size: 11px;
+            padding: 3px 10px;
+          }
+
+          .sidebar {
+            width: 92%;
+            max-width: 320px;
             padding: 20px 16px;
           }
-          .menu-item {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 8px;
+        }
+
+        /* Small tablets: 1024px - 769px */
+        @media (min-width: 769px) and (max-width: 1024px) {
+          .service-card .card-inner {
+            grid-template-columns: 220px 1fr;
           }
-          .menu-item .price-order {
-            width: 100%;
-            justify-content: space-between;
+          .service-card .card-image {
+            min-height: 220px;
           }
-          .service-card .service-image {
-            height: 140px;
+        }
+
+        /* Desktop large screens */
+        @media (min-width: 1400px) {
+          .hospitality-container {
+            max-width: 1400px;
+          }
+          .hospitality-layout {
+            grid-template-columns: 320px 1fr;
+            gap: 40px;
+          }
+          .service-card .card-inner {
+            grid-template-columns: 340px 1fr;
           }
         }
       `}</style>
 
       <div className="hospitality-page">
         <div className="hospitality-container">
-          {/* Header */}
+          {/* ===== HEADER ===== */}
           <div className="hospitality-header">
-            <div className="label">✦ Hospitality</div>
-            <h1>Villa Alpha International Hotel</h1>
-            <p>LUXURY ACCOMMODATION & SERVICES</p>
+            <div className="label">✦ Discover Hospitality</div>
+            <h1>Discover Hospitality</h1>
+            <p>
+              Discover dining, spa, massage, tours, and hotel services from our partner properties.
+            </p>
           </div>
 
-          {/* ===== SECTION 1: RESTAURANT & MENU ===== */}
-          <div className="menu-section">
-            <div className="section-header">
-              <h2>Restaurant & <span>Menu</span></h2>
-              <div className="menu-categories">
+          {/* ===== MOBILE FILTER TOGGLE ===== */}
+          <button className="mobile-filter-toggle" onClick={() => setMobileMenuOpen(true)}>
+            <span><Filter size={16} /> Filters & Sort</span>
+            <ChevronDown size={16} />
+          </button>
+
+          {/* ===== SIDEBAR OVERLAY ===== */}
+          <div className={`sidebar-overlay ${mobileMenuOpen ? 'active' : ''}`} onClick={() => setMobileMenuOpen(false)}></div>
+
+          {/* ===== LAYOUT ===== */}
+          <div className="hospitality-layout">
+            {/* ===== SIDEBAR ===== */}
+            <aside className={`sidebar ${mobileMenuOpen ? 'open' : ''}`}>
+              {/* Mobile close button */}
+              <div className="sidebar-close">
+                <button onClick={() => setMobileMenuOpen(false)}>
+                  <X size={24} />
+                </button>
+              </div>
+
+              {/* ===== CATEGORY ===== */}
+              <div className="sidebar-title">CATEGORY</div>
+              <ul className="category-list">
                 {categories.map((cat) => (
-                  <button
+                  <li
                     key={cat}
                     className={activeCategory === cat ? 'active' : ''}
-                    onClick={() => setActiveCategory(cat)}
+                    onClick={() => {
+                      setActiveCategory(cat);
+                      if (window.innerWidth <= 768) setMobileMenuOpen(false);
+                    }}
                   >
                     {cat}
-                  </button>
+                  </li>
+                ))}
+              </ul>
+
+              <hr className="divider" />
+
+              {/* ===== PRICE (ETB) ===== */}
+              <div className="sidebar-title">PRICE (ETB)</div>
+              <ul className="price-list">
+                {priceRanges.map((range) => (
+                  <li
+                    key={range}
+                    className={activePrice === range ? 'active' : ''}
+                    onClick={() => {
+                      setActivePrice(range);
+                      if (window.innerWidth <= 768) setMobileMenuOpen(false);
+                    }}
+                  >
+                    {range === 'All' ? 'All' : `${range.replace('-', ' to ')} ETB`}
+                  </li>
+                ))}
+              </ul>
+
+              <hr className="divider" />
+
+              {/* ===== SORT RESULTS BY ===== */}
+              <div className="sidebar-title">SORT RESULTS BY</div>
+              <div className="sort-options">
+                {sortOptions.map((option) => (
+                  <div
+                    key={option.id}
+                    className={`sort-option ${sortBy === option.id ? 'active' : ''}`}
+                    onClick={() => {
+                      setSortBy(option.id);
+                      if (window.innerWidth <= 768) setMobileMenuOpen(false);
+                    }}
+                  >
+                    <div className="radio-circle">
+                      <div className="inner"></div>
+                    </div>
+                    {option.label}
+                  </div>
                 ))}
               </div>
-            </div>
-            <div className="menu-items">
-              {filteredItems.map((item, index) => (
-                <div key={index} className="menu-item">
-                  <div className="info">
-                    <div className="name">{item.name}</div>
-                    <div className="desc">{item.description}</div>
-                  </div>
-                  <div className="price-order">
-                    <span className="price">ETB {item.price}</span>
-                    <button className="btn-order" onClick={() => alert(`Ordered: ${item.name}`)}>
-                      Order Now
-                    </button>
-                  </div>
+            </aside>
+
+            {/* ===== SERVICES LIST ===== */}
+            <div className="services-list">
+              {sortedServices.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
+                  No services found matching your filters.
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* ===== SECTION 2: WELLNESS & LEISURE ===== */}
-          <div className="wellness-section">
-            <div className="section-header">
-              <h2>Wellness & <span>Leisure</span></h2>
-              <p>Recharge, relax, and rejuvenate with our premium facilities</p>
-            </div>
-            <div className="wellness-grid">
-              {wellnessFacilities.map((facility, index) => (
-                <Link key={index} to={facility.link} className="wellness-card">
-                  <div className="icon">
-                    <facility.icon size={28} />
-                  </div>
-                  <div className="content">
-                    <h4>{facility.title}</h4>
-                    <p>{facility.description}</p>
-                  </div>
-                  <div className="arrow">
-                    <ArrowRight size={20} />
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          {/* ===== SECTION 3: HOTEL SERVICES ===== */}
-          <div className="services-section">
-            <div className="section-header">
-              <h2>Hotel <span>Services</span></h2>
-              <p>Exclusive services designed for your comfort and convenience</p>
-            </div>
-            <div className="services-grid">
-              {hotelServices.map((service, index) => (
-                <div key={index} className="service-card">
-                  <div className="service-image">
-                    <img src={service.image} alt={service.title} />
-                  </div>
-                  <div className="service-body">
-                    <div className="icon">
-                      <service.icon size={22} />
+              ) : (
+                sortedServices.map((service) => (
+                  <div key={service.id} className="service-card">
+                    <div className="card-inner">
+                      <div className="card-image">
+                        <img src={service.image} alt={service.title} loading="lazy" />
+                        {service.popular && (
+                          <div className="popular-badge">✦ Popular</div>
+                        )}
+                      </div>
+                      <div className="card-body">
+                        <div className="provider">{service.provider}</div>
+                        <h3 className="title">{service.title}</h3>
+                        <p className="description">{service.description}</p>
+                        <div className="location">
+                          <MapPin size={14} /> {service.location}
+                        </div>
+                        <div className="amenities">
+                          {service.amenities.map((amenity, idx) => (
+                            <span key={idx} className="amenity">
+                              <Check size={12} /> {amenity}
+                            </span>
+                          ))}
+                        </div>
+                        <div className="card-footer">
+                          <div className="price">
+                            ETB {service.price.toLocaleString()} <span>/ person</span>
+                          </div>
+                          <button className="btn-order" onClick={() => alert(`Booked: ${service.title}`)}>
+                            Book Now <ArrowRight size={14} />
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                    <h4>{service.title}</h4>
-                    <p>{service.description}</p>
-                    <button className="btn-service" onClick={() => alert(`Requested: ${service.title}`)}>
-                      Request Service <ArrowRight size={14} />
-                    </button>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         </div>
