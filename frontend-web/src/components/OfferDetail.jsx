@@ -1,7 +1,6 @@
 // src/components/OfferDetail.jsx
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Clock } from 'lucide-react';
-
+import { ArrowLeft, Clock, Calendar, Users, Star } from 'lucide-react';
 
 const OfferDetail = () => {
   const { id } = useParams();
@@ -118,7 +117,7 @@ const OfferDetail = () => {
         .detail-page {
           padding: 40px 24px 80px;
           background: #ffffff;
-          font-family: 'Inter', -apple-system, sans-serif;
+          font-family: 'Poppins', sans-serif;
         }
         .detail-container {
           max-width: 1200px;
@@ -173,28 +172,39 @@ const OfferDetail = () => {
           position: absolute;
           top: 16px;
           left: 16px;
-          background: linear-gradient(135deg, #f43f5e, #f97316);
+          background: #ef4444;
           color: white;
           padding: 6px 14px;
           border-radius: 9999px;
           font-weight: 700;
           font-size: 13px;
+          box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
         }
         .badge-seasonal {
           position: absolute;
           top: 16px;
           right: 16px;
-          background: white;
-          color: #374151;
+          background: #d4af37;
+          color: #1a1a1a;
           padding: 6px 14px;
           border-radius: 9999px;
           font-size: 12px;
-          font-weight: 600;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
         }
         .thumbnail-strip {
           display: flex;
           gap: 12px;
           overflow-x: auto;
+          padding-bottom: 4px;
+        }
+        .thumbnail-strip::-webkit-scrollbar {
+          height: 4px;
+        }
+        .thumbnail-strip::-webkit-scrollbar-thumb {
+          background: #d4af37;
+          border-radius: 4px;
         }
         .thumbnail-strip img {
           width: 80px;
@@ -204,6 +214,7 @@ const OfferDetail = () => {
           cursor: pointer;
           border: 2px solid transparent;
           transition: 0.2s;
+          flex-shrink: 0;
         }
         .thumbnail-strip img:hover, .thumbnail-strip img.active {
           border-color: #d4af37;
@@ -219,8 +230,8 @@ const OfferDetail = () => {
           display: inline-flex;
           align-items: center;
           gap: 6px;
-          background: #fff7ed;
-          color: #f97316;
+          background: #fef3c7;
+          color: #b45309;
           padding: 6px 14px;
           border-radius: 9999px;
           font-size: 13px;
@@ -237,11 +248,7 @@ const OfferDetail = () => {
         }
         .detail-highlight {
           font-size: 18px;
-          color: #f97316; /* Fallback */
-          background: linear-gradient(135deg, #f97316 0%, #ec4899 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
+          color: #d4af37;
           font-weight: 500;
           margin-bottom: 16px;
         }
@@ -251,12 +258,12 @@ const OfferDetail = () => {
           gap: 8px;
           margin-bottom: 16px;
         }
-        .divider-line .dot { width: 6px; height: 6px; background: #f97316; border-radius: 50%; }
+        .divider-line .dot { width: 6px; height: 6px; background: #d4af37; border-radius: 50%; }
         .divider-line .line { flex: 1; height: 1px; background: #e5e7eb; max-width: 40px; }
 
         .detail-description {
           color: #4b5563;
-          line-height: 1.6;
+          line-height: 1.8;
           font-size: 15px;
           margin-bottom: 24px;
         }
@@ -272,8 +279,13 @@ const OfferDetail = () => {
         }
         .info-card {
           background: #f8fafc;
-          padding: 16px;
+          padding: 16px 20px;
           border-radius: 12px;
+          border: 1px solid #f1f3f5;
+          transition: border-color 0.3s;
+        }
+        .info-card:hover {
+          border-color: #d4af37;
         }
         .info-card .label {
           font-size: 10px;
@@ -285,14 +297,14 @@ const OfferDetail = () => {
         .info-card .value {
           font-weight: 700;
           color: #1a1a1a;
-          font-size: 16px;
+          font-size: 18px;
         }
         .info-card .sub-value {
           font-size: 12px;
           color: #6b7280;
         }
         .info-card .savings-text {
-          color: #f97316;
+          color: #d4af37;
           font-weight: 600;
           font-size: 13px;
           margin-top: 4px;
@@ -304,9 +316,11 @@ const OfferDetail = () => {
           text-align: center;
         }
         .highlights-top-badge {
-          color: #f97316;
+          color: #d4af37;
           font-size: 13px;
           font-weight: 600;
+          letter-spacing: 2px;
+          text-transform: uppercase;
           margin-bottom: 4px;
           display: block;
         }
@@ -318,10 +332,7 @@ const OfferDetail = () => {
           color: #1a1a1a;
         }
         .highlights-title span {
-          background: linear-gradient(135deg, #f97316 0%, #ec4899 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
+          color: #d4af37;
         }
         .highlights-grid {
           display: grid;
@@ -332,19 +343,18 @@ const OfferDetail = () => {
           .highlights-grid { grid-template-columns: repeat(4, 1fr); }
         }
 
-        /* --- UPDATED PACKAGE HIGHLIGHT CARD HOVER EFFECTS --- */
         .highlight-card {
           background: #f8fafc;
           padding: 24px 20px;
-          border-radius: 20px;
+          border-radius: 16px;
           text-align: left;
-          position: relative; /* Required for the top bar */
-          overflow: hidden; /* Keeps the top gradient inside rounded corners */
-          transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+          position: relative;
+          overflow: hidden;
+          transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
           cursor: default;
+          border: 1px solid #f1f3f5;
         }
 
-        /* 1. The sliding top gradient bar */
         .highlight-card::before {
           content: '';
           position: absolute;
@@ -352,8 +362,7 @@ const OfferDetail = () => {
           left: 0;
           width: 100%;
           height: 4px;
-          /* Matches the number badge gradient */
-          background: linear-gradient(135deg, #f97316 0%, #ec4899 100%);
+          background: #d4af37;
           transform: scaleX(0);
           transform-origin: left;
           transition: transform 0.4s ease;
@@ -361,18 +370,18 @@ const OfferDetail = () => {
         }
 
         .highlight-card:hover::before {
-          transform: scaleX(1); /* Slides the bar across */
+          transform: scaleX(1);
         }
 
         .highlight-card:hover {
-          transform: translateY(-8px); /* Lifts the card */
+          transform: translateY(-8px);
           box-shadow: 0 16px 40px rgba(0,0,0,0.06);
+          border-color: rgba(212, 175, 55, 0.2);
         }
 
-        /* 2. The Number Badge */
         .highlight-card .number-badge {
-          background: linear-gradient(135deg, #f97316 0%, #ec4899 100%);
-          color: white;
+          background: #d4af37;
+          color: #1a1a1a;
           width: 32px;
           height: 32px;
           border-radius: 10px;
@@ -387,7 +396,7 @@ const OfferDetail = () => {
 
         .highlight-card:hover .number-badge {
           transform: scale(1.05);
-          box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+          box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
         }
 
         .highlight-card h4 {
@@ -403,23 +412,44 @@ const OfferDetail = () => {
           margin: 0;
         }
 
-        /* 3. The Bottom Expanding Line */
         .highlight-card .bottom-line {
-          height: 4px;
+          height: 3px;
           width: 30px;
           margin-top: 16px;
           border-radius: 99px;
-          background: linear-gradient(90deg, #f97316 0%, #ec4899 100%);
-          transition: width 0.4s ease; /* Added transition */
+          background: #d4af37;
+          transition: width 0.4s ease;
         }
 
         .highlight-card:hover .bottom-line {
-          width: 100%; /* Expands to full width */
+          width: 100%;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+          .detail-title {
+            font-size: 32px;
+          }
+          .main-image-wrapper {
+            height: 320px;
+          }
+          .highlights-title {
+            font-size: 26px;
+          }
         }
 
         @media (max-width: 480px) {
-          .detail-title { font-size: 28px; }
-          .main-image-wrapper { height: 260px; }
+          .detail-title { font-size: 26px; }
+          .main-image-wrapper { height: 240px; }
+          .detail-highlight { font-size: 15px; }
+          .highlights-title { font-size: 22px; }
+          .thumbnail-strip img {
+            width: 60px;
+            height: 60px;
+          }
+          .info-card .value {
+            font-size: 15px;
+          }
         }
       `}</style>
 
@@ -437,7 +467,7 @@ const OfferDetail = () => {
                 <div className="badge-discount">{offer.discount} OFF</div>
                 <div className="badge-seasonal">{offer.seasonalBadge}</div>
               </div>
-              {/* Thumbnail Carousel Placeholder */}
+              {/* Thumbnail Carousel */}
               <div className="thumbnail-strip">
                 <img src={offer.image} className="active" alt="Main" />
                 <img src="https://images.unsplash.com/photo-1596528718950-8a6af2865ad8?w=200&auto=format&fit=crop" alt="Thumb 2" />
@@ -482,7 +512,7 @@ const OfferDetail = () => {
 
           {/* Bottom Highlights Section */}
           <div className="highlights-section">
-            <span className="highlights-top-badge">✦ Package perks ✦</span>
+            <span className="highlights-top-badge">✦ Package Perks ✦</span>
             <h2 className="highlights-title">Package <span>Highlights</span></h2>
             <div className="highlights-grid">
               {offer.highlights.map((item) => (

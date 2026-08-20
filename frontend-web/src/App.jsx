@@ -2,7 +2,6 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'; // Added useLocation
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import Stats from './components/Stats';
 import About from './components/About';
 import Home from './components/Home';
 import Amenities from './components/Amenities';
@@ -63,12 +62,13 @@ function App() {
           <Route path="/" element={
             <>
               <Hero />
-              {/* <Stats /> */}
-              <Offers />
+              
+          
               <About />
                <Home />
               <Amenities />
                <Testimonials />
+               <Offers />
             </>
           } />
           <Route path="/rooms" element={<RoomsPage />} />

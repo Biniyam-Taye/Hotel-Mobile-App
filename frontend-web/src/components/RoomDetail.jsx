@@ -1,6 +1,6 @@
 // src/components/RoomDetail.jsx
 import { useParams, Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // Added useEffect
 import { 
   Wifi, Tv, AirVent, Coffee, Car, Users, Bath, 
   ArrowLeft, Star, Calendar, Check, 
@@ -10,6 +10,7 @@ import {
 const RoomDetail = () => {
   const { id } = useParams();
   const [showBooking, setShowBooking] = useState(false);
+  const [selectedImage, setSelectedImage] = useState('');
 
   // Exchange rate
   const usdToEtb = 57;
@@ -19,7 +20,7 @@ const RoomDetail = () => {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
-  // Room data with location and discount
+  // Room data with location and discount + GALLERY
   const rooms = [
     {
       id: 1,
@@ -40,7 +41,12 @@ const RoomDetail = () => {
       popular: true,
       amenities: ['Free Wi-Fi', '24hr Room Service', 'Concierge', 'Laundry Service', 'Daily Housekeeping', 'Welcome Drink', 'Turn-down Service', 'Work Desk', 'Bathrobe & Slippers'],
       guests: 2,
-      bed: 'King Size'
+      bed: 'King Size',
+      gallery: [
+        'https://images.unsplash.com/photo-1590490360182-c33d57733427?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        'https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        'https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
+      ]
     },
     {
       id: 2,
@@ -61,7 +67,12 @@ const RoomDetail = () => {
       popular: false,
       amenities: ['Free Wi-Fi', 'Work Desk', 'Business Services', 'Express Check-in', 'Daily Housekeeping', 'Iron & Ironing Board'],
       guests: 2,
-      bed: 'Double Bed'
+      bed: 'Double Bed',
+      gallery: [
+        'https://images.unsplash.com/photo-1618773928121-c32242e63f39?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        'https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        'https://images.unsplash.com/photo-1590490360182-c33d57733427?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
+      ]
     },
     {
       id: 3,
@@ -82,7 +93,12 @@ const RoomDetail = () => {
       popular: false,
       amenities: ['Butler Service', 'Private Terrace', 'Jacuzzi', 'Kitchenette', 'Dining Area', 'Welcome Champagne', 'Turn-down Service', 'Premium Toiletries'],
       guests: 4,
-      bed: 'King Size + Sofa'
+      bed: 'King Size + Sofa',
+      gallery: [
+        'https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        'https://images.unsplash.com/photo-1591088398332-8a7791972843?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
+      ]
     },
     {
       id: 4,
@@ -103,7 +119,12 @@ const RoomDetail = () => {
       popular: false,
       amenities: ['Free Wi-Fi', 'Daily Housekeeping', 'Complimentary Toiletries', 'Work Desk'],
       guests: 2,
-      bed: 'Double Bed'
+      bed: 'Double Bed',
+      gallery: [
+        'https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        'https://images.unsplash.com/photo-1618773928121-c32242e63f39?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        'https://images.unsplash.com/photo-1590490360182-c33d57733427?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
+      ]
     },
     {
       id: 5,
@@ -124,7 +145,12 @@ const RoomDetail = () => {
       popular: false,
       amenities: ['Game Console', 'Kids Activities', 'Babysitting Service', 'Children\'s Menu', 'Family Board Games', 'Kitchenette'],
       guests: 5,
-      bed: 'King Size + 2 Twins'
+      bed: 'King Size + 2 Twins',
+      gallery: [
+        'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        'https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        'https://images.unsplash.com/photo-1591088398332-8a7791972843?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
+      ]
     },
     {
       id: 6,
@@ -145,11 +171,23 @@ const RoomDetail = () => {
       popular: false,
       amenities: ['Jacuzzi', 'Private Balcony', 'Romantic Setup', 'Complimentary Champagne', 'Rose Petals', 'Chocolate Truffles', 'Couples Spa Services'],
       guests: 2,
-      bed: 'King Size'
+      bed: 'King Size',
+      gallery: [
+        'https://images.unsplash.com/photo-1591088398332-8a7791972843?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        'https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        'https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
+      ]
     }
   ];
 
   const room = rooms.find(r => r.id === parseInt(id));
+
+  // Reset selected image when room changes
+  useEffect(() => {
+    if (room) {
+      setSelectedImage(room.image);
+    }
+  }, [room]);
 
   if (!room) {
     return (
@@ -204,7 +242,6 @@ const RoomDetail = () => {
   return (
     <>
       <style>{`
-        /* ===== ROOM DETAIL PAGE - FIXED LAYOUT ===== */
         .room-detail-page {
           background: #f8f9fa;
           min-height: 100vh;
@@ -216,7 +253,6 @@ const RoomDetail = () => {
           margin: 0 auto;
         }
 
-        /* Back Button */
         .back-link {
           display: inline-flex;
           align-items: center;
@@ -232,14 +268,13 @@ const RoomDetail = () => {
           color: #d4af37;
         }
 
-        /* Main Grid */
         .detail-grid {
           display: grid;
           grid-template-columns: 1fr;
           gap: 32px;
         }
 
-        /* Image */
+        /* Main Image */
         .detail-image {
           position: relative;
           border-radius: 16px;
@@ -251,6 +286,7 @@ const RoomDetail = () => {
           width: 100%;
           height: 400px;
           object-fit: cover;
+          transition: opacity 0.3s ease;
         }
 
         .detail-image .discount-badge {
@@ -264,6 +300,60 @@ const RoomDetail = () => {
           font-weight: 700;
           font-size: 14px;
           box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+          z-index: 2;
+        }
+
+        /* ===== GALLERY THUMBNAILS ===== */
+        .room-gallery {
+          margin-top: 16px;
+        }
+
+        .room-gallery .gallery-label {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 14px;
+          font-weight: 600;
+          color: #1a1a1a;
+          margin-bottom: 10px;
+        }
+
+        .gallery-thumbnails {
+          display: flex;
+          gap: 12px;
+          overflow-x: auto;
+          padding-bottom: 8px;
+          scroll-behavior: smooth;
+        }
+
+        .gallery-thumbnails::-webkit-scrollbar {
+          height: 4px;
+        }
+
+        .gallery-thumbnails::-webkit-scrollbar-thumb {
+          background: #d4af37;
+          border-radius: 4px;
+        }
+
+        .gallery-thumb {
+          width: 100px;
+          height: 70px;
+          object-fit: cover;
+          border-radius: 8px;
+          cursor: pointer;
+          border: 2px solid transparent;
+          transition: all 0.3s ease;
+          flex-shrink: 0;
+        }
+
+        .gallery-thumb:hover {
+          border-color: #d4af37;
+          transform: scale(1.05);
+        }
+
+        .gallery-thumb.active {
+          border-color: #d4af37;
+          box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
         }
 
         /* Content Card */
@@ -274,7 +364,6 @@ const RoomDetail = () => {
           box-shadow: 0 2px 10px rgba(0,0,0,0.06);
         }
 
-        /* Location */
         .detail-location {
           display: flex;
           align-items: center;
@@ -290,7 +379,6 @@ const RoomDetail = () => {
           height: 16px;
         }
 
-        /* Room Name */
         .detail-name {
           font-size: 28px;
           font-weight: 700;
@@ -304,7 +392,6 @@ const RoomDetail = () => {
           color: #6b7280;
         }
 
-        /* Price */
         .detail-price {
           margin: 12px 0 8px;
         }
@@ -327,7 +414,6 @@ const RoomDetail = () => {
           font-weight: 400;
         }
 
-        /* Rating */
         .detail-rating {
           display: flex;
           align-items: center;
@@ -351,14 +437,12 @@ const RoomDetail = () => {
           font-size: 14px;
         }
 
-        /* Divider */
         .divider {
           border: none;
           border-top: 1px solid #e5e7eb;
           margin: 16px 0;
         }
 
-        /* Room Meta */
         .room-meta {
           display: flex;
           flex-wrap: wrap;
@@ -377,7 +461,6 @@ const RoomDetail = () => {
           color: #d4af37;
         }
 
-        /* Description */
         .detail-description {
           color: #4b5563;
           font-size: 15px;
@@ -385,7 +468,6 @@ const RoomDetail = () => {
           margin: 16px 0;
         }
 
-        /* Features */
         .features-list {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
@@ -409,7 +491,6 @@ const RoomDetail = () => {
           flex-shrink: 0;
         }
 
-        /* Book Button */
         .btn-book {
           display: inline-flex;
           align-items: center;
@@ -435,13 +516,16 @@ const RoomDetail = () => {
           box-shadow: 0 8px 30px rgba(212, 175, 55, 0.35);
         }
 
-        /* Responsive */
         @media (min-width: 992px) {
           .detail-grid {
             grid-template-columns: 1fr 1fr;
           }
           .detail-image img {
             height: 500px;
+          }
+          .gallery-thumb {
+            width: 120px;
+            height: 80px;
           }
         }
 
@@ -463,6 +547,10 @@ const RoomDetail = () => {
           }
           .features-list {
             grid-template-columns: 1fr;
+          }
+          .gallery-thumb {
+            width: 80px;
+            height: 55px;
           }
         }
 
@@ -491,6 +579,10 @@ const RoomDetail = () => {
           }
           .detail-rating .stars {
             gap: 1px;
+          }
+          .gallery-thumb {
+            width: 70px;
+            height: 50px;
           }
         }
 
@@ -629,11 +721,33 @@ const RoomDetail = () => {
           </Link>
 
           <div className="detail-grid">
-            {/* Image */}
-            <div className="detail-image">
-              <img src={room.image} alt={room.name} />
-              {room.discount > 0 && (
-                <div className="discount-badge">{room.discount}% OFF</div>
+            {/* Image Column */}
+            <div>
+              <div className="detail-image">
+                <img src={selectedImage} alt={room.name} />
+                {room.discount > 0 && (
+                  <div className="discount-badge">{room.discount}% OFF</div>
+                )}
+              </div>
+
+              {/* ===== GALLERY SECTION ===== */}
+              {room.gallery && room.gallery.length > 1 && (
+                <div className="room-gallery">
+                  <div className="gallery-label">
+                    <Sparkles size={16} color="#d4af37" /> More Views
+                  </div>
+                  <div className="gallery-thumbnails">
+                    {room.gallery.map((img, idx) => (
+                      <img
+                        key={idx}
+                        src={img}
+                        alt={`${room.name} view ${idx + 1}`}
+                        className={`gallery-thumb ${selectedImage === img ? 'active' : ''}`}
+                        onClick={() => setSelectedImage(img)}
+                      />
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
 

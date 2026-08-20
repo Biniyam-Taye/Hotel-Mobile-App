@@ -12,72 +12,94 @@ const Home = () => {
   const [showBooking, setShowBooking] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(null);
 
-  const rooms = [
-    {
-      id: 3,
-      name: 'Presidential Suite',
-      priceUSD: 450,
-      priceETB: 450 * usdToEtb,
-      capacity: 4,
-      bedType: 'King Size Bed + Sofa Bed',
-      size: '85 m²',
-      rating: 4.8,
-      location: 'Adama · Bekele Mola Hotels',
-      shortDescription: 'Our most luxurious suite with private terrace and butler service.',
-      features: ['Free Wi-Fi', 'Smart TV', 'Air Conditioning', 'Coffee Maker', 'Mini Bar', 'Bathtub', 'Private Terrace'],
-      image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      popular: true,
-      longDescription: 'The Presidential Suite is the epitome of luxury living. Spanning an impressive 85 square meters, this suite offers panoramic views of the city skyline from a private terrace.'
-    },
-    {
-      id: 4,
-      name: 'Standard Room',
-      priceUSD: 120,
-      priceETB: 120 * usdToEtb,
-      capacity: 2,
-      bedType: 'Double Bed',
-      size: '24 m²',
-      rating: 4.3,
-      location: 'Adama · Bekele Mola Hotels',
-      shortDescription: 'Comfortable room with all essential amenities for a pleasant stay.',
-      features: ['Free Wi-Fi', 'Flat-screen TV', 'Air Conditioning', 'Coffee Maker'],
-      image: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      popular: false,
-      longDescription: 'The Standard Room offers a comfortable and inviting space for travelers seeking value without compromising on quality.'
-    },
-    {
-      id: 5,
-      name: 'Family Suite',
-      priceUSD: 320,
-      priceETB: 320 * usdToEtb,
-      capacity: 5,
-      bedType: 'King Size Bed + 2 Twin Beds',
-      size: '65 m²',
-      rating: 4.7,
-      location: 'Adama · Bekele Mola Hotels',
-      shortDescription: 'Spacious suite designed for families with children\'s entertainment area.',
-      features: ['Free Wi-Fi', 'Smart TV', 'Air Conditioning', 'Coffee Maker', 'Mini Bar', 'Game Console'],
-      image: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      popular: false,
-      longDescription: 'The Family Suite is perfect for families seeking space and comfort. This suite features a separate children\'s area with a game console, board games, and a selection of movies.'
-    },
-    {
-      id: 6,
-      name: 'Honeymoon Suite',
-      priceUSD: 380,
-      priceETB: 380 * usdToEtb,
-      capacity: 2,
-      bedType: 'King Size Bed',
-      size: '55 m²',
-      rating: 4.9,
-      location: 'Adama · Bekele Mola Hotels',
-      shortDescription: 'Romantic suite with jacuzzi, rose petals, and sunset views.',
-      features: ['Free Wi-Fi', 'Smart TV', 'Air Conditioning', 'Coffee Maker', 'Jacuzzi', 'Mini Bar'],
-      image: 'https://images.unsplash.com/photo-1591088398332-8a7791972843?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      popular: true,
-      longDescription: 'The Honeymoon Suite is designed for romance and celebration. Upon arrival, guests are welcomed with rose petals, champagne, and chocolates.'
-    }
-  ];
+ 
+
+const rooms = [
+  {
+    id: 3,
+    name: 'Presidential Suite',
+    priceUSD: 450,
+    priceETB: 450 * usdToEtb,
+    capacity: 4,
+    bedType: 'King Size Bed + Sofa Bed',
+    size: '85 m²',
+    rating: 4.8,
+    location: 'Adama · Bekele Mola Hotels',
+    shortDescription: 'Our most luxurious suite with private terrace and butler service.',
+    features: ['Free Wi-Fi', 'Smart TV', 'Air Conditioning', 'Coffee Maker', 'Mini Bar', 'Bathtub', 'Private Terrace'],
+    image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    popular: true,
+    longDescription: 'The Presidential Suite is the epitome of luxury living...',
+    gallery: [
+      'https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', // main view
+      'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', // angle 2 – bedroom
+      'https://images.unsplash.com/photo-1591088398332-8a7791972843?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'  // angle 3 – bathroom/balcony
+    ]
+  },
+  {
+    id: 4,
+    name: 'Standard Room',
+    priceUSD: 120,
+    priceETB: 120 * usdToEtb,
+    capacity: 2,
+    bedType: 'Double Bed',
+    size: '24 m²',
+    rating: 4.3,
+    location: 'Adama · Bekele Mola Hotels',
+    shortDescription: 'Comfortable room with all essential amenities for a pleasant stay.',
+    features: ['Free Wi-Fi', 'Flat-screen TV', 'Air Conditioning', 'Coffee Maker'],
+    image: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    popular: false,
+    longDescription: 'The Standard Room offers a comfortable and inviting space...',
+    gallery: [
+      'https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+      'https://images.unsplash.com/photo-1618773928121-c32242e63f39?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+      'https://images.unsplash.com/photo-1590490360182-c33d57733427?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
+    ]
+  },
+  {
+    id: 5,
+    name: 'Family Suite',
+    priceUSD: 320,
+    priceETB: 320 * usdToEtb,
+    capacity: 5,
+    bedType: 'King Size Bed + 2 Twin Beds',
+    size: '65 m²',
+    rating: 4.7,
+    location: 'Adama · Bekele Mola Hotels',
+    shortDescription: 'Spacious suite designed for families with children\'s entertainment area.',
+    features: ['Free Wi-Fi', 'Smart TV', 'Air Conditioning', 'Coffee Maker', 'Mini Bar', 'Game Console'],
+    image: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    popular: false,
+    longDescription: 'The Family Suite is perfect for families seeking space and comfort...',
+    gallery: [
+      'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+      'https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+      'https://images.unsplash.com/photo-1590490360182-c33d57733427?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
+    ]
+  },
+  {
+    id: 6,
+    name: 'Honeymoon Suite',
+    priceUSD: 380,
+    priceETB: 380 * usdToEtb,
+    capacity: 2,
+    bedType: 'King Size Bed',
+    size: '55 m²',
+    rating: 4.9,
+    location: 'Adama · Bekele Mola Hotels',
+    shortDescription: 'Romantic suite with jacuzzi, rose petals, and sunset views.',
+    features: ['Free Wi-Fi', 'Smart TV', 'Air Conditioning', 'Coffee Maker', 'Jacuzzi', 'Mini Bar'],
+    image: 'https://images.unsplash.com/photo-1591088398332-8a7791972843?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    popular: true,
+    longDescription: 'The Honeymoon Suite is designed for romance and celebration...',
+    gallery: [
+      'https://images.unsplash.com/photo-1591088398332-8a7791972843?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+      'https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+      'https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
+    ]
+  }
+];
 
   const formatPrice = (price) => {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');

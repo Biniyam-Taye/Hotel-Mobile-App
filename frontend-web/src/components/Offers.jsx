@@ -98,7 +98,6 @@ const Offers = () => {
           margin-bottom: 8px;
         }
 
-        /* --- UPDATED TITLE HOVER EFFECT --- */
         .offers-header h2 {
           font-family: 'Georgia', 'Times New Roman', serif;
           font-size: 40px;
@@ -131,7 +130,6 @@ const Offers = () => {
           gap: 24px;
         }
 
-        /* --- UPDATED OFFER CARD HOVER EFFECT (Bottom Colored Line) --- */
         .offer-card {
           background: #ffffff;
           border-radius: 16px;
@@ -141,7 +139,9 @@ const Offers = () => {
           transition: all 0.4s ease;
           display: flex;
           flex-direction: column;
-          position: relative; /* Required for the colored line */
+          position: relative;
+          text-decoration: none;
+          color: inherit;
         }
 
         .offer-card:hover {
@@ -150,7 +150,6 @@ const Offers = () => {
           box-shadow: 0 16px 48px rgba(0,0,0,0.08);
         }
 
-        /* The sliding colored bottom line */
         .offer-card::after {
           content: '';
           position: absolute;
@@ -158,8 +157,8 @@ const Offers = () => {
           left: 0;
           width: 0;
           height: 5px;
-          border-radius: 0 0 16px 16px; /* Matches the card's bottom rounded corners */
-          background: var(--card-line-color, #d4af37); /* Defaults to Gold */
+          border-radius: 0 0 16px 16px;
+          background: var(--card-line-color, #d4af37);
           transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
           z-index: 2;
         }
@@ -278,11 +277,47 @@ const Offers = () => {
           gap: 4px;
         }
 
-        .offer-card .offer-details .offer-footer .btn-book {
+        .offer-actions {
+          display: flex;
+          gap: 8px;
+          align-items: center;
+        }
+
+        /* ===== FIXED: VIEW DETAILS BUTTON - TEXT ALWAYS VISIBLE ===== */
+        .btn-view-details {
           display: inline-flex;
           align-items: center;
+          justify-content: center;
           gap: 6px;
-          padding: 6px 18px;
+          padding: 8px 18px;
+          border: 2px solid #d4af37;
+          background: transparent;
+          color: #d4af37;
+          border-radius: 9999px;
+          font-weight: 600;
+          font-size: 13px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          text-decoration: none;
+          font-family: 'Poppins', sans-serif;
+          white-space: nowrap;
+          min-width: 120px;
+        }
+
+        .btn-view-details:hover {
+          background: #d4af37;
+          color: #1a1a1a !important;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        /* ===== FIXED: BOOK NOW BUTTON ===== */
+        .btn-book-offer {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          padding: 8px 20px;
           background: #d4af37;
           color: #1a1a1a;
           border: none;
@@ -291,17 +326,18 @@ const Offers = () => {
           font-size: 13px;
           cursor: pointer;
           transition: all 0.3s ease;
-          text-decoration: none;
           font-family: 'Poppins', sans-serif;
+          white-space: nowrap;
+          min-width: 120px;
         }
 
-        .offer-card .offer-details .offer-footer .btn-book:hover {
+        .btn-book-offer:hover {
           background: #c5a028;
+          color: #1a1a1a !important;
           transform: translateY(-2px);
           box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
         }
 
-        /* --- GOLD EXPLORE ALL BUTTON --- */
         .explore-all-wrapper {
           display: flex;
           justify-content: center;
@@ -391,8 +427,16 @@ const Offers = () => {
             flex-direction: column;
             align-items: stretch;
           }
-          .offer-card .offer-details .offer-footer .btn-book {
+          .offer-actions {
+            width: 100%;
+          }
+          .btn-view-details,
+          .btn-book-offer {
+            flex: 1;
             justify-content: center;
+            font-size: 12px;
+            padding: 6px 12px;
+            min-width: auto;
           }
           .explore-all-btn {
             font-size: 15px;
@@ -566,11 +610,10 @@ const Offers = () => {
 
           <div className="offers-grid">
             {offers.map((offer) => (
-              <Link 
+              <div 
                 key={offer.id} 
-                to={`/offers/${offer.id}`} 
                 className="offer-card" 
-                style={{ '--card-line-color': '#d4af37', textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column' }}
+                style={{ '--card-line-color': '#d4af37' }}
               >
                 <div className="offer-image">
                   <img src={offer.image} alt={offer.title} />
@@ -586,22 +629,28 @@ const Offers = () => {
                   <h3 className="offer-title">{offer.title}</h3>
                   <div className="offer-subtitle">{offer.subtitle}</div>
                   <p className="offer-description">{offer.description}</p>
+                  
                   <div className="offer-footer">
                     <span className="valid">
                       <Clock size={12} /> {offer.validUntil}
                     </span>
-                    <button 
-                      onClick={(e) => {
-                        e.stopPropagation(); 
-                        openBookingModal(offer);
-                      }} 
-                      className="btn-book"
-                    >
-                      Book Now <ArrowRight size={14} />
-                    </button>
+                    <div className="offer-actions">
+                      <Link to={`/offers/${offer.id}`} className="btn-view-details">
+                        View Details <ArrowRight size={14} />
+                      </Link>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation(); 
+                          openBookingModal(offer);
+                        }} 
+                        className="btn-book-offer"
+                      >
+                        Book Now <ArrowRight size={14} />
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
 
