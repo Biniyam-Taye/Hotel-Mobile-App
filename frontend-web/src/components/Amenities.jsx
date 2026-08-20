@@ -1,65 +1,89 @@
 // src/components/Amenities.jsx
 import { Link } from 'react-router-dom';
-import {
-  Utensils, Coffee, Wine, Car, Clock, Shirt,
-  Droplets, Dumbbell, Sparkles, MapPin, Star,
-  ArrowRight, Compass, Calendar
-} from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 const Amenities = () => {
-  // 4 Home Cards Data – No details, only image + badge + title
   const cards = [
     {
       id: 1,
       title: 'Restaurant & Bar',
       badge: 'FINE DINING',
       image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&auto=format&fit=crop',
-      link: '/dining'
+      link: '/hospitality?category=Dining'
     },
     {
       id: 2,
       title: 'Hotel Services',
       badge: '24/7 CONCIERGE',
       image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&auto=format&fit=crop',
-      link: '/services'
+      link: '/hospitality?category=Services'
     },
     {
       id: 3,
       title: 'Facilities & Wellness',
       badge: 'REJUVENATE',
       image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=600&auto=format&fit=crop',
-      link: '/wellness'
+      link: '/hospitality?category=Wellness'
     },
     {
       id: 4,
       title: 'Events & Conference',
       badge: 'PREMIUM VENUES',
       image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=600&auto=format&fit=crop',
-      link: '/events'
+      link: '/hospitality?category=Events'
     }
   ];
 
   return (
-    <>
+    <section className="amenities-section" id="amenities">
+      <div className="amenities-container">
+        <div className="amenities-header">
+          <div className="label">✦ Curated Experiences ✦</div>
+          <h2>Hotel <span>Hospitality</span></h2>
+          <p>
+            Discover dining, spa, massage, tours, and premium services from our partner hotels —
+            crafted for unforgettable stays.
+          </p>
+        </div>
+
+        <div className="amenities-grid">
+          {cards.map((card) => (
+            <div key={card.id} className="amenity-card">
+              <div className="card-image">
+                <img src={card.image} alt={card.title} loading="lazy" />
+                <span className="badge">{card.badge}</span>
+              </div>
+              <div className="card-body">
+                <h3 className="title">{card.title}</h3>
+                <Link to={card.link} className="explore-link">
+                  Explore <ArrowRight size={16} />
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="explore-all-wrapper">
+          <Link to="/hospitality" className="explore-all-btn">
+            Explore All Hospitality <ArrowRight size={18} />
+          </Link>
+        </div>
+      </div>
+
       <style>{`
-        /* ----- SECTION BASE ----- */
         .amenities-section {
           padding: 80px 24px;
           background: #f6f7f9;
-          font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+          font-family: 'Poppins', sans-serif;
         }
-
         .amenities-container {
           max-width: 1200px;
           margin: 0 auto;
         }
-
-        /* ----- HEADER ----- */
         .amenities-header {
           text-align: center;
           margin-bottom: 48px;
         }
-
         .amenities-header .label {
           display: inline-block;
           font-size: 13px;
@@ -72,19 +96,14 @@ const Amenities = () => {
           border-radius: 9999px;
           margin-bottom: 12px;
         }
-
         .amenities-header h2 {
-          font-family: 'Georgia', 'Times New Roman', serif;
+          font-family: 'Georgia', serif;
           font-size: 42px;
           font-weight: 700;
           color: #0e0e0e;
           margin-bottom: 8px;
         }
-
-        .amenities-header h2 span {
-          color: #b8941e;
-        }
-
+        .amenities-header h2 span { color: #b8941e; }
         .amenities-header p {
           color: #6b7280;
           font-size: 16px;
@@ -93,14 +112,12 @@ const Amenities = () => {
           line-height: 1.7;
         }
 
-        /* ----- GRID & CARDS ----- */
         .amenities-grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
           gap: 24px;
           margin-bottom: 48px;
         }
-
         .amenity-card {
           background: #ffffff;
           border-radius: 20px;
@@ -109,38 +126,31 @@ const Amenities = () => {
           transition: all 0.35s ease;
           display: flex;
           flex-direction: column;
-          box-shadow: 0 2px 12px rgba(0, 0, 0, 0.02);
+          box-shadow: 0 2px 12px rgba(0,0,0,0.02);
         }
-
         .amenity-card:hover {
           transform: translateY(-6px);
-          border-color: rgba(184, 148, 30, 0.15);
-          box-shadow: 0 16px 40px rgba(0, 0, 0, 0.06);
+          border-color: rgba(184,148,30,0.15);
+          box-shadow: 0 16px 40px rgba(0,0,0,0.06);
         }
-
         .amenity-card .card-image {
           height: 200px;
           overflow: hidden;
           background: #eef0f2;
           position: relative;
         }
-
         .amenity-card .card-image img {
           width: 100%;
           height: 100%;
           object-fit: cover;
           transition: transform 0.6s ease;
         }
-
-        .amenity-card:hover .card-image img {
-          transform: scale(1.05);
-        }
-
+        .amenity-card:hover .card-image img { transform: scale(1.05); }
         .amenity-card .card-image .badge {
           position: absolute;
           top: 16px;
           left: 16px;
-          background: rgba(0, 0, 0, 0.6);
+          background: rgba(0,0,0,0.6);
           backdrop-filter: blur(4px);
           color: #fff;
           font-size: 10px;
@@ -149,24 +159,21 @@ const Amenities = () => {
           text-transform: uppercase;
           padding: 4px 14px;
           border-radius: 9999px;
-          border: 1px solid rgba(255, 255, 255, 0.15);
+          border: 1px solid rgba(255,255,255,0.15);
         }
-
         .amenity-card .card-body {
           padding: 18px 20px 20px;
           flex: 1;
           display: flex;
           flex-direction: column;
         }
-
         .amenity-card .card-body .title {
           font-size: 19px;
           font-weight: 700;
           color: #0e0e0e;
           margin: 0 0 14px;
-          font-family: 'Georgia', 'Times New Roman', serif;
+          font-family: 'Georgia', serif;
         }
-
         .amenity-card .card-body .explore-link {
           display: inline-flex;
           align-items: center;
@@ -179,27 +186,18 @@ const Amenities = () => {
           margin-top: auto;
           align-self: flex-start;
         }
-
-        .amenity-card .card-body .explore-link:hover {
-          gap: 12px;
-        }
-
+        .amenity-card .card-body .explore-link:hover { gap: 12px; }
         .amenity-card .card-body .explore-link svg {
           width: 16px;
           height: 16px;
           transition: transform 0.3s ease;
         }
+        .amenity-card .card-body .explore-link:hover svg { transform: translateX(4px); }
 
-        .amenity-card .card-body .explore-link:hover svg {
-          transform: translateX(4px);
-        }
-
-        /* ----- EXPLORE ALL BUTTON ----- */
         .explore-all-wrapper {
           display: flex;
           justify-content: center;
         }
-
         .explore-all-btn {
           display: inline-flex;
           align-items: center;
@@ -214,110 +212,35 @@ const Amenities = () => {
           transition: all 0.3s ease;
           border: 2px solid #b8941e;
         }
-
         .explore-all-btn:hover {
           background: transparent;
           color: #b8941e;
           transform: translateY(-3px);
-          box-shadow: 0 8px 24px rgba(184, 148, 30, 0.15);
+          box-shadow: 0 8px 24px rgba(184,148,30,0.15);
         }
-
         .explore-all-btn svg {
           width: 18px;
           height: 18px;
           transition: transform 0.3s ease;
         }
+        .explore-all-btn:hover svg { transform: translateX(4px); }
 
-        .explore-all-btn:hover svg {
-          transform: translateX(4px);
-        }
-
-        /* ----- RESPONSIVE ----- */
         @media (max-width: 1024px) {
-          .amenities-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 24px;
-          }
+          .amenities-grid { grid-template-columns: repeat(2, 1fr); }
         }
-
         @media (max-width: 768px) {
-          .amenities-section {
-            padding: 60px 16px;
-          }
-          .amenities-header h2 {
-            font-size: 30px;
-          }
-          .amenities-header p {
-            font-size: 14px;
-          }
-          .amenities-grid {
-            grid-template-columns: 1fr;
-            gap: 20px;
-          }
-          .amenity-card .card-image {
-            height: 180px;
-          }
-          .amenity-card .card-body {
-            padding: 16px 16px 18px;
-          }
-          .amenity-card .card-body .title {
-            font-size: 18px;
-          }
-          .explore-all-btn {
-            padding: 12px 24px;
-            font-size: 14px;
-          }
+          .amenities-section { padding: 60px 16px; }
+          .amenities-header h2 { font-size: 30px; }
+          .amenities-grid { grid-template-columns: 1fr; }
+          .amenity-card .card-image { height: 180px; }
+          .explore-all-btn { padding: 12px 24px; font-size: 14px; }
         }
-
         @media (max-width: 480px) {
-          .amenities-header h2 {
-            font-size: 24px;
-          }
-          .amenity-card .card-image {
-            height: 160px;
-          }
+          .amenities-header h2 { font-size: 24px; }
+          .amenity-card .card-image { height: 160px; }
         }
       `}</style>
-
-      <section className="amenities-section" id="amenities">
-        <div className="amenities-container">
-          {/* HEADER */}
-          <div className="amenities-header">
-            <div className="label">✦ Curated Experiences ✦</div>
-            <h2>Hotel <span>Hospitality</span></h2>
-            <p>
-              Discover dining, spa, massage, tours, and premium services from our partner hotels —
-              crafted for unforgettable stays.
-            </p>
-          </div>
-
-          {/* GRID — 4 Cards (Image + Badge + Title + Explore) */}
-          <div className="amenities-grid">
-            {cards.map((card) => (
-              <div key={card.id} className="amenity-card">
-                <div className="card-image">
-                  <img src={card.image} alt={card.title} loading="lazy" />
-                  <span className="badge">{card.badge}</span>
-                </div>
-                <div className="card-body">
-                  <h3 className="title">{card.title}</h3>
-                  <Link to={card.link} className="explore-link">
-                    Explore <ArrowRight size={16} />
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* EXPLORE ALL LINK */}
-          <div className="explore-all-wrapper">
-            <Link to="/hospitality" className="explore-all-btn">
-              Explore All Hospitality <ArrowRight size={18} />
-            </Link>
-          </div>
-        </div>
-      </section>
-    </>
+    </section>
   );
 };
 
