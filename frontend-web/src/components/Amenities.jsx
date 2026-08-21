@@ -8,6 +8,7 @@ const Amenities = () => {
       id: 1,
       title: 'Restaurant & Bar',
       badge: 'FINE DINING',
+      description: 'Savor world-class cuisine and signature cocktails in an elegant atmosphere.',
       image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&auto=format&fit=crop',
       link: '/hospitality?category=Dining'
     },
@@ -15,6 +16,7 @@ const Amenities = () => {
       id: 2,
       title: 'Hotel Services',
       badge: '24/7 CONCIERGE',
+      description: 'Experience 24/7 concierge support, luggage assistance, and personalized attention.',
       image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&auto=format&fit=crop',
       link: '/hospitality?category=Services'
     },
@@ -22,6 +24,7 @@ const Amenities = () => {
       id: 3,
       title: 'Facilities & Wellness',
       badge: 'REJUVENATE',
+      description: 'Relax with a pampering spa day, access our state-of-the-art gym, or unwind by the pool.',
       image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=600&auto=format&fit=crop',
       link: '/hospitality?category=Wellness'
     },
@@ -29,6 +32,7 @@ const Amenities = () => {
       id: 4,
       title: 'Events & Conference',
       badge: 'PREMIUM VENUES',
+      description: 'Host memorable meetings, weddings, and conferences in our versatile premium venues.',
       image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=600&auto=format&fit=crop',
       link: '/hospitality?category=Events'
     }
@@ -55,6 +59,7 @@ const Amenities = () => {
               </div>
               <div className="card-body">
                 <h3 className="title">{card.title}</h3>
+                <p className="description">{card.description}</p>
                 <Link to={card.link} className="explore-link">
                   Explore <ArrowRight size={16} />
                 </Link>
@@ -171,9 +176,18 @@ const Amenities = () => {
           font-size: 19px;
           font-weight: 700;
           color: #0e0e0e;
-          margin: 0 0 14px;
+          margin: 0 0 10px;
           font-family: 'Georgia', serif;
         }
+
+        /* NEW CSS FOR DESCRIPTION */
+        .amenity-card .card-body .description {
+          font-size: 14px;
+          color: #6b7280;
+          line-height: 1.6;
+          margin: 0 0 16px;
+        }
+
         .amenity-card .card-body .explore-link {
           display: inline-flex;
           align-items: center;

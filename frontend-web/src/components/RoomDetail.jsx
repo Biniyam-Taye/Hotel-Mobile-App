@@ -1,15 +1,15 @@
 // src/components/RoomDetail.jsx
 import { useParams, Link } from 'react-router-dom';
-import { useState, useEffect } from 'react'; // Added useEffect
+import { useState, useEffect } from 'react';
 import { 
   Wifi, Tv, AirVent, Coffee, Car, Users, Bath, 
-  ArrowLeft, Star, Calendar, Check, 
+  ArrowLeft, Star, Check, 
   Utensils, Dumbbell, Sparkles, Bed, Maximize, MapPin
 } from 'lucide-react';
+import AvailabilityForm from './AvailabilityForm';
 
 const RoomDetail = () => {
   const { id } = useParams();
-  const [showBooking, setShowBooking] = useState(false);
   const [selectedImage, setSelectedImage] = useState('');
 
   // Exchange rate
@@ -20,7 +20,7 @@ const RoomDetail = () => {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
-  // Room data with location and discount + GALLERY
+  // Room data with location, discount, and gallery
   const rooms = [
     {
       id: 1,
@@ -198,12 +198,6 @@ const RoomDetail = () => {
     );
   }
 
-  const handleBooking = (e) => {
-    e.preventDefault();
-    alert('🎉 Booking confirmed! We will contact you shortly.');
-    setShowBooking(false);
-  };
-
   // Generate stars
   const renderStars = (rating) => {
     const fullStars = Math.floor(rating);
@@ -284,7 +278,7 @@ const RoomDetail = () => {
 
         .detail-image img {
           width: 100%;
-          height: 400px;
+          aspect-ratio: 16 / 9;
           object-fit: cover;
           transition: opacity 0.3s ease;
         }
@@ -320,7 +314,7 @@ const RoomDetail = () => {
 
         .gallery-thumbnails {
           display: flex;
-          gap: 12px;
+          gap: 16px; /* Increased gap for spacing */
           overflow-x: auto;
           padding-bottom: 8px;
           scroll-behavior: smooth;
@@ -335,11 +329,11 @@ const RoomDetail = () => {
           border-radius: 4px;
         }
 
+        /* UPDATED: Made the thumbnails much larger */
         .gallery-thumb {
-          width: 100px;
-          height: 70px;
+          width: 180px;
+          aspect-ratio: 4 / 3;
           object-fit: cover;
-          border-radius: 8px;
           cursor: pointer;
           border: 2px solid transparent;
           transition: all 0.3s ease;
@@ -356,12 +350,13 @@ const RoomDetail = () => {
           box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
         }
 
-        /* Content Card */
+        /* Content Card (right side) */
         .detail-card {
           background: #ffffff;
           border-radius: 16px;
           padding: 32px;
           box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+          border: 1px solid #e5e7eb;
         }
 
         .detail-location {
@@ -491,41 +486,18 @@ const RoomDetail = () => {
           flex-shrink: 0;
         }
 
-        .btn-book {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 14px 48px;
-          background: #d4af37;
-          color: #1a1a1a;
-          border: none;
-          border-radius: 9999px;
-          font-weight: 600;
-          font-size: 16px;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          font-family: 'Poppins', sans-serif;
-          width: 100%;
-          justify-content: center;
-          margin-top: 8px;
-        }
-
-        .btn-book:hover {
-          background: #c5a028;
-          transform: translateY(-2px);
-          box-shadow: 0 8px 30px rgba(212, 175, 55, 0.35);
+        /* ----- AvailabilityForm container ----- */
+        .form-wrapper {
+          margin-top: 20px;
         }
 
         @media (min-width: 992px) {
           .detail-grid {
             grid-template-columns: 1fr 1fr;
           }
-          .detail-image img {
-            height: 500px;
-          }
+          /* Larger on desktop */
           .gallery-thumb {
-            width: 120px;
-            height: 80px;
+            width: 200px;
           }
         }
 
@@ -542,15 +514,12 @@ const RoomDetail = () => {
           .detail-price .current-price {
             font-size: 26px;
           }
-          .detail-image img {
-            height: 250px;
+          /* Slightly smaller on tablets */
+          .gallery-thumb {
+            width: 140px;
           }
           .features-list {
             grid-template-columns: 1fr;
-          }
-          .gallery-thumb {
-            width: 80px;
-            height: 55px;
           }
         }
 
@@ -567,149 +536,19 @@ const RoomDetail = () => {
           .detail-price .current-price {
             font-size: 22px;
           }
-          .detail-image img {
-            height: 200px;
-          }
-          .btn-book {
-            font-size: 14px;
-            padding: 12px 24px;
-          }
           .detail-rating {
             gap: 4px;
           }
           .detail-rating .stars {
             gap: 1px;
           }
+          /* Mobile size */
           .gallery-thumb {
-            width: 70px;
-            height: 50px;
+            width: 110px;
           }
-        }
-
-        /* Modal Styles */
-        .modal-overlay {
-          position: fixed;
-          inset: 0;
-          background: rgba(0,0,0,0.6);
-          backdrop-filter: blur(8px);
-          z-index: 999;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 24px;
-          animation: fadeIn 0.3s ease;
-        }
-
-        .modal-content {
-          background: #ffffff;
-          border-radius: 20px;
-          max-width: 520px;
-          width: 100%;
-          padding: 32px;
-          animation: slideUp 0.4s ease;
-          max-height: 90vh;
-          overflow-y: auto;
-        }
-
-        .modal-content .modal-close {
-          float: right;
-          background: none;
-          border: none;
-          font-size: 24px;
-          color: #6b7280;
-          cursor: pointer;
-          transition: color 0.3s;
-        }
-
-        .modal-content .modal-close:hover {
-          color: #1a1a1a;
-        }
-
-        .modal-content h3 {
-          font-size: 24px;
-          font-weight: 700;
-          color: #1a1a1a;
-          margin: 0 0 4px;
-        }
-
-        .modal-content .modal-price {
-          color: #d4af37;
-          font-size: 28px;
-          font-weight: 700;
-        }
-
-        .modal-content .modal-price span {
-          font-size: 14px;
-          color: #6b7280;
-          font-weight: 400;
-        }
-
-        .modal-content .form-group {
-          margin: 16px 0;
-        }
-
-        .modal-content .form-group label {
-          display: block;
-          font-size: 14px;
-          font-weight: 600;
-          color: #374151;
-          margin-bottom: 4px;
-        }
-
-        .modal-content .form-group input,
-        .modal-content .form-group select {
-          width: 100%;
-          padding: 10px 14px;
-          border: 1px solid #d1d5db;
-          border-radius: 8px;
-          font-size: 14px;
-          transition: border-color 0.3s;
-          box-sizing: border-box;
-          font-family: 'Poppins', sans-serif;
-        }
-
-        .modal-content .form-group input:focus,
-        .modal-content .form-group select:focus {
-          outline: none;
-          border-color: #d4af37;
-          box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
-        }
-
-        .modal-content .btn-confirm {
-          width: 100%;
-          padding: 14px;
-          background: #d4af37;
-          color: #1a1a1a;
-          border: none;
-          border-radius: 9999px;
-          font-weight: 600;
-          font-size: 16px;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          margin-top: 8px;
-          font-family: 'Poppins', sans-serif;
-        }
-
-        .modal-content .btn-confirm:hover {
-          background: #c5a028;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
-        }
-
-        .modal-content .form-row {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 16px;
-        }
-
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-
-        @keyframes slideUp {
-          from { transform: translateY(30px); opacity: 0; }
-          to { transform: translateY(0); opacity: 1; }
+          .features-list {
+            grid-template-columns: 1fr;
+          }
         }
       `}</style>
 
@@ -721,7 +560,7 @@ const RoomDetail = () => {
           </Link>
 
           <div className="detail-grid">
-            {/* Image Column */}
+            {/* Left Column – Image & Gallery */}
             <div>
               <div className="detail-image">
                 <img src={selectedImage} alt={room.name} />
@@ -730,7 +569,7 @@ const RoomDetail = () => {
                 )}
               </div>
 
-              {/* ===== GALLERY SECTION ===== */}
+              {/* Gallery */}
               {room.gallery && room.gallery.length > 1 && (
                 <div className="room-gallery">
                   <div className="gallery-label">
@@ -751,7 +590,7 @@ const RoomDetail = () => {
               )}
             </div>
 
-            {/* Content */}
+            {/* Right Column – Details + Availability Form */}
             <div className="detail-card">
               {/* Location */}
               <div className="detail-location">
@@ -811,70 +650,14 @@ const RoomDetail = () => {
                 ))}
               </div>
 
-              {/* Book Button */}
-              <button className="btn-book" onClick={() => setShowBooking(true)}>
-                <Calendar size={18} /> Book This Room
-              </button>
+              {/* ===== AVAILABILITY FORM ===== */}
+              <div className="form-wrapper">
+                <AvailabilityForm roomName={room.name} roomPrice={room.priceETB} />
+              </div>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Booking Modal */}
-      {showBooking && (
-        <div className="modal-overlay" onClick={() => setShowBooking(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setShowBooking(false)}>✕</button>
-            <h3>{room.name}</h3>
-            <div className="modal-price">
-              ETB {formatPrice(room.priceETB)} <span>/ night</span>
-            </div>
-
-            <form onSubmit={handleBooking}>
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Check-in Date</label>
-                  <input type="date" required />
-                </div>
-                <div className="form-group">
-                  <label>Check-out Date</label>
-                  <input type="date" required />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label>Full Name</label>
-                <input type="text" placeholder="John Doe" required />
-              </div>
-
-              <div className="form-group">
-                <label>Email Address</label>
-                <input type="email" placeholder="john@example.com" required />
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Phone Number</label>
-                  <input type="tel" placeholder="+1 234 567 890" required />
-                </div>
-                <div className="form-group">
-                  <label>Number of Guests</label>
-                  <select required>
-                    <option value="1">1 Guest</option>
-                    <option value="2" selected>2 Guests</option>
-                    <option value="3">3 Guests</option>
-                    <option value="4">4+ Guests</option>
-                  </select>
-                </div>
-              </div>
-
-              <button type="submit" className="btn-confirm">
-                Confirm Booking
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
     </>
   );
 };
