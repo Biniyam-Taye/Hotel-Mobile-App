@@ -1,122 +1,118 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+// src/App.jsx
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import Hero from './components/Hero';
+import About from './components/About';
+import Home from './components/Home';
+import Amenities from './components/Amenities';
+import RoomDetail from './components/RoomDetail';
+import RoomsPage from './pages/RoomsPage';
+import HospitalityPage from './pages/HospitalityPage';
+import ExperiencePage from './pages/ExperiencePage';
+import AboutPage from './pages/AboutPage';
+import FAQPage from './pages/FAQPage';
+import PrivacyPage from './pages/PrivacyPage';
+import TermsPage from './pages/TermsPage';
+import ContactPage from './pages/ContactPage';
+import RestaurantPage from './pages/RestaurantPage';
+import PoolPage from './pages/PoolPage';
+import SpaPage from './pages/SpaPage';
+import FitnessPage from './pages/FitnessPage';
+import Footer from './components/Footer';
+import Testimonials from './components/Testimonials';
+import Offers from './components/Offers';
+import OfferDetail from './components/OfferDetail';
+import ScrollToTop from './components/ScrollToTop';
+import OffersPage from './pages/OffersPage';
+import LoginPage from './pages/LoginPage';
+import SignUpPage from './pages/SignUpPage';
 
-function App() {
-  const [count, setCount] = useState(0)
+// ===== NOTE: Separate explore pages (DiningPage, ServicesPage, WellnessPage, EventsPage) are no longer needed =====
+// They have been replaced by the HospitalityPage with query parameters:
+// /hospitality?category=Dining
+// /hospitality?category=Services
+// /hospitality?category=Wellness
+// /hospitality?category=Events
+
+// Create a Layout component to conditionally show Navbar/Footer
+const Layout = ({ children }) => {
+  const location = useLocation();
+
+  // List of routes where we DO NOT want the Navbar and Footer to show
+  const hideNavAndFooter = ['/login', '/signup'];
+
+  // Check if current path is in the list
+  const shouldHide = hideNavAndFooter.includes(location.pathname);
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div>
+      {/* Only render Navbar if we shouldn't hide it */}
+      {!shouldHide && <Navbar />}
 
-      <div className="ticks"></div>
+      <ScrollToTop />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      <div>
+        {children}
+      </div>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      {/* Only render Footer if we shouldn't hide it */}
+      {!shouldHide && <Footer />}
+    </div>
+  );
+};
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Layout>
+        <Routes>
+          {/* ===== HOMEPAGE ===== */}
+          <Route path="/" element={
+            <>
+              <Hero />
+              <About />
+              <Home />
+              <Amenities />
+              <Testimonials />
+              <Offers />
+            </>
+          } />
+
+          {/* ===== MAIN PAGES ===== */}
+          <Route path="/rooms" element={<RoomsPage />} />
+          
+          {/* ===== HOSPITALITY PAGE (Handles all explore categories via query param) ===== */}
+          <Route path="/hospitality" element={<HospitalityPage />} />
+          
+          <Route path="/experience" element={<ExperiencePage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/offers" element={<OffersPage />} />
+
+          {/* ===== AMENITY DETAIL PAGES ===== */}
+          <Route path="/restaurant" element={<RestaurantPage />} />
+          <Route path="/pool" element={<PoolPage />} />
+          <Route path="/spa" element={<SpaPage />} />
+          <Route path="/fitness" element={<FitnessPage />} />
+
+          {/* ===== ROOM DETAIL ===== */}
+          <Route path="/room/:id" element={<RoomDetail />} />
+
+          {/* ===== OFFER DETAIL ===== */}
+          <Route path="/offers/:id" element={<OfferDetail />} />
+
+          {/* ===== LEGAL & SUPPORT PAGES ===== */}
+          <Route path="/faq" element={<FAQPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+
+          {/* ===== AUTH PAGES (No Navbar/Footer) ===== */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
+        </Routes>
+      </Layout>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
