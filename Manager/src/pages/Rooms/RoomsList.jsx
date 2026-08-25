@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Edit, Trash2, Star, Filter } from 'lucide-react';
-import { mockCategories } from '../../data/mockData';
 import Modal from '../../components/common/Modal';
 import RoomForm from './RoomForm';
 import {
@@ -9,10 +8,13 @@ import {
   updateRoom,
   deleteRoom,
   buildRoomPayload,
+  formatPrice,
 } from '../../services/roomApi';
+import { fetchCategories } from '../../services/categoryApi';
 
 export default function RoomsList() {
   const [rooms, setRooms] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -31,8 +33,12 @@ export default function RoomsList() {
     try {
       setLoading(true);
       setError('');
-      const data = await fetchRooms();
-      setRooms(data);
+      const [roomsData, categoriesData] = await Promise.all([
+        fetchRooms(),
+        fetchCategories(),
+      ]);
+      setRooms(roomsData);
+      setCategories(categoriesData);
     } catch (err) {
       setError(err.message || 'Failed to load rooms');
     } finally {
@@ -44,7 +50,7 @@ export default function RoomsList() {
     loadRooms();
   }, []);
 
-  const getCategoryName = (id) => mockCategories.find((c) => c.id === id)?.name || 'Unknown';
+  const getCategoryName = (id) => categories.find((c) => c.id === id)?.name || 'Unknown';
 
   const filteredRooms = rooms.filter((room) => {
     const matchesSearch =
@@ -91,7 +97,7 @@ export default function RoomsList() {
       setSaving(true);
       setFormError('');
       setError('');
-      const payload = buildRoomPayload(formData, mockCategories);
+      const payload = buildRoomPayload(formData, categories);
 
       const duplicate = rooms.find(
         (room) =>
@@ -153,7 +159,7 @@ export default function RoomsList() {
             style={{ padding: '0.6rem 1rem', borderRadius: '0.5rem', border: '1px solid #e5e7eb', fontSize: '0.875rem', color: '#374151', minWidth: '150px' }}
           >
             <option value="">All Categories</option>
-            {mockCategories.map((c) => (
+            {categories.map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}
           </select>
@@ -205,8 +211,12 @@ export default function RoomsList() {
                     </td>
                     <td style={{ fontSize: '0.875rem', color: '#4b5563' }}>{room.categoryName || getCategoryName(room.categoryId)}</td>
                     <td>
-                      <div style={{ fontWeight: 500 }}>${room.discountedPrice || room.price}</div>
-                      {room.discountedPrice && <div style={{ fontSize: '0.75rem', color: '#9ca3af', textDecoration: 'line-through' }}>${room.price}</div>}
+                      <div style={{ fontWeight: 500 }}>ETB {formatPrice(room.discountedPrice || room.price)}</div>
+                      {room.discountedPrice && (
+                        <div style={{ fontSize: '0.75rem', color: '#9ca3af', textDecoration: 'line-through' }}>
+                          ETB {formatPrice(room.price)}
+                        </div>
+                      )}
                     </td>
                     <td style={{ fontSize: '0.875rem', color: '#4b5563' }}>Fl. {room.floor}</td>
                     <td>
@@ -252,6 +262,7 @@ export default function RoomsList() {
         <RoomForm
           key={editingRoom?.id || 'new-room'}
           initialData={editingRoom}
+          categories={categories}
           onSave={handleSaveForm}
           onCancel={() => { setIsFormModalOpen(false); setFormError(''); }}
           saving={saving}

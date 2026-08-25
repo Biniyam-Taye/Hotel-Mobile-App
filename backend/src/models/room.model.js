@@ -24,7 +24,7 @@ const roomSchema = new mongoose.Schema(
     },
     price: {
       type: Number,
-      required: [true, 'Please add a price per night'],
+      required: [true, 'Please add a price per night in ETB'],
       min: [0, 'Price must be greater than or equal to 0'],
     },
     discountedPrice: {

@@ -2,6 +2,7 @@ require('dotenv').config();
 const app = require('./src/app');
 const connectDB = require('./src/config/db');
 const { seedRoomsIfEmpty } = require('./src/scripts/seedRooms');
+const { seedCategoriesIfEmpty } = require('./src/scripts/seedCategories');
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (err) => {
@@ -15,6 +16,7 @@ const PORT = process.env.PORT || 5000;
 const startServer = async () => {
   try {
     await connectDB();
+    await seedCategoriesIfEmpty();
     await seedRoomsIfEmpty();
 
     const server = app.listen(PORT, () => {

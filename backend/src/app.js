@@ -28,6 +28,7 @@ app.get('/api/v1/health', (req, res) => {
 // API Routes
 const userRoutes = require('./routes/user.routes');
 const roomRoutes = require('./routes/room.routes');
+const roomCategoryRoutes = require('./routes/roomCategory.routes');
 const bookingRoutes = require('./routes/booking.routes');
 const restaurantRoutes = require('./routes/restaurant.routes');
 const serviceRoutes = require('./routes/service.routes');
@@ -38,6 +39,7 @@ const dashboardRoutes = require('./routes/dashboard.routes');
 
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/rooms', roomRoutes);
+app.use('/api/v1/room-categories', roomCategoryRoutes);
 app.use('/api/v1/bookings', bookingRoutes);
 app.use('/api/v1/restaurant', restaurantRoutes);
 app.use('/api/v1/services', serviceRoutes);

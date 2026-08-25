@@ -463,9 +463,9 @@ const RoomDetail = () => {
 
               {/* Price */}
               <div className="detail-price">
-                {room.discount > 0 && (
+                {room.originalPriceETB && (
                   <div className="original-price">
-                    ETB {formatPrice(Math.round(room.priceETB + (room.priceETB * room.discount / 100)))}
+                    ETB {formatPrice(room.originalPriceETB)}
                   </div>
                 )}
                 <div>

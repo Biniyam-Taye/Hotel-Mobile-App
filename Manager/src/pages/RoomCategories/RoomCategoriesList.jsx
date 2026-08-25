@@ -1,35 +1,62 @@
-import React, { useState } from 'react';
-import { Plus, Search, MoreHorizontal, Edit, Trash2, Eye, Power } from 'lucide-react';
-import { mockCategories } from '../../data/mockData';
+import React, { useState, useEffect } from 'react';
+import { Plus, Search, Edit, Trash2, Power, Filter } from 'lucide-react';
 import Modal from '../../components/common/Modal';
 import CategoryForm from './CategoryForm';
+import {
+  fetchCategories,
+  createCategory,
+  updateCategory,
+  toggleCategoryStatus,
+  deleteCategory,
+  buildCategoryPayload,
+  formatPrice,
+} from '../../services/categoryApi';
 
 export default function RoomCategoriesList() {
-  const [categories, setCategories] = useState(mockCategories);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
-  
-  // Confirmation Modal State
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState('');
+
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState(null);
 
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
+  const loadCategories = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      const data = await fetchCategories();
+      setCategories(data);
+    } catch (err) {
+      setError(err.message || 'Failed to load categories');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const filteredCategories = categories.filter(c => 
-    c.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    c.description.toLowerCase().includes(searchTerm.toLowerCase())
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  const filteredCategories = categories.filter(
+    (c) =>
+      c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      c.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleAddClick = () => {
     setEditingCategory(null);
+    setFormError('');
     setIsFormModalOpen(true);
   };
 
   const handleEditClick = (category) => {
     setEditingCategory(category);
+    setFormError('');
     setIsFormModalOpen(true);
   };
 
@@ -38,29 +65,57 @@ export default function RoomCategoriesList() {
     setIsConfirmModalOpen(true);
   };
 
-  const confirmDelete = () => {
-    setCategories(categories.filter(c => c.id !== categoryToDelete.id));
-    setIsConfirmModalOpen(false);
-    setCategoryToDelete(null);
-  };
-
-  const handleToggleStatus = (id) => {
-    setCategories(categories.map(c => {
-      if (c.id === id) {
-        return { ...c, status: c.status === 'Active' ? 'Inactive' : 'Active' };
-      }
-      return c;
-    }));
-  };
-
-  const handleSaveForm = (formData) => {
-    if (editingCategory) {
-      setCategories(categories.map(c => c.id === editingCategory.id ? { ...c, ...formData } : c));
-    } else {
-      const newId = `c${categories.length + 1}`;
-      setCategories([...categories, { id: newId, ...formData, roomsCount: 0, status: 'Active' }]);
+  const confirmDelete = async () => {
+    try {
+      await deleteCategory(categoryToDelete.id);
+      setCategories(categories.filter((c) => c.id !== categoryToDelete.id));
+      setIsConfirmModalOpen(false);
+      setCategoryToDelete(null);
+    } catch (err) {
+      setError(err.message || 'Failed to delete category');
+      setIsConfirmModalOpen(false);
     }
-    setIsFormModalOpen(false);
+  };
+
+  const handleToggleStatus = async (id) => {
+    try {
+      const updated = await toggleCategoryStatus(id);
+      setCategories(categories.map((c) => (c.id === id ? updated : c)));
+    } catch (err) {
+      setError(err.message || 'Failed to update status');
+    }
+  };
+
+  const handleSaveForm = async (formData) => {
+    try {
+      setSaving(true);
+      setFormError('');
+      const payload = buildCategoryPayload(formData);
+
+      const duplicate = categories.find(
+        (c) =>
+          c.name.toLowerCase() === payload.name.toLowerCase() &&
+          (!editingCategory || c.id !== editingCategory.id)
+      );
+      if (duplicate) {
+        setFormError(`Category "${payload.name}" already exists.`);
+        return;
+      }
+
+      if (editingCategory) {
+        const updated = await updateCategory(editingCategory.id, payload);
+        setCategories(categories.map((c) => (c.id === editingCategory.id ? updated : c)));
+      } else {
+        const created = await createCategory(payload);
+        setCategories([...categories, created]);
+      }
+
+      setIsFormModalOpen(false);
+    } catch (err) {
+      setFormError(err.message || 'Failed to save category');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -72,21 +127,31 @@ export default function RoomCategoriesList() {
         </button>
       </div>
 
+      {error && (
+        <div style={{ marginBottom: '1rem', padding: '0.75rem 1rem', background: '#fef2f2', color: '#b91c1c', borderRadius: '0.5rem', fontSize: '0.875rem' }}>
+          {error}
+        </div>
+      )}
+
       <div className="data-card" style={{ padding: '1.5rem' }}>
         <div className="table-controls" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
           <div className="search-wrapper" style={{ position: 'relative', width: '300px' }}>
             <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} />
-            <input 
-              type="text" 
-              placeholder="Search categories..." 
+            <input
+              type="text"
+              placeholder="Search categories..."
               value={searchTerm}
-              onChange={handleSearch}
+              onChange={(e) => setSearchTerm(e.target.value)}
               style={{ width: '100%', padding: '0.6rem 1rem 0.6rem 2.2rem', borderRadius: '0.5rem', border: '1px solid #e5e7eb', fontSize: '0.875rem' }}
             />
           </div>
         </div>
 
-        {filteredCategories.length > 0 ? (
+        {loading ? (
+          <div className="empty-state">
+            <p>Loading categories...</p>
+          </div>
+        ) : filteredCategories.length > 0 ? (
           <div className="table-responsive">
             <table className="data-table">
               <thead>
@@ -100,20 +165,27 @@ export default function RoomCategoriesList() {
                 </tr>
               </thead>
               <tbody>
-                {filteredCategories.map(category => (
+                {filteredCategories.map((category) => (
                   <tr key={category.id}>
                     <td>
                       <div className="category-cell">
-                        <img src={category.image} alt={category.name} className="category-image" />
+                        <img
+                          src={category.image || 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=800&q=80'}
+                          alt={category.name}
+                          className="category-image"
+                          style={{ width: 48, height: 48, borderRadius: '0.375rem', objectFit: 'cover' }}
+                        />
                         <div>
                           <h4 style={{ margin: 0, fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>{category.name}</h4>
-                          <p style={{ margin: 0, fontSize: '0.75rem', color: '#6b7280', maxWidth: '300px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{category.description}</p>
+                          <p style={{ margin: 0, fontSize: '0.75rem', color: '#6b7280', maxWidth: '300px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {category.description}
+                          </p>
                         </div>
                       </div>
                     </td>
-                    <td style={{ fontWeight: 500 }}>${category.basePrice}/night</td>
+                    <td style={{ fontWeight: 500 }}>ETB {formatPrice(category.basePrice)}/night</td>
                     <td style={{ fontSize: '0.875rem', color: '#4b5563' }}>Up to {category.maxGuests} guests</td>
-                    <td>{category.roomsCount}</td>
+                    <td>{category.roomsCount ?? 0}</td>
                     <td>
                       <span className={`status-badge ${category.status.toLowerCase()}`}>
                         {category.status}
@@ -125,7 +197,7 @@ export default function RoomCategoriesList() {
                           <Edit size={16} />
                         </button>
                         <button className="action-btn" title="Toggle Status" onClick={() => handleToggleStatus(category.id)}>
-                          <Power size={16} style={{ color: category.status === 'Active' ? '#10b981' : '#6b7280' }}/>
+                          <Power size={16} style={{ color: category.status === 'Active' ? '#10b981' : '#6b7280' }} />
                         </button>
                         <button className="action-btn delete" title="Delete" onClick={() => handleDeleteClick(category)}>
                           <Trash2 size={16} />
@@ -139,29 +211,30 @@ export default function RoomCategoriesList() {
           </div>
         ) : (
           <div className="empty-state">
-            <Tags size={48} color="#d1d5db" />
+            <Filter size={48} color="#d1d5db" />
             <h3>No categories found</h3>
             <p>Try adjusting your search or add a new category.</p>
           </div>
         )}
       </div>
 
-      {/* Add/Edit Category Modal */}
-      <Modal 
-        isOpen={isFormModalOpen} 
-        onClose={() => setIsFormModalOpen(false)}
-        title={editingCategory ? "Edit Category" : "Add New Category"}
-        footer={null} // Footer is handled inside CategoryForm
+      <Modal
+        isOpen={isFormModalOpen}
+        onClose={() => { setIsFormModalOpen(false); setFormError(''); }}
+        title={editingCategory ? 'Edit Category' : 'Add New Category'}
+        footer={null}
       >
-        <CategoryForm 
-          initialData={editingCategory} 
-          onSave={handleSaveForm} 
-          onCancel={() => setIsFormModalOpen(false)} 
+        <CategoryForm
+          key={editingCategory?.id || 'new-category'}
+          initialData={editingCategory}
+          onSave={handleSaveForm}
+          onCancel={() => { setIsFormModalOpen(false); setFormError(''); }}
+          saving={saving}
+          error={formError}
         />
       </Modal>
 
-      {/* Delete Confirmation Modal */}
-      <Modal 
+      <Modal
         isOpen={isConfirmModalOpen}
         onClose={() => setIsConfirmModalOpen(false)}
         title="Confirm Deletion"
@@ -174,7 +247,6 @@ export default function RoomCategoriesList() {
       >
         <p>Are you sure you want to delete the category <strong>{categoryToDelete?.name}</strong>? This action cannot be undone.</p>
       </Modal>
-
     </section>
   );
 }

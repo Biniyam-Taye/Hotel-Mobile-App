@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { UploadCloud, X } from 'lucide-react';
-import { mockCategories, amenitiesList } from '../../data/mockData';
+import { amenitiesList } from '../../data/mockData';
 
 const normalizeInitialData = (data) => {
   if (!data) {
@@ -36,7 +36,7 @@ const normalizeInitialData = (data) => {
   };
 };
 
-export default function RoomForm({ initialData, onSave, onCancel, saving = false, error = '' }) {
+export default function RoomForm({ initialData, categories = [], onSave, onCancel, saving = false, error = '' }) {
   const [formData, setFormData] = useState(() => normalizeInitialData(initialData));
 
   const [mainImagePreview, setMainImagePreview] = useState(
@@ -204,7 +204,7 @@ export default function RoomForm({ initialData, onSave, onCancel, saving = false
             required
           >
             <option value="" disabled>Select a category</option>
-            {mockCategories.map(cat => (
+            {categories.map((cat) => (
               <option key={cat.id} value={cat.id}>{cat.name}</option>
             ))}
           </select>
@@ -223,25 +223,28 @@ export default function RoomForm({ initialData, onSave, onCancel, saving = false
 
       <div className="form-row">
         <div className="form-group">
-          <label>Price ($/night) *</label>
+          <label>Price (ETB/night) *</label>
           <input 
             type="number" 
             name="price" 
             value={formData.price} 
             onChange={handleChange} 
-            required 
+            required
             min="0"
+            step="1"
+            placeholder="e.g. 6840"
           />
         </div>
         <div className="form-group">
-          <label>Discounted Price ($/night)</label>
+          <label>Discounted Price (ETB/night)</label>
           <input 
             type="number" 
             name="discountedPrice" 
             value={formData.discountedPrice || ''} 
             onChange={handleChange} 
             min="0"
-            placeholder="Optional"
+            step="1"
+            placeholder="Optional, e.g. 5700"
           />
         </div>
       </div>

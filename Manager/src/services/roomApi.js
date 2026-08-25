@@ -2,6 +2,9 @@ import { amenitiesList } from '../data/mockData';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
+export const formatPrice = (price) =>
+  Number(price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
 const parseJson = async (response) => {
   const data = await response.json();
   if (!response.ok) {
@@ -70,8 +73,10 @@ export const buildRoomPayload = (formData, categories) => {
     name: formData.name?.trim() || `Room ${formData.roomNumber}`,
     categoryId: formData.categoryId,
     categoryName: category?.name || '',
-    price: Number(formData.price),
-    discountedPrice: formData.discountedPrice ? Number(formData.discountedPrice) : null,
+    price: Math.round(Number(formData.price)),
+    discountedPrice: formData.discountedPrice
+      ? Math.round(Number(formData.discountedPrice))
+      : null,
     maxGuests: Number(formData.maxGuests) || 2,
     floor: Number(formData.floor) || 1,
     status: formData.status || 'Available',

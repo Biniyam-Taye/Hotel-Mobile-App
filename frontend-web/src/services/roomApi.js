@@ -1,18 +1,18 @@
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
-const USD_TO_ETB = 57;
 
-export const formatPrice = (price) => price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+export const formatPrice = (price) =>
+  Number(price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
 export const mapRoomForCustomer = (room) => {
-  const priceUSD = room.discountedPrice ?? room.price;
-  const hasDiscount = room.discountedPrice && room.discountedPrice < room.price;
+  const hasDiscount =
+    room.discountedPrice != null && room.discountedPrice < room.price;
+  const priceETB = hasDiscount ? room.discountedPrice : room.price;
 
   return {
     id: room._id,
     name: room.name,
-    priceUSD,
-    priceETB: Math.round(priceUSD * USD_TO_ETB),
-    originalPriceETB: hasDiscount ? Math.round(room.price * USD_TO_ETB) : null,
+    priceETB: Math.round(priceETB),
+    originalPriceETB: hasDiscount ? Math.round(room.price) : null,
     capacity: room.maxGuests,
     bedType: room.bedType || '',
     size: room.roomSize ? `${room.roomSize} m²` : '',
@@ -26,7 +26,9 @@ export const mapRoomForCustomer = (room) => {
     image: room.mainImage,
     popular: room.isPopular || room.isFeatured,
     gallery: [room.mainImage, ...(room.detailImages || [])].filter(Boolean),
-    discount: hasDiscount ? Math.round(((room.price - room.discountedPrice) / room.price) * 100) : 0,
+    discount: hasDiscount
+      ? Math.round(((room.price - room.discountedPrice) / room.price) * 100)
+      : 0,
     guests: room.maxGuests,
     bed: room.bedType || '',
   };
