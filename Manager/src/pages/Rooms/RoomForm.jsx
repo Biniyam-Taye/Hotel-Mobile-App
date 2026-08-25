@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { UploadCloud, X } from 'lucide-react';
 import { mockCategories, amenitiesList } from '../../data/mockData';
 
-export default function RoomForm({ initialData, onSave, onCancel }) {
-  const [formData, setFormData] = useState(
-    initialData || {
+const normalizeInitialData = (data) => {
+  if (!data) {
+    return {
       roomNumber: '',
       name: '',
       categoryId: '',
@@ -15,18 +15,37 @@ export default function RoomForm({ initialData, onSave, onCancel }) {
       status: 'Available',
       publishStatus: 'Draft',
       isFeatured: false,
-      mainImage: initialData?.mainImage || initialData?.image || '',
-      detailImages: initialData?.detailImages || ['', '', ''],
+      mainImage: '',
+      detailImages: ['', '', ''],
       location: 'Adama',
       bedType: '',
       roomSize: '',
       description: '',
-      amenities: []
-    }
-  );
+      amenities: [],
+    };
+  }
 
-  const [mainImagePreview, setMainImagePreview] = useState(initialData?.mainImage || initialData?.image || null);
-  const [detailImagePreviews, setDetailImagePreviews] = useState(initialData?.detailImages || [null, null, null]);
+  const detailImages = [...(data.detailImages || [])];
+  while (detailImages.length < 3) detailImages.push('');
+
+  return {
+    ...data,
+    mainImage: data.mainImage || data.image || '',
+    detailImages: detailImages.slice(0, 3),
+    amenities: data.amenities || [],
+  };
+};
+
+export default function RoomForm({ initialData, onSave, onCancel, saving = false }) {
+  const [formData, setFormData] = useState(() => normalizeInitialData(initialData));
+
+  const [mainImagePreview, setMainImagePreview] = useState(
+    initialData?.mainImage || initialData?.image || null
+  );
+  const [detailImagePreviews, setDetailImagePreviews] = useState(() => {
+    const images = initialData?.detailImages || [];
+    return [0, 1, 2].map((i) => images[i] || null);
+  });
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -336,7 +355,9 @@ export default function RoomForm({ initialData, onSave, onCancel }) {
 
       <div className="form-actions">
         <button type="button" className="secondary-btn" onClick={onCancel}>Cancel</button>
-        <button type="submit" className="primary-btn">Save Room</button>
+        <button type="submit" className="primary-btn" disabled={saving}>
+          {saving ? 'Saving...' : 'Save Room'}
+        </button>
       </div>
     </form>
   );

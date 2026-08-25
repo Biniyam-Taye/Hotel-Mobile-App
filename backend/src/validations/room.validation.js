@@ -1,33 +1,40 @@
 const { z } = require('zod');
 
+const optionalNumber = z.preprocess(
+  (val) => (val === '' || val === undefined ? undefined : val === null ? null : Number(val)),
+  z.number().nonnegative().nullable().optional()
+);
+
+const roomBody = z.object({
+  roomNumber: z.string().min(1).max(20),
+  name: z.string().min(2).max(100),
+  categoryId: z.string().min(1),
+  categoryName: z.string().optional(),
+  price: z.coerce.number().nonnegative(),
+  discountedPrice: optionalNumber,
+  maxGuests: z.coerce.number().int().positive().optional(),
+  floor: z.coerce.number().int().positive().optional(),
+  status: z.enum(['Available', 'Occupied', 'Maintenance']).optional(),
+  publishStatus: z.enum(['Published', 'Draft']).optional(),
+  isFeatured: z.boolean().optional(),
+  isPopular: z.boolean().optional(),
+  mainImage: z.string().optional(),
+  detailImages: z.array(z.string()).optional(),
+  location: z.string().optional(),
+  bedType: z.string().optional(),
+  roomSize: optionalNumber,
+  description: z.string().max(2000).optional(),
+  amenities: z.array(z.string()).optional(),
+  rating: z.coerce.number().min(0).max(5).optional(),
+  reviewCount: z.coerce.number().int().nonnegative().optional(),
+});
+
 const createRoom = z.object({
-  body: z.object({
-    title: z.string().min(3).max(100),
-    description: z.string().min(10).max(1000),
-    pricePerNight: z.number().positive(),
-    capacity: z.object({
-      adults: z.number().int().positive(),
-      children: z.number().int().nonnegative().default(0),
-    }),
-    amenities: z.array(z.string()).min(1),
-    roomType: z.enum(['standard', 'deluxe', 'suite', 'presidential']).optional(),
-    isAvailable: z.boolean().optional(),
-  }),
+  body: roomBody,
 });
 
 const updateRoom = z.object({
-  body: z.object({
-    title: z.string().min(3).max(100).optional(),
-    description: z.string().min(10).max(1000).optional(),
-    pricePerNight: z.number().positive().optional(),
-    capacity: z.object({
-      adults: z.number().int().positive().optional(),
-      children: z.number().int().nonnegative().optional(),
-    }).optional(),
-    amenities: z.array(z.string()).optional(),
-    roomType: z.enum(['standard', 'deluxe', 'suite', 'presidential']).optional(),
-    isAvailable: z.boolean().optional(),
-  }),
+  body: roomBody.partial(),
 });
 
 module.exports = {

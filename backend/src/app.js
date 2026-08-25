@@ -2,14 +2,13 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
-const mongoSanitize = require('express-mongo-sanitize');
 const errorHandler = require('./middlewares/error.middleware');
 
 const app = express();
 
 // Global Middlewares
-app.use(helmet()); // Security headers
-app.use(cors()); // Enable CORS for React/Flutter clients
+app.use(helmet());
+app.use(cors());
 // Stripe Webhook must be parsed as raw body before express.json()
 app.post(
   '/api/v1/payments/webhook',
@@ -17,10 +16,9 @@ app.post(
   require('./controllers/payment.controller').handleWebhook
 );
 
-app.use(express.json()); // Parse JSON payloads
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded payloads
-app.use(mongoSanitize()); // Prevent NoSQL injection
-app.use(morgan('dev')); // HTTP request logger
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(morgan('dev'));
 
 // Health Check Route
 app.get('/api/v1/health', (req, res) => {

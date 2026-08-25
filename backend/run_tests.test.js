@@ -70,12 +70,14 @@ describe('Hotel Management API Integration Tests', () => {
       .post('/api/v1/rooms')
       .set('Authorization', `Bearer ${adminToken}`)
       .send({
-        title: 'Luxury Suite',
+        roomNumber: '999',
+        name: 'Luxury Suite',
+        categoryId: 'c1',
+        categoryName: 'Standard Room',
         description: 'A very nice luxury suite with ocean view.',
-        pricePerNight: 500,
-        capacity: { adults: 2, children: 1 },
+        price: 500,
+        maxGuests: 2,
         amenities: ['WiFi', 'Pool', 'Ocean View'],
-        roomType: 'suite'
       });
       
     expect(res.statusCode).toBe(201);

@@ -1,30 +1,57 @@
-import React, { useState } from 'react';
-import { Plus, Search, Edit, Trash2, Eye, Star, Filter } from 'lucide-react';
-import { mockRooms, mockCategories } from '../../data/mockData';
+import React, { useState, useEffect } from 'react';
+import { Plus, Search, Edit, Trash2, Star, Filter } from 'lucide-react';
+import { mockCategories } from '../../data/mockData';
 import Modal from '../../components/common/Modal';
 import RoomForm from './RoomForm';
+import {
+  fetchRooms,
+  createRoom,
+  updateRoom,
+  deleteRoom,
+  buildRoomPayload,
+} from '../../services/roomApi';
 
 export default function RoomsList() {
-  const [rooms, setRooms] = useState(mockRooms);
+  const [rooms, setRooms] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-  
+
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [editingRoom, setEditingRoom] = useState(null);
-  
-  // Confirmation Modal State
+  const [saving, setSaving] = useState(false);
+
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [roomToDelete, setRoomToDelete] = useState(null);
 
-  const getCategoryName = (id) => mockCategories.find(c => c.id === id)?.name || 'Unknown';
+  const loadRooms = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      const data = await fetchRooms();
+      setRooms(data);
+    } catch (err) {
+      setError(err.message || 'Failed to load rooms');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const filteredRooms = rooms.filter(room => {
-    const matchesSearch = room.roomNumber.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          (room.name && room.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  useEffect(() => {
+    loadRooms();
+  }, []);
+
+  const getCategoryName = (id) => mockCategories.find((c) => c.id === id)?.name || 'Unknown';
+
+  const filteredRooms = rooms.filter((room) => {
+    const matchesSearch =
+      room.roomNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (room.name && room.name.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesCategory = categoryFilter ? room.categoryId === categoryFilter : true;
     const matchesStatus = statusFilter ? room.status === statusFilter : true;
-    
+
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
@@ -43,20 +70,37 @@ export default function RoomsList() {
     setIsConfirmModalOpen(true);
   };
 
-  const confirmDelete = () => {
-    setRooms(rooms.filter(r => r.id !== roomToDelete.id));
-    setIsConfirmModalOpen(false);
-    setRoomToDelete(null);
+  const confirmDelete = async () => {
+    try {
+      await deleteRoom(roomToDelete.id);
+      setRooms(rooms.filter((r) => r.id !== roomToDelete.id));
+      setIsConfirmModalOpen(false);
+      setRoomToDelete(null);
+    } catch (err) {
+      setError(err.message || 'Failed to delete room');
+    }
   };
 
-  const handleSaveForm = (formData) => {
-    if (editingRoom) {
-      setRooms(rooms.map(r => r.id === editingRoom.id ? { ...r, ...formData } : r));
-    } else {
-      const newId = `r${rooms.length + 1}`;
-      setRooms([...rooms, { id: newId, ...formData }]);
+  const handleSaveForm = async (formData) => {
+    try {
+      setSaving(true);
+      setError('');
+      const payload = buildRoomPayload(formData, mockCategories);
+
+      if (editingRoom) {
+        const updated = await updateRoom(editingRoom.id, payload);
+        setRooms(rooms.map((r) => (r.id === editingRoom.id ? updated : r)));
+      } else {
+        const created = await createRoom(payload);
+        setRooms([...rooms, created]);
+      }
+
+      setIsFormModalOpen(false);
+    } catch (err) {
+      setError(err.message || 'Failed to save room');
+    } finally {
+      setSaving(false);
     }
-    setIsFormModalOpen(false);
   };
 
   return (
@@ -68,30 +112,38 @@ export default function RoomsList() {
         </button>
       </div>
 
+      {error && (
+        <div style={{ marginBottom: '1rem', padding: '0.75rem 1rem', background: '#fef2f2', color: '#b91c1c', borderRadius: '0.5rem', fontSize: '0.875rem' }}>
+          {error}
+        </div>
+      )}
+
       <div className="data-card" style={{ padding: '1.5rem' }}>
         <div className="table-controls" style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
           <div className="search-wrapper" style={{ position: 'relative', flex: '1', minWidth: '200px' }}>
             <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} />
-            <input 
-              type="text" 
-              placeholder="Search by room number or name..." 
+            <input
+              type="text"
+              placeholder="Search by room number or name..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{ width: '100%', padding: '0.6rem 1rem 0.6rem 2.2rem', borderRadius: '0.5rem', border: '1px solid #e5e7eb', fontSize: '0.875rem' }}
             />
           </div>
-          
-          <select 
-            value={categoryFilter} 
+
+          <select
+            value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
             style={{ padding: '0.6rem 1rem', borderRadius: '0.5rem', border: '1px solid #e5e7eb', fontSize: '0.875rem', color: '#374151', minWidth: '150px' }}
           >
             <option value="">All Categories</option>
-            {mockCategories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+            {mockCategories.map((c) => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
           </select>
 
-          <select 
-            value={statusFilter} 
+          <select
+            value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
             style={{ padding: '0.6rem 1rem', borderRadius: '0.5rem', border: '1px solid #e5e7eb', fontSize: '0.875rem', color: '#374151', minWidth: '150px' }}
           >
@@ -102,7 +154,11 @@ export default function RoomsList() {
           </select>
         </div>
 
-        {filteredRooms.length > 0 ? (
+        {loading ? (
+          <div className="empty-state">
+            <p>Loading rooms...</p>
+          </div>
+        ) : filteredRooms.length > 0 ? (
           <div className="table-responsive">
             <table className="data-table">
               <thead>
@@ -117,11 +173,11 @@ export default function RoomsList() {
                 </tr>
               </thead>
               <tbody>
-                {filteredRooms.map(room => (
+                {filteredRooms.map((room) => (
                   <tr key={room.id}>
                     <td>
                       <div className="room-cell">
-                        <img src={room.image} alt={room.name} className="room-image" style={{ width: 40, height: 40, borderRadius: '0.375rem' }} />
+                        <img src={room.image || room.mainImage} alt={room.name} className="room-image" style={{ width: 40, height: 40, borderRadius: '0.375rem', objectFit: 'cover' }} />
                         <div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                             <h4 style={{ margin: 0, fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>Room {room.roomNumber}</h4>
@@ -131,7 +187,7 @@ export default function RoomsList() {
                         </div>
                       </div>
                     </td>
-                    <td style={{ fontSize: '0.875rem', color: '#4b5563' }}>{getCategoryName(room.categoryId)}</td>
+                    <td style={{ fontSize: '0.875rem', color: '#4b5563' }}>{room.categoryName || getCategoryName(room.categoryId)}</td>
                     <td>
                       <div style={{ fontWeight: 500 }}>${room.discountedPrice || room.price}</div>
                       {room.discountedPrice && <div style={{ fontSize: '0.75rem', color: '#9ca3af', textDecoration: 'line-through' }}>${room.price}</div>}
@@ -171,22 +227,21 @@ export default function RoomsList() {
         )}
       </div>
 
-      {/* Add/Edit Room Modal */}
-      <Modal 
-        isOpen={isFormModalOpen} 
+      <Modal
+        isOpen={isFormModalOpen}
         onClose={() => setIsFormModalOpen(false)}
-        title={editingRoom ? `Edit Room ${editingRoom.roomNumber}` : "Add New Room"}
+        title={editingRoom ? `Edit Room ${editingRoom.roomNumber}` : 'Add New Room'}
         footer={null}
       >
-        <RoomForm 
-          initialData={editingRoom} 
-          onSave={handleSaveForm} 
-          onCancel={() => setIsFormModalOpen(false)} 
+        <RoomForm
+          initialData={editingRoom}
+          onSave={handleSaveForm}
+          onCancel={() => setIsFormModalOpen(false)}
+          saving={saving}
         />
       </Modal>
 
-      {/* Delete Confirmation Modal */}
-      <Modal 
+      <Modal
         isOpen={isConfirmModalOpen}
         onClose={() => setIsConfirmModalOpen(false)}
         title="Confirm Deletion"
@@ -199,7 +254,6 @@ export default function RoomsList() {
       >
         <p>Are you sure you want to delete Room <strong>{roomToDelete?.roomNumber}</strong>? This action cannot be undone.</p>
       </Modal>
-
     </section>
   );
 }

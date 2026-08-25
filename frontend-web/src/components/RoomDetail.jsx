@@ -7,192 +7,49 @@ import {
   Utensils, Dumbbell, Sparkles, Bed, Maximize, MapPin
 } from 'lucide-react';
 import AvailabilityForm from './AvailabilityForm';
+import { fetchRoomById, formatPrice } from '../services/roomApi';
 
 const RoomDetail = () => {
   const { id } = useParams();
+  const [room, setRoom] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [selectedImage, setSelectedImage] = useState('');
 
-  // Exchange rate
-  const usdToEtb = 57;
-
-  // Helper to format price
-  const formatPrice = (price) => {
-    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  };
-
-  // Room data with location, discount, and gallery
-  const rooms = [
-    {
-      id: 1,
-      name: 'Deluxe Suite',
-      bedType: 'King Size Bed',
-      priceUSD: 250,
-      priceETB: 250 * usdToEtb,
-      location: 'Adama',
-      discount: 20,
-      rating: 4.8,
-      reviews: 200,
-      capacity: 2,
-      size: '45 m²',
-      description: 'Elegant suite with city views, featuring a separate living area and premium amenities.',
-      longDescription: 'The Deluxe Suite offers an unparalleled experience with breathtaking city views. Step into a world of elegance where every detail has been carefully curated for your comfort. The suite features a spacious separate living area, perfect for entertaining guests or simply relaxing in style. The bedroom boasts a luxurious king-size bed with premium linens, ensuring a restful night\'s sleep. The marble bathroom includes a deep soaking tub and separate rain shower. 24-hour room service ensures your every need is met, while the dedicated concierge team is always ready to assist with any request.',
-      features: ['Free Wi-Fi', 'Flat-screen TV', 'Air Conditioning', 'Coffee Maker', 'Mini Bar', 'Bathtub', '24hr Room Service', 'Concierge Service'],
-      image: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-      popular: true,
-      amenities: ['Free Wi-Fi', '24hr Room Service', 'Concierge', 'Laundry Service', 'Daily Housekeeping', 'Welcome Drink', 'Turn-down Service', 'Work Desk', 'Bathrobe & Slippers'],
-      guests: 2,
-      bed: 'King Size',
-      gallery: [
-        'https://images.unsplash.com/photo-1590490360182-c33d57733427?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-        'https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-        'https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
-      ]
-    },
-    {
-      id: 2,
-      name: 'Executive Double Room',
-      bedType: 'Double Bed',
-      priceUSD: 180,
-      priceETB: 180 * usdToEtb,
-      location: 'Adama',
-      discount: 20,
-      rating: 4.8,
-      reviews: 200,
-      capacity: 2,
-      size: '32 m²',
-      description: 'Modern room designed for business travelers, with workspace and high-speed internet.',
-      longDescription: 'The Executive Room is designed with the modern business traveler in mind. Featuring a dedicated workspace with ergonomic chair and high-speed internet, this room provides the perfect environment for productivity. After a long day of meetings, unwind in the comfortable queen-size bed and enjoy the flat-screen TV with streaming services. The room also includes a mini-fridge, coffee maker, and luxurious bath amenities. Business services including printing, scanning, and secretarial support are available upon request.',
-      features: ['Free Wi-Fi', 'Flat-screen TV', 'Air Conditioning', 'Coffee Maker', 'Work Desk', 'Ergonomic Chair', 'Mini Refrigerator', 'Business Services'],
-      image: 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-      popular: false,
-      amenities: ['Free Wi-Fi', 'Work Desk', 'Business Services', 'Express Check-in', 'Daily Housekeeping', 'Iron & Ironing Board'],
-      guests: 2,
-      bed: 'Double Bed',
-      gallery: [
-        'https://images.unsplash.com/photo-1618773928121-c32242e63f39?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-        'https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-        'https://images.unsplash.com/photo-1590490360182-c33d57733427?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
-      ]
-    },
-    {
-      id: 3,
-      name: 'Presidential Suite',
-      bedType: 'King Size Bed + Sofa Bed',
-      priceUSD: 450,
-      priceETB: 450 * usdToEtb,
-      location: 'Adama',
-      discount: 15,
-      rating: 4.9,
-      reviews: 150,
-      capacity: 4,
-      size: '85 m²',
-      description: 'Our most luxurious suite with panoramic views, private terrace, and butler service.',
-      longDescription: 'The Presidential Suite is the epitome of luxury living. Spanning an impressive 85 square meters, this suite offers panoramic views of the city skyline from a private terrace. The suite features a spacious living area with a designer sofa bed, a separate dining area, and a fully equipped kitchenette. The bedroom boasts a king-size bed with premium Egyptian cotton linens and a pillow menu for the perfect night\'s sleep. The marble bathroom includes a Jacuzzi bathtub, rain shower, and double vanities. A dedicated butler is available to cater to your every need, from packing and unpacking to arranging private tours and dining experiences.',
-      features: ['Free Wi-Fi', 'Smart TV', 'Air Conditioning', 'Coffee Maker', 'Mini Bar', 'Bathtub', 'Private Terrace', 'Butler Service'],
-      image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-      popular: false,
-      amenities: ['Butler Service', 'Private Terrace', 'Jacuzzi', 'Kitchenette', 'Dining Area', 'Welcome Champagne', 'Turn-down Service', 'Premium Toiletries'],
-      guests: 4,
-      bed: 'King Size + Sofa',
-      gallery: [
-        'https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-        'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-        'https://images.unsplash.com/photo-1591088398332-8a7791972843?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
-      ]
-    },
-    {
-      id: 4,
-      name: 'Standard Room',
-      bedType: 'Double Bed',
-      priceUSD: 120,
-      priceETB: 120 * usdToEtb,
-      location: 'Adama',
-      discount: 0,
-      rating: 4.5,
-      reviews: 180,
-      capacity: 2,
-      size: '24 m²',
-      description: 'Comfortable room with all essential amenities for a pleasant stay.',
-      longDescription: 'The Standard Room offers a comfortable and inviting space for travelers seeking value without compromising on quality. The room features a cozy double bed with comfortable linens, a flat-screen TV, and a work desk. The private bathroom is equipped with a shower and complimentary toiletries. Enjoy the convenience of free Wi-Fi, air conditioning, and a coffee maker. This room is perfect for solo travelers, couples, or business guests looking for a comfortable stay at an affordable price.',
-      features: ['Free Wi-Fi', 'Flat-screen TV', 'Air Conditioning', 'Coffee Maker', 'Work Desk', 'Private Bathroom'],
-      image: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-      popular: false,
-      amenities: ['Free Wi-Fi', 'Daily Housekeeping', 'Complimentary Toiletries', 'Work Desk'],
-      guests: 2,
-      bed: 'Double Bed',
-      gallery: [
-        'https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-        'https://images.unsplash.com/photo-1618773928121-c32242e63f39?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-        'https://images.unsplash.com/photo-1590490360182-c33d57733427?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
-      ]
-    },
-    {
-      id: 5,
-      name: 'Family Suite',
-      bedType: 'King Size Bed + 2 Twin Beds',
-      priceUSD: 320,
-      priceETB: 320 * usdToEtb,
-      location: 'Adama',
-      discount: 10,
-      rating: 4.7,
-      reviews: 120,
-      capacity: 5,
-      size: '65 m²',
-      description: 'Spacious suite designed for families, with separate children\'s area and entertainment.',
-      longDescription: 'The Family Suite is perfect for families seeking space and comfort. This suite features a separate children\'s area with a game console, board games, and a selection of movies. The master bedroom boasts a king-size bed with premium linens, while the second area includes two comfortable twin beds. The suite also features a living area with a sofa bed, a dining area, and a kitchenette. The bathroom includes a bathtub and separate shower. Family-friendly amenities include a kids\' menu, babysitting services on request, and complimentary activities for children.',
-      features: ['Free Wi-Fi', 'Smart TV', 'Air Conditioning', 'Coffee Maker', 'Mini Bar', 'Game Console', 'Children\'s Area', 'Family Services'],
-      image: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-      popular: false,
-      amenities: ['Game Console', 'Kids Activities', 'Babysitting Service', 'Children\'s Menu', 'Family Board Games', 'Kitchenette'],
-      guests: 5,
-      bed: 'King Size + 2 Twins',
-      gallery: [
-        'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-        'https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-        'https://images.unsplash.com/photo-1591088398332-8a7791972843?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
-      ]
-    },
-    {
-      id: 6,
-      name: 'Honeymoon Suite',
-      bedType: 'King Size Bed',
-      priceUSD: 380,
-      priceETB: 380 * usdToEtb,
-      location: 'Adama',
-      discount: 25,
-      rating: 4.9,
-      reviews: 250,
-      capacity: 2,
-      size: '55 m²',
-      description: 'Romantic suite with jacuzzi, rose petals, and breathtaking sunset views.',
-      longDescription: 'The Honeymoon Suite is designed for romance and celebration. Upon arrival, guests are welcomed with rose petals, champagne, and chocolates. The suite features a king-size bed with premium linens, a cozy sitting area, and a private balcony with breathtaking sunset views. The highlight of the suite is the jacuzzi bathtub, perfect for a romantic soak. The suite also includes a mini bar, coffee maker, and luxurious bath amenities. Couples can enjoy personalized services including private dining, spa packages, and romantic excursions arranged by our dedicated concierge team.',
-      features: ['Free Wi-Fi', 'Smart TV', 'Air Conditioning', 'Coffee Maker', 'Jacuzzi', 'Mini Bar', 'Private Balcony', 'Romantic Setup'],
-      image: 'https://images.unsplash.com/photo-1591088398332-8a7791972843?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-      popular: false,
-      amenities: ['Jacuzzi', 'Private Balcony', 'Romantic Setup', 'Complimentary Champagne', 'Rose Petals', 'Chocolate Truffles', 'Couples Spa Services'],
-      guests: 2,
-      bed: 'King Size',
-      gallery: [
-        'https://images.unsplash.com/photo-1591088398332-8a7791972843?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-        'https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-        'https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
-      ]
-    }
-  ];
-
-  const room = rooms.find(r => r.id === parseInt(id));
-
-  // Reset selected image when room changes
   useEffect(() => {
-    if (room) {
-      setSelectedImage(room.image);
-    }
-  }, [room]);
+    const loadRoom = async () => {
+      try {
+        setLoading(true);
+        setError('');
+        const data = await fetchRoomById(id);
+        if (!data) {
+          setError('Room not found');
+          return;
+        }
+        setRoom(data);
+        setSelectedImage(data.image);
+      } catch (err) {
+        setError(err.message || 'Failed to load room');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  if (!room) {
+    loadRoom();
+  }, [id]);
+
+  if (loading) {
     return (
       <div style={{ padding: '80px 24px', textAlign: 'center' }}>
-        <h2>Room not found</h2>
+        <p>Loading room details...</p>
+      </div>
+    );
+  }
+
+  if (error || !room) {
+    return (
+      <div style={{ padding: '80px 24px', textAlign: 'center' }}>
+        <h2>{error || 'Room not found'}</h2>
         <Link to="/" style={{ color: '#d4af37' }}>Go back home</Link>
       </div>
     );

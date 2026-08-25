@@ -7,7 +7,14 @@ const createRoom = async (roomData) => {
 };
 
 const getAllRooms = async (query) => {
-  return await queryBuilder(Room, query, ['title', 'description']);
+  const queryCopy = { ...query };
+
+  if (queryCopy.published === 'true') {
+    queryCopy.publishStatus = 'Published';
+    delete queryCopy.published;
+  }
+
+  return await queryBuilder(Room, queryCopy, ['roomNumber', 'name', 'categoryName']);
 };
 
 const getRoomById = async (roomId) => {
