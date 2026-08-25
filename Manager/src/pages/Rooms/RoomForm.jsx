@@ -36,7 +36,7 @@ const normalizeInitialData = (data) => {
   };
 };
 
-export default function RoomForm({ initialData, onSave, onCancel, saving = false }) {
+export default function RoomForm({ initialData, onSave, onCancel, saving = false, error = '' }) {
   const [formData, setFormData] = useState(() => normalizeInitialData(initialData));
 
   const [mainImagePreview, setMainImagePreview] = useState(
@@ -113,6 +113,11 @@ export default function RoomForm({ initialData, onSave, onCancel, saving = false
 
   return (
     <form onSubmit={handleSubmit} className="custom-form">
+      {error && (
+        <div style={{ marginBottom: '1rem', padding: '0.75rem 1rem', background: '#fef2f2', color: '#b91c1c', borderRadius: '0.5rem', fontSize: '0.875rem' }}>
+          {error}
+        </div>
+      )}
       <div className="form-group">
         <label>Main Room Image</label>
         <div className="image-upload-area">

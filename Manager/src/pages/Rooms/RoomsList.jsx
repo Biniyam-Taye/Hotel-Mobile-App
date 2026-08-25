@@ -25,6 +25,7 @@ export default function RoomsList() {
 
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [roomToDelete, setRoomToDelete] = useState(null);
+  const [formError, setFormError] = useState('');
 
   const loadRooms = async () => {
     try {
@@ -57,11 +58,15 @@ export default function RoomsList() {
 
   const handleAddClick = () => {
     setEditingRoom(null);
+    setFormError('');
+    setError('');
     setIsFormModalOpen(true);
   };
 
   const handleEditClick = (room) => {
     setEditingRoom(room);
+    setFormError('');
+    setError('');
     setIsFormModalOpen(true);
   };
 
@@ -84,8 +89,19 @@ export default function RoomsList() {
   const handleSaveForm = async (formData) => {
     try {
       setSaving(true);
+      setFormError('');
       setError('');
       const payload = buildRoomPayload(formData, mockCategories);
+
+      const duplicate = rooms.find(
+        (room) =>
+          String(room.roomNumber).trim() === payload.roomNumber &&
+          (!editingRoom || room.id !== editingRoom.id)
+      );
+      if (duplicate) {
+        setFormError(`Room number "${payload.roomNumber}" already exists. Please choose another number.`);
+        return;
+      }
 
       if (editingRoom) {
         const updated = await updateRoom(editingRoom.id, payload);
@@ -97,7 +113,7 @@ export default function RoomsList() {
 
       setIsFormModalOpen(false);
     } catch (err) {
-      setError(err.message || 'Failed to save room');
+      setFormError(err.message || 'Failed to save room');
     } finally {
       setSaving(false);
     }
@@ -229,15 +245,17 @@ export default function RoomsList() {
 
       <Modal
         isOpen={isFormModalOpen}
-        onClose={() => setIsFormModalOpen(false)}
+        onClose={() => { setIsFormModalOpen(false); setFormError(''); }}
         title={editingRoom ? `Edit Room ${editingRoom.roomNumber}` : 'Add New Room'}
         footer={null}
       >
         <RoomForm
+          key={editingRoom?.id || 'new-room'}
           initialData={editingRoom}
           onSave={handleSaveForm}
-          onCancel={() => setIsFormModalOpen(false)}
+          onCancel={() => { setIsFormModalOpen(false); setFormError(''); }}
           saving={saving}
+          error={formError}
         />
       </Modal>
 
