@@ -3,13 +3,43 @@ const Room = require('../models/room.model');
 const ApiError = require('../utils/apiError');
 const queryBuilder = require('../utils/queryBuilder');
 
+const LEGACY_CATEGORY_IDS = {
+  'Standard Room': 'c1',
+  'Deluxe Ocean View': 'c2',
+  'Executive Suite': 'c3',
+  'Family Connecting Room': 'c4',
+  'Presidential Suite': 'c5',
+};
+
+const getCategoryRoomFilter = (category) => {
+  const categoryId = String(category._id);
+  const categoryName = category.name;
+  const legacyId = LEGACY_CATEGORY_IDS[categoryName];
+  const firstWord = categoryName.split(' ')[0];
+
+  const or = [
+    { categoryId },
+    { categoryName: { $regex: new RegExp(`^${categoryName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') } },
+  ];
+
+  if (legacyId) {
+    or.push({ categoryId: legacyId });
+  }
+
+  if (firstWord.length >= 3) {
+    or.push({ categoryName: { $regex: new RegExp(`^${firstWord}`, 'i') } });
+  }
+
+  return { $or: or };
+};
+
 const attachRoomsCount = async (categories) => {
   const list = Array.isArray(categories) ? categories : [categories];
 
   return Promise.all(
     list.map(async (category) => {
       const doc = category.toObject ? category.toObject() : { ...category };
-      doc.roomsCount = await Room.countDocuments({ categoryId: String(doc._id) });
+      doc.roomsCount = await Room.countDocuments(getCategoryRoomFilter(doc));
       return doc;
     })
   );
@@ -104,7 +134,12 @@ const toggleCategoryStatus = async (categoryId) => {
 };
 
 const deleteCategoryById = async (categoryId) => {
-  const roomsUsingCategory = await Room.countDocuments({ categoryId: String(categoryId) });
+  const category = await RoomCategory.findById(categoryId);
+  if (!category) {
+    throw new ApiError(404, 'Category not found');
+  }
+
+  const roomsUsingCategory = await Room.countDocuments(getCategoryRoomFilter(category));
   if (roomsUsingCategory > 0) {
     throw new ApiError(
       409,
@@ -112,11 +147,7 @@ const deleteCategoryById = async (categoryId) => {
     );
   }
 
-  const category = await RoomCategory.findByIdAndDelete(categoryId);
-  if (!category) {
-    throw new ApiError(404, 'Category not found');
-  }
-
+  await RoomCategory.findByIdAndDelete(categoryId);
   return category;
 };
 
