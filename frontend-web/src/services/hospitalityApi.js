@@ -21,8 +21,9 @@ export const mapHotelService = (service) => ({
   price: Number(service.price) || 0,
   displayPrice: service.pricingNote || `ETB ${formatPrice(service.price || 0)}`,
   priceSuffix: service.pricingNote ? '' : '/ person',
-  category: 'Services',
+  category: service.category || 'other',
   image: service.image,
+  badge: service.badge,
   amenities: service.badge ? [service.badge] : [],
   popular: false,
   dateAdded: service.createdAt,
@@ -39,6 +40,7 @@ export const mapFacility = (facility) => ({
   priceSuffix: '',
   category: 'Wellness',
   image: facility.image,
+  badge: facility.badge,
   amenities: facility.badge ? [facility.badge] : [],
   popular: false,
   dateAdded: facility.createdAt,
@@ -55,8 +57,10 @@ export const mapEventSpace = (space) => ({
   priceSuffix: '/ day',
   category: 'Events',
   image: space.image,
+  badge: space.badge,
   amenities: space.amenities || [],
   popular: Boolean(space.isFeatured),
+  maxGuests: space.maxGuests,
   dateAdded: space.createdAt,
   location: space.category?.name || 'Event Space',
 });
@@ -87,4 +91,42 @@ export const fetchHospitalityItems = async () => {
   ]);
 
   return [...hotelServices, ...facilities, ...eventSpaces];
+};
+
+export const fetchRestaurantHighlight = async () => {
+  const response = await fetch(`${API_BASE}/restaurant/menu`);
+  const result = await parseJson(response);
+  const menu = result.data?.menu || [];
+
+  for (const category of menu) {
+    if (category.items?.length) {
+      return category.items[0];
+    }
+  }
+  return null;
+};
+
+export const buildSectionCard = (section, items, featuredField = 'popular') => {
+  if (!items.length) {
+    return {
+      id: section.id,
+      title: section.title,
+      badge: section.badge,
+      description: section.description,
+      image: section.image,
+      link: section.link,
+    };
+  }
+
+  const featured = items.find((item) => item[featuredField]) || items[0];
+
+  return {
+    id: section.id,
+    badge: featured.badge || featured.amenities?.[0] || section.badge,
+    description: featured.description || section.description,
+    image: featured.image && !featured.image.startsWith('default-')
+      ? featured.image
+      : section.image,
+    link: section.link,
+  };
 };

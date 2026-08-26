@@ -1,18 +1,41 @@
 // src/pages/HospitalityPage.jsx
 import { useState, useEffect } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, Link, Navigate } from 'react-router-dom';
 import {
-  ArrowRight, MapPin, Check, ArrowLeft, Filter, ChevronDown, X, User, Lock, Calendar, LockKeyhole
+  ArrowRight, MapPin, Check, Filter, ChevronDown, X, User, Lock,
+  Calendar, LockKeyhole, LayoutGrid, Compass, Sparkles, Dumbbell,
+  HeartPulse, ConciergeBell, PartyPopper, Plane, Waves, Star, Banknote, Coffee
 } from 'lucide-react';
-import { services as staticServices } from '../data/services';
-import { fetchHospitalityItems } from '../services/hospitalityApi';
+
+import { fetchHotelServices } from '../services/hospitalityApi';
 import EventBookingForm from "../components/EventBookingForm";
 
-const LEGACY_CATEGORIES = ['Dining', 'Bar', 'Breakfast', 'Tour', 'Spa', 'Fitness'];
+
+
+// Service types for the specialized hotel services
+const SERVICE_TYPES = [
+  { key: 'All',              label: 'All Services',       Icon: LayoutGrid,     color: '#6b7280' },
+  { key: 'airport_transfer', label: 'Airport Transfer',   Icon: Plane,          color: '#0ea5e9' },
+  { key: 'room_service',     label: 'Room Service',       Icon: Coffee,         color: '#f59e0b' },
+  { key: 'laundry',          label: 'Laundry & Cleaning',  Icon: Check,          color: '#10b981' },
+  { key: 'concierge',        label: 'Concierge & Porter', Icon: ConciergeBell,  color: '#6366f1' },
+  { key: 'other',            label: 'Other Services',     Icon: LayoutGrid,     color: '#6b7280' },
+];
+
+const categories = SERVICE_TYPES.map(s => s.key);
 
 const HospitalityPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const categoryParam = searchParams.get('category') || 'All';
+  const legacyCategory = searchParams.get('category');
+
+  if (legacyCategory === 'Wellness') {
+    return <Navigate to="/facilities-wellness" replace />;
+  }
+  if (legacyCategory === 'Events') {
+    return <Navigate to="/events-conferences" replace />;
+  }
+
+  const categoryParam = legacyCategory === 'Services' ? 'All' : (legacyCategory || 'All');
 
   const [activeCategory, setActiveCategory] = useState(categoryParam);
   const [activePrice, setActivePrice] = useState('All');
@@ -39,16 +62,19 @@ const HospitalityPage = () => {
   }, [activeCategory, setSearchParams]);
 
   useEffect(() => {
-    if (categoryParam) setActiveCategory(categoryParam);
-    else setActiveCategory('All');
-  }, [categoryParam]);
+    if (categoryParam && categories.includes(categoryParam)) {
+      setActiveCategory(categoryParam);
+    } else {
+      setActiveCategory('All');
+    }
+  }, [categoryParam, categories]);
 
   useEffect(() => {
     const loadItems = async () => {
       try {
         setLoading(true);
         setLoadError('');
-        const items = await fetchHospitalityItems();
+        const items = await fetchHotelServices();
         setApiItems(items);
       } catch (err) {
         setLoadError(err.message || 'Failed to load hospitality content');
@@ -59,20 +85,10 @@ const HospitalityPage = () => {
     loadItems();
   }, []);
 
-  const legacyItems = staticServices.filter((item) => LEGACY_CATEGORIES.includes(item.category));
-  const allServices = [...apiItems, ...legacyItems];
+  // Only show manager-posted hotel services (API data only — no static data)
+  const allServices = apiItems;
 
-  const getCategoryFilter = (param) => {
-    const map = {
-      'Dining': ['Dining'],
-      'Services': ['Services'],
-      'Wellness': ['Spa', 'Fitness', 'Wellness'],
-      'Events': ['Events'],
-    };
-    return map[param] || null;
-  };
 
-  const categories = ['All', 'Bar', 'Breakfast', 'Dining', 'Fitness', 'Spa', 'Tour', 'Services', 'Wellness', 'Events'];
   const priceRanges = ['All', '100-300', '300-500', '500-1000'];
   const sortOptions = [
     { id: 'popular', label: 'Popularity' },
@@ -81,10 +97,9 @@ const HospitalityPage = () => {
     { id: 'newest', label: 'Newest First' },
   ];
 
-  const categoryFilter = getCategoryFilter(activeCategory);
-  const filteredByCategory = categoryFilter
-    ? allServices.filter((s) => categoryFilter.includes(s.category))
-    : allServices;
+  const filteredByCategory = activeCategory === 'All'
+    ? allServices
+    : allServices.filter((s) => s.category === activeCategory);
   const filteredByPrice = filteredByCategory.filter(s => {
     if (activePrice === 'All') return true;
     if (activePrice === '100-300') return s.price >= 100 && s.price <= 300;
@@ -212,16 +227,29 @@ const HospitalityPage = () => {
         /* ══ Sidebar ══ */
         .sidebar {
           background: #fff;
-          border-radius: 18px;
-          padding: 24px 20px;
+          border-radius: 20px;
+          padding: 20px 16px 24px;
           border: 1px solid #e9eaf0;
           height: fit-content;
           position: sticky;
           top: 100px;
-          box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+          box-shadow: 0 4px 24px rgba(0,0,0,0.07);
         }
-        .sb-x-row {
-          display: flex; justify-content: flex-end; margin-bottom: 8px;
+
+        /* sidebar header row */
+        .sb-head {
+          display: flex; align-items: center; justify-content: space-between;
+          margin-bottom: 20px;
+        }
+        .sb-head-title {
+          display: flex; align-items: center; gap: 8px;
+          font-size: 13px; font-weight: 800;
+          letter-spacing: 1.5px; text-transform: uppercase; color: #111827;
+        }
+        .sb-head-icon {
+          width: 30px; height: 30px; border-radius: 8px;
+          background: linear-gradient(135deg, #c9970c, #e2b84a);
+          display: flex; align-items: center; justify-content: center;
         }
         .sb-x-btn {
           background: #f3f4f6; border: none; cursor: pointer;
@@ -230,36 +258,65 @@ const HospitalityPage = () => {
           color: #6b7280; transition: background 0.15s;
         }
         .sb-x-btn:hover { background: #fee2e2; color: #b91c1c; }
+
         .sb-section-title {
           font-size: 10px; font-weight: 800;
           letter-spacing: 2px; text-transform: uppercase;
-          color: #374151; margin-bottom: 12px;
+          color: #9ca3af; margin-bottom: 10px; padding-left: 4px;
         }
-        .sb-list {
-          list-style: none; padding: 0; margin: 0 0 20px;
+
+        /* ── Icon-pill category buttons ── */
+        .cat-btn-list {
+          display: flex; flex-direction: column; gap: 6px;
+          margin-bottom: 0;
         }
-        .sb-list li {
-          padding: 9px 10px; border-radius: 9px;
-          cursor: pointer; font-size: 14px; color: #6b7280;
-          transition: all 0.15s; display: flex;
-          align-items: center; justify-content: space-between;
+        .cat-btn {
+          display: flex; align-items: center; gap: 12px;
+          padding: 10px 12px; border-radius: 13px;
+          cursor: pointer; border: none; background: transparent;
+          font-size: 14px; font-weight: 500; color: #4b5563;
+          text-align: left; width: 100%;
+          transition: all 0.18s ease;
+          font-family: inherit;
         }
-        .sb-list li:hover { background: #fef9ec; color: #c9970c; }
-        .sb-list li.active {
-          background: #fef9ec; color: #c9970c;
-          font-weight: 700;
+        .cat-btn:hover { background: #f9fafb; color: #111827; }
+        .cat-btn.active { font-weight: 700; }
+        .cat-btn-icon {
+          width: 34px; height: 34px; border-radius: 10px;
+          display: flex; align-items: center; justify-content: center;
+          flex-shrink: 0;
+          transition: transform 0.18s ease;
         }
-        .sb-divider { border: none; border-top: 1px solid #f1f3f8; margin: 16px 0; }
+        .cat-btn:hover .cat-btn-icon { transform: scale(1.1); }
+        .cat-btn-label { flex: 1; line-height: 1.2; }
+
+        .sb-divider { border: none; border-top: 1px solid #f1f3f8; margin: 18px 0 14px; }
+
+        /* ── Price rows ── */
+        .price-row {
+          display: flex; align-items: center; gap: 10px;
+          padding: 9px 12px; border-radius: 11px;
+          cursor: pointer; font-size: 13px; font-weight: 500;
+          color: #6b7280; transition: all 0.15s; margin-bottom: 4px;
+        }
+        .price-row:hover { background: #f9fafb; color: #111827; }
+        .price-row.active {
+          background: #fef9ec; color: #92700a; font-weight: 700;
+        }
+        .price-dot {
+          width: 10px; height: 10px; border-radius: 50%;
+          flex-shrink: 0;
+        }
 
         /* sort radio */
         .sort-option {
           display: flex; align-items: center; gap: 10px;
-          padding: 8px 10px; border-radius: 9px;
-          cursor: pointer; font-size: 14px; color: #6b7280;
-          transition: background 0.15s;
+          padding: 8px 12px; border-radius: 10px;
+          cursor: pointer; font-size: 13px; color: #6b7280;
+          transition: background 0.15s; margin-bottom: 2px;
         }
         .sort-option:hover { background: #f9fafb; }
-        .sort-option.active { color: #c9970c; font-weight: 600; }
+        .sort-option.active { color: #c9970c; font-weight: 700; background: #fef9ec; }
         .radio-circle {
           width: 16px; height: 16px; border-radius: 50%;
           border: 2px solid #d1d5db;
@@ -540,9 +597,9 @@ const HospitalityPage = () => {
 
           {/* ── Page Header ── */}
           <div className="hp-header">
-            <div className="lbl">✦ Discover Hospitality</div>
-            <h1>Discover Hospitality</h1>
-            <p>Discover dining, spa, massage, tours, and hotel services from our partner properties.</p>
+            <div className="lbl">✦ 24/7 Concierge</div>
+            <h1>Hotel Services</h1>
+            <p>Airport transfers, room service, laundry, concierge support, and personalized guest services.</p>
           </div>
 
           {/* mobile toggle */}
@@ -555,42 +612,61 @@ const HospitalityPage = () => {
 
           <div className="hp-layout">
 
-            {/* ════ Sidebar ════ */}
+            {/* ════ Sidebar — icon-pill design ════ */}
             <aside className={`sidebar ${mobileMenuOpen ? 'open' : ''}`}>
-              <div className="sb-x-row">
+
+              {/* header */}
+              <div className="sb-head">
+                <div className="sb-head-title">
+                  <div className="sb-head-icon">
+                    <Filter size={15} color="#fff" />
+                  </div>
+                  Filters
+                </div>
                 <button className="sb-x-btn" onClick={() => setMobileMenuOpen(false)}>
-                  <X size={16} />
+                  <X size={15} />
                 </button>
               </div>
 
-              <div className="sb-section-title">Category</div>
-              <ul className="sb-list">
-                {categories.map((cat) => (
-                  <li
-                    key={cat}
-                    className={activeCategory === cat ? 'active' : ''}
-                    onClick={() => { setActiveCategory(cat); if (window.innerWidth <= 860) setMobileMenuOpen(false); }}
+              {/* ── Service Type ── */}
+              <div className="sb-section-title">Service Type</div>
+              {SERVICE_TYPES.map(({ key, label, Icon, color }) => {
+                const isActive = activeCategory === key;
+                return (
+                  <div
+                    key={key}
+                    className={`price-row${isActive ? ' active' : ''}`}
+                    onClick={() => { setActiveCategory(key); if (window.innerWidth <= 860) setMobileMenuOpen(false); }}
                   >
-                    {cat}
-                  </li>
-                ))}
-              </ul>
+                    <Icon size={16} color={color} style={{ flexShrink: 0 }} />
+                    {label}
+                  </div>
+                );
+              })}
 
               <hr className="sb-divider" />
+
+              {/* ── Price filter ── */}
               <div className="sb-section-title">Price (ETB)</div>
-              <ul className="sb-list">
-                {priceRanges.map((range) => (
-                  <li
-                    key={range}
-                    className={activePrice === range ? 'active' : ''}
-                    onClick={() => { setActivePrice(range); if (window.innerWidth <= 860) setMobileMenuOpen(false); }}
-                  >
-                    {range === 'All' ? 'All Prices' : `${range.replace('-', ' – ')} ETB`}
-                  </li>
-                ))}
-              </ul>
+              {[
+                { label: 'All Prices',       range: 'All',     color: '#6b7280' },
+                { label: '100 – 300 ETB',    range: '100-300', color: '#22c55e' },
+                { label: '300 – 500 ETB',    range: '300-500', color: '#f59e0b' },
+                { label: '500 – 1,000 ETB',  range: '500-1000',color: '#ef4444' },
+              ].map(({ label, range, color }) => (
+                <div
+                  key={range}
+                  className={`price-row${activePrice === range ? ' active' : ''}`}
+                  onClick={() => { setActivePrice(range); if (window.innerWidth <= 860) setMobileMenuOpen(false); }}
+                >
+                  <Banknote size={16} color={color} style={{ flexShrink: 0 }} />
+                  {label}
+                </div>
+              ))}
 
               <hr className="sb-divider" />
+
+              {/* ── Sort ── */}
               <div className="sb-section-title">Sort by</div>
               {sortOptions.map((opt) => (
                 <div

@@ -1,42 +1,92 @@
 // src/components/Amenities.jsx
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import {
+  fetchHotelServices,
+  fetchFacilities,
+  fetchEventSpaces,
+  fetchRestaurantHighlight,
+  buildSectionCard,
+} from '../services/hospitalityApi';
+
+const SECTION_DEFAULTS = {
+  restaurant: {
+    id: 1,
+    title: 'Restaurant & Bar',
+    badge: 'FINE DINING',
+    description: 'Savor world-class cuisine and signature cocktails in an elegant atmosphere.',
+    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&auto=format&fit=crop',
+    link: '/restaurant',
+  },
+  services: {
+    id: 2,
+    title: 'Hotel Services',
+    badge: '24/7 CONCIERGE',
+    description: 'Experience 24/7 concierge support, luggage assistance, and personalized attention.',
+    image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&auto=format&fit=crop',
+    link: '/hospitality',
+  },
+  facilities: {
+    id: 3,
+    title: 'Facilities & Wellness',
+    badge: 'REJUVENATE',
+    description: 'Relax with a pampering spa day, access our state-of-the-art gym, or unwind by the pool.',
+    image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=600&auto=format&fit=crop',
+    link: '/facilities-wellness',
+  },
+  events: {
+    id: 4,
+    title: 'Events & Conference',
+    badge: 'PREMIUM VENUES',
+    description: 'Host memorable meetings, weddings, and conferences in our versatile premium venues.',
+    image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=600&auto=format&fit=crop',
+    link: '/events-conferences',
+  },
+};
 
 const Amenities = () => {
-  const cards = [
-    {
-      id: 1,
-      title: 'Restaurant & Bar',
-      badge: 'FINE DINING',
-      description: 'Savor world-class cuisine and signature cocktails in an elegant atmosphere.',
-      image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&auto=format&fit=crop',
-      link: '/restaurant'
-    },
-    {
-      id: 2,
-      title: 'Hotel Services',
-      badge: '24/7 CONCIERGE',
-      description: 'Experience 24/7 concierge support, luggage assistance, and personalized attention.',
-      image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&auto=format&fit=crop',
-      link: '/hospitality?category=Services'
-    },
-    {
-      id: 3,
-      title: 'Facilities & Wellness',
-      badge: 'REJUVENATE',
-      description: 'Relax with a pampering spa day, access our state-of-the-art gym, or unwind by the pool.',
-      image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=600&auto=format&fit=crop',
-      link: '/hospitality?category=Wellness'
-    },
-    {
-      id: 4,
-      title: 'Events & Conference',
-      badge: 'PREMIUM VENUES',
-      description: 'Host memorable meetings, weddings, and conferences in our versatile premium venues.',
-      image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=600&auto=format&fit=crop',
-      link: '/hospitality?category=Events'
-    }
-  ];
+  const [cards, setCards] = useState([
+    { ...SECTION_DEFAULTS.restaurant },
+    { ...SECTION_DEFAULTS.services },
+    { ...SECTION_DEFAULTS.facilities },
+    { ...SECTION_DEFAULTS.events },
+  ]);
+
+  useEffect(() => {
+    const loadCards = async () => {
+      const [servicesResult, facilitiesResult, eventsResult, menuResult] = await Promise.allSettled([
+        fetchHotelServices(),
+        fetchFacilities(),
+        fetchEventSpaces(),
+        fetchRestaurantHighlight(),
+      ]);
+
+      const hotelServices = servicesResult.status === 'fulfilled' ? servicesResult.value : [];
+      const facilities = facilitiesResult.status === 'fulfilled' ? facilitiesResult.value : [];
+      const eventSpaces = eventsResult.status === 'fulfilled' ? eventsResult.value : [];
+      const menuHighlight = menuResult.status === 'fulfilled' ? menuResult.value : null;
+
+      const restaurantCard = menuHighlight
+        ? {
+            ...SECTION_DEFAULTS.restaurant,
+            description: menuHighlight.description || SECTION_DEFAULTS.restaurant.description,
+            image: menuHighlight.image && !menuHighlight.image.startsWith('default-')
+              ? menuHighlight.image
+              : SECTION_DEFAULTS.restaurant.image,
+          }
+        : { ...SECTION_DEFAULTS.restaurant };
+
+      setCards([
+        restaurantCard,
+        buildSectionCard(SECTION_DEFAULTS.services, hotelServices),
+        buildSectionCard(SECTION_DEFAULTS.facilities, facilities),
+        buildSectionCard(SECTION_DEFAULTS.events, eventSpaces, 'popular'),
+      ]);
+    };
+
+    loadCards();
+  }, []);
 
   return (
     <section className="amenities-section" id="amenities">
@@ -180,7 +230,6 @@ const Amenities = () => {
           font-family: 'Georgia', serif;
         }
 
-        /* NEW CSS FOR DESCRIPTION */
         .amenity-card .card-body .description {
           font-size: 14px;
           color: #6b7280;

@@ -8,6 +8,8 @@ import Amenities from './components/Amenities';
 import RoomDetail from './components/RoomDetail';
 import RoomsPage from './pages/RoomsPage';
 import HospitalityPage from './pages/HospitalityPage';
+import FacilitiesWellnessPage from './pages/FacilitiesWellnessPage';
+import EventsConferencesPage from './pages/EventsConferencesPage';
 import ExperiencePage from './pages/ExperiencePage';
 import AboutPage from './pages/AboutPage';
 import FAQPage from './pages/FAQPage';
@@ -27,12 +29,11 @@ import OffersPage from './pages/OffersPage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
 
-// ===== NOTE: Separate explore pages (DiningPage, ServicesPage, WellnessPage, EventsPage) are no longer needed =====
-// They have been replaced by the HospitalityPage with query parameters:
-// /hospitality?category=Dining
-// /hospitality?category=Services
-// /hospitality?category=Wellness
-// /hospitality?category=Events
+// Hospitality sections are independent pages:
+// /restaurant — Restaurant & Bar
+// /hospitality — Hotel Services
+// /facilities-wellness — Facilities & Wellness
+// /events-conferences — Events & Conference
 
 // Create a Layout component to conditionally show Navbar/Footer
 const Layout = ({ children }) => {
@@ -81,8 +82,9 @@ function App() {
           {/* ===== MAIN PAGES ===== */}
           <Route path="/rooms" element={<RoomsPage />} />
           
-          {/* ===== HOSPITALITY PAGE (Handles all explore categories via query param) ===== */}
           <Route path="/hospitality" element={<HospitalityPage />} />
+          <Route path="/facilities-wellness" element={<FacilitiesWellnessPage />} />
+          <Route path="/events-conferences" element={<EventsConferencesPage />} />
           
           <Route path="/experience" element={<ExperiencePage />} />
           <Route path="/about" element={<AboutPage />} />
