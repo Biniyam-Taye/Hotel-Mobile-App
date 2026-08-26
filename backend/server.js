@@ -3,6 +3,10 @@ const app = require('./src/app');
 const connectDB = require('./src/config/db');
 const { seedRoomsIfEmpty } = require('./src/scripts/seedRooms');
 const { seedCategoriesIfEmpty } = require('./src/scripts/seedCategories');
+const { seedRestaurantIfEmpty } = require('./src/scripts/seedRestaurant');
+const { seedHotelServicesIfEmpty } = require('./src/scripts/seedHotelServices');
+const { seedFacilitiesIfEmpty } = require('./src/scripts/seedFacilities');
+const { seedEventsIfEmpty } = require('./src/scripts/seedEvents');
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (err) => {
@@ -18,6 +22,10 @@ const startServer = async () => {
     await connectDB();
     await seedCategoriesIfEmpty();
     await seedRoomsIfEmpty();
+    await seedRestaurantIfEmpty();
+    await seedHotelServicesIfEmpty();
+    await seedFacilitiesIfEmpty();
+    await seedEventsIfEmpty();
 
     const server = app.listen(PORT, () => {
       console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);

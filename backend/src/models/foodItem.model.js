@@ -26,21 +26,39 @@ const foodItemSchema = new mongoose.Schema(
       type: String,
       default: 'default-food.jpg',
     },
+    imagePublicId: {
+      type: String,
+    },
     isAvailable: {
       type: Boolean,
       default: true,
     },
     preparationTime: {
-      type: Number, // in minutes
+      type: Number,
       default: 20,
     },
     tags: {
-      type: [String], // e.g. ['vegan', 'spicy', 'bestseller']
-    }
+      type: [String],
+    },
+    isPopular: {
+      type: Boolean,
+      default: false,
+    },
+    features: {
+      type: [String],
+    },
+    section: {
+      type: String,
+      enum: ['restaurant_bar', 'room_service'],
+      default: 'restaurant_bar',
+    },
   },
   {
     timestamps: true,
   }
 );
+
+foodItemSchema.index({ category: 1, isAvailable: 1 });
+foodItemSchema.index({ name: 'text', description: 'text' });
 
 module.exports = mongoose.model('FoodItem', foodItemSchema);

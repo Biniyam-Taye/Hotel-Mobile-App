@@ -1,46 +1,40 @@
 // src/pages/RestaurantPage.jsx
-import { Utensils, Coffee, Wine, Cake } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Utensils, Coffee, Wine, Cake, Loader2 } from 'lucide-react';
+import { fetchPublicMenu, formatPrice } from '../services/restaurantApi';
+
+const categoryIcons = {
+  Breakfast: Coffee,
+  Lunch: Utensils,
+  Dinner: Utensils,
+  Drinks: Wine,
+  Desserts: Cake,
+  Appetizers: Utensils,
+};
+
+const getCategoryIcon = (name) => categoryIcons[name] || Utensils;
 
 const RestaurantPage = () => {
-  const menuItems = [
-    {
-      category: 'Appetizers',
-      icon: Utensils,
-      items: [
-        { name: 'Bruschetta', description: 'Toasted bread with tomato, garlic, and basil', price: 'ETB 450' },
-        { name: 'Calamari Fritti', description: 'Crispy fried squid with lemon aioli', price: 'ETB 550' },
-        { name: 'Beef Carpaccio', description: 'Thinly sliced raw beef with parmesan and arugula', price: 'ETB 650' },
-      ]
-    },
-    {
-      category: 'Main Courses',
-      icon: Coffee,
-      items: [
-        { name: 'Grilled Lamb Chops', description: 'Served with rosemary potatoes and mint sauce', price: 'ETB 1,200' },
-        { name: 'Seafood Paella', description: 'Saffron rice with shrimp, mussels, and clams', price: 'ETB 1,400' },
-        { name: 'Beef Tenderloin', description: 'Grilled to perfection with red wine reduction', price: 'ETB 1,500' },
-        { name: 'Vegetarian Lasagna', description: 'Layered pasta with ricotta and fresh vegetables', price: 'ETB 850' },
-      ]
-    },
-    {
-      category: 'Desserts',
-      icon: Cake,
-      items: [
-        { name: 'Tiramisu', description: 'Classic Italian dessert with coffee and mascarpone', price: 'ETB 350' },
-        { name: 'Chocolate Fondant', description: 'Warm chocolate cake with vanilla ice cream', price: 'ETB 400' },
-        { name: 'Panna Cotta', description: 'Creamy custard with berry compote', price: 'ETB 320' },
-      ]
-    },
-    {
-      category: 'Drinks',
-      icon: Wine,
-      items: [
-        { name: 'Signature Cocktails', description: 'Handcrafted by our expert mixologists', price: 'ETB 400' },
-        { name: 'Wine Selection', description: 'Curated international and local wines', price: 'ETB 600' },
-        { name: 'Fresh Juices', description: 'Seasonal fruit juices and smoothies', price: 'ETB 200' },
-      ]
-    }
-  ];
+  const [menu, setMenu] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const loadMenu = async () => {
+      try {
+        setLoading(true);
+        setError('');
+        const data = await fetchPublicMenu();
+        setMenu(data);
+      } catch (err) {
+        setError(err.message || 'Failed to load menu');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadMenu();
+  }, []);
 
   return (
     <>
@@ -50,7 +44,6 @@ const RestaurantPage = () => {
           min-height: 100vh;
         }
 
-        /* ===== HERO ===== */
         .restaurant-hero {
           position: relative;
           height: 400px;
@@ -105,7 +98,6 @@ const RestaurantPage = () => {
           line-height: 1.6;
         }
 
-        /* ===== MENU ===== */
         .menu-section {
           max-width: 1000px;
           margin: 0 auto;
@@ -159,12 +151,21 @@ const RestaurantPage = () => {
           display: flex;
           justify-content: space-between;
           align-items: flex-start;
+          gap: 16px;
           padding: 14px 0;
           border-bottom: 1px solid #f1f3f5;
         }
 
         .menu-item:last-child {
           border-bottom: none;
+        }
+
+        .menu-item .item-image {
+          width: 72px;
+          height: 72px;
+          border-radius: 12px;
+          object-fit: cover;
+          flex-shrink: 0;
         }
 
         .menu-item .info {
@@ -191,6 +192,16 @@ const RestaurantPage = () => {
           margin-left: 20px;
         }
 
+        .menu-status {
+          text-align: center;
+          padding: 48px 24px;
+          color: #6b7280;
+        }
+
+        .menu-status.error {
+          color: #b91c1c;
+        }
+
         @media (max-width: 768px) {
           .restaurant-hero {
             padding-left: 24px;
@@ -212,7 +223,7 @@ const RestaurantPage = () => {
           .menu-item {
             flex-direction: column;
             align-items: flex-start;
-            gap: 4px;
+            gap: 8px;
           }
           .menu-item .price {
             margin-left: 0;
@@ -229,7 +240,6 @@ const RestaurantPage = () => {
       `}</style>
 
       <div className="restaurant-page">
-        {/* Hero */}
         <div className="restaurant-hero">
           <div className="overlay"></div>
           <div className="content">
@@ -239,30 +249,50 @@ const RestaurantPage = () => {
           </div>
         </div>
 
-        {/* Menu */}
         <div className="menu-section">
           <div className="header">
             <div className="label">✦ Our Menu</div>
             <h2>A Culinary Journey</h2>
           </div>
 
-          {menuItems.map((category, index) => (
-            <div key={index} className="menu-category">
-              <div className="category-title">
-                <category.icon size={24} />
-                {category.category}
-              </div>
-              {category.items.map((item, idx) => (
-                <div key={idx} className="menu-item">
-                  <div className="info">
-                    <div className="name">{item.name}</div>
-                    <div className="description">{item.description}</div>
-                  </div>
-                  <div className="price">{item.price}</div>
-                </div>
-              ))}
+          {loading ? (
+            <div className="menu-status">
+              <Loader2 size={32} style={{ animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
+              <p>Loading menu...</p>
             </div>
-          ))}
+          ) : error ? (
+            <div className="menu-status error">
+              <p>{error}</p>
+            </div>
+          ) : menu.length === 0 ? (
+            <div className="menu-status">
+              <p>No menu items available yet. Check back soon.</p>
+            </div>
+          ) : (
+            menu.map((category) => {
+              const Icon = getCategoryIcon(category.name);
+              return (
+                <div key={category._id || category.name} className="menu-category">
+                  <div className="category-title">
+                    <Icon size={24} />
+                    {category.name}
+                  </div>
+                  {category.items.map((item) => (
+                    <div key={item._id || item.name} className="menu-item">
+                      {item.image && item.image !== 'default-food.jpg' && (
+                        <img src={item.image} alt={item.name} className="item-image" />
+                      )}
+                      <div className="info">
+                        <div className="name">{item.name}</div>
+                        <div className="description">{item.description}</div>
+                      </div>
+                      <div className="price">ETB {formatPrice(item.price)}</div>
+                    </div>
+                  ))}
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
     </>

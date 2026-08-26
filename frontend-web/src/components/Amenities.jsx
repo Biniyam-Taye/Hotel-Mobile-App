@@ -10,7 +10,7 @@ const Amenities = () => {
       badge: 'FINE DINING',
       description: 'Savor world-class cuisine and signature cocktails in an elegant atmosphere.',
       image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&auto=format&fit=crop',
-      link: '/hospitality?category=Dining'
+      link: '/restaurant'
     },
     {
       id: 2,

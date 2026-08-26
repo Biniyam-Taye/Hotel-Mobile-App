@@ -16,6 +16,9 @@ const foodCategorySchema = new mongoose.Schema(
       type: String,
       default: 'default-category.jpg',
     },
+    imagePublicId: {
+      type: String,
+    },
     isActive: {
       type: Boolean,
       default: true,
