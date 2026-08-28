@@ -103,220 +103,264 @@ const Home = () => {
           line-height: 1.6;
         }
 
+        /* ====== ROOMS GRID — 4 columns ====== */
         .rooms-grid {
           display: grid;
-          grid-template-columns: 1fr;
-          gap: 30px;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 20px;
         }
 
-        /* --- UPDATED ROOM CARD HOVER EFFECT (Bottom Colored Line) --- */
+        /* ====== ROOM CARD BASE ====== */
         .room-card {
           background: #ffffff;
-          border-radius: 24px;
-          overflow: hidden; /* Ensures the colored line stays inside the corners */
-          box-shadow: 0 4px 16px rgba(0,0,0,0.04);
-          border: 1px solid rgba(0,0,0,0.03);
-          transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          border-radius: 18px;
+          overflow: hidden;
+          box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+          border: 1px solid rgba(0,0,0,0.06);
+          transition: transform 0.38s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                      box-shadow 0.38s ease, border-color 0.38s ease;
           text-decoration: none;
           color: inherit;
-          display: block;
-          cursor: default;
           display: flex;
           flex-direction: column;
-          position: relative; /* Required for the bottom line */
+          position: relative;
         }
 
         .room-card:hover {
-          transform: translateY(-10px);
-          box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-          border-color: rgba(212, 175, 55, 0.2);
+          transform: translateY(-7px);
+          box-shadow: 0 20px 40px rgba(0,0,0,0.11);
+          border-color: rgba(212, 175, 55, 0.30);
         }
 
-        /* The sliding colored bottom line */
+        /* Animated gold bottom accent */
         .room-card::after {
           content: '';
           position: absolute;
-          bottom: 0;
-          left: 0;
-          width: 0;
-          height: 5px;
-          border-radius: 0 0 24px 24px; /* Matches the card's bottom rounded corners */
-          background: var(--card-line-color, #d4af37); /* Defaults to Gold if no color is passed */
-          transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          bottom: 0; left: 0;
+          width: 0; height: 3px;
+          border-radius: 0 0 18px 18px;
+          background: linear-gradient(90deg, #d4af37, #f5d879);
+          transition: width 0.42s cubic-bezier(0.25, 0.46, 0.45, 0.94);
           z-index: 2;
         }
+        .room-card:hover::after { width: 100%; }
 
-        .room-card:hover::after {
-          width: 100%;
-        }
-
-        /* --- IMAGE & BADGE OVERLAYS --- */
+        /* ====== ROOM IMAGE ====== */
         .room-card .room-image {
           position: relative;
-          height: 220px;
+          height: 215px;
           overflow: hidden;
           background: #f3f4f6;
+          flex-shrink: 0;
         }
 
         .room-card .room-image img {
-          width: 100%;
-          height: 100%;
+          width: 100%; height: 100%;
           object-fit: cover;
-          transition: transform 0.6s ease;
+          transition: transform 0.65s ease;
+          display: block;
         }
 
-        .room-card:hover .room-image img {
-          transform: scale(1.08);
+        .room-card:hover .room-image img { transform: scale(1.07); }
+
+        /* Gradient overlay */
+        .room-card .room-image::before {
+          content: '';
+          position: absolute; inset: 0;
+          background: linear-gradient(
+            to bottom,
+            rgba(0,0,0,0.28) 0%,
+            transparent 50%,
+            rgba(0,0,0,0.18) 100%
+          );
+          z-index: 1;
+          pointer-events: none;
         }
 
-        .room-card .room-image .popular-badge {
-          position: absolute;
-          top: 16px;
-          left: 16px;
-          background: #d4af37;
-          color: #1a1a1a;
-          padding: 4px 14px;
-          border-radius: 9999px;
-          font-size: 11px;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-          box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
-          font-family: 'Montserrat', sans-serif;
-        }
-
+        /* ── Price pill — top right ─────────────────────── */
         .room-card .room-image .price-badge {
           position: absolute;
-          top: 16px;
-          right: 16px;
-          background: rgba(255, 255, 255, 0.9);
-          backdrop-filter: blur(6px);
-          padding: 6px 16px;
+          top: 10px; right: 10px;
+          z-index: 2;
+          background: rgba(255,255,255,0.96);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          padding: 5px 11px;
           border-radius: 9999px;
-          font-size: 14px;
-          font-weight: 700;
+          display: flex;
+          align-items: baseline;
+          gap: 3px;
+          box-shadow: 0 3px 10px rgba(0,0,0,0.14);
+          font-family: 'Montserrat', sans-serif;
+          line-height: 1;
+          white-space: nowrap;
+        }
+        .price-badge .price-amount {
+          font-size: 12px;
+          font-weight: 800;
           color: #1a1a1a;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+          letter-spacing: -0.3px;
+        }
+        .price-badge .price-label {
+          font-size: 9.5px;
+          font-weight: 500;
+          color: #8a8f98;
+        }
+
+        /* ── Popular pill — top left ────────────────────── */
+        .room-card .room-image .popular-badge {
+          position: absolute;
+          top: 10px; left: 10px;
+          z-index: 2;
+          background: linear-gradient(135deg, #d4af37 0%, #f5d879 100%);
+          color: #3d2e00;
+          padding: 4px 10px;
+          border-radius: 9999px;
+          font-size: 9px;
+          font-weight: 900;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          box-shadow: 0 3px 10px rgba(212,175,55,0.50);
+          font-family: 'Montserrat', sans-serif;
           display: flex;
           align-items: center;
           gap: 4px;
-          font-family: 'Montserrat', sans-serif;
-        }
-        .room-card .room-image .price-badge span {
-          font-size: 10px;
-          font-weight: 500;
-          color: #6b7280;
+          white-space: nowrap;
         }
 
-        /* --- DETAILS TYPOGRAPHY --- */
+        /* ====== ROOM DETAILS ====== */
         .room-card .room-details {
-          padding: 24px 24px 24px;
+          padding: 14px 16px 16px;
           display: flex;
           flex-direction: column;
           flex: 1;
         }
 
+        /* Name + rating row */
         .room-card .room-details .room-header {
           display: flex;
           justify-content: space-between;
-          align-items: flex-start;
+          align-items: center;
+          gap: 8px;
           margin-bottom: 6px;
         }
 
         .room-card .room-details .room-header h3 {
           font-family: 'Montserrat', sans-serif;
-          font-size: 20px;
-          font-weight: 600;
+          font-size: 13.5px;
+          font-weight: 700;
           text-transform: uppercase;
-          letter-spacing: 1.5px;
+          letter-spacing: 0.9px;
           color: #1a1a1a;
           margin: 0;
-          line-height: 1.2;
+          line-height: 1.3;
+          flex: 1;
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
+        /* Rating chip */
         .rating-badge {
-          display: flex;
+          display: inline-flex;
           align-items: center;
-          gap: 4px;
-          background: #ffffff;
-          border: 1px solid #ffb347;
-          color: #ffb347;
-          padding: 3px 10px;
+          gap: 3px;
+          background: #fffbeb;
+          border: 1.5px solid #f59e0b;
+          color: #92400e;
+          padding: 3px 8px;
           border-radius: 9999px;
-          font-size: 12px;
+          font-size: 10.5px;
           font-weight: 700;
           font-family: 'Montserrat', sans-serif;
           white-space: nowrap;
+          flex-shrink: 0;
         }
-        .rating-badge .star {
-          fill: #ffb347;
-          color: #ffb347;
+        .rating-badge .star svg {
+          fill: #f59e0b;
+          color: #f59e0b;
+          vertical-align: middle;
         }
 
+        /* Thin divider */
+        .room-card .room-details .card-divider {
+          height: 1px;
+          background: linear-gradient(90deg, #ececec, transparent);
+          margin: 8px 0;
+        }
+
+        /* Description */
         .room-card .room-details .short-description {
           font-family: 'Poppins', sans-serif;
           color: #6b7280;
-          font-size: 14px;
+          font-size: 12px;
           line-height: 1.6;
-          margin: 6px 0 16px 0;
+          margin: 0 0 14px;
           display: -webkit-box;
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
-        }
-
-        .room-card .room-details .card-footer {
-          margin-top: auto;
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-
-        .room-card .room-details .action-buttons {
-          display: flex;
-          gap: 12px;
-          align-items: center;
-        }
-
-        .room-card .room-details .action-buttons .btn {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: 6px;
-          padding: 10px 20px;
-          border: none;
-          border-radius: 9999px;
-          font-weight: 600;
-          font-size: 13px;
-          font-family: 'Poppins', sans-serif;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          text-decoration: none;
           flex: 1;
         }
 
+        /* ====== ACTION BUTTONS — side by side 2-col ====== */
+        .room-card .room-details .action-buttons {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 8px;
+          margin-top: auto;
+        }
+
+        .room-card .room-details .action-buttons .btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 5px;
+          padding: 9px 6px;
+          border-radius: 9999px;
+          font-weight: 600;
+          font-size: 11.5px;
+          font-family: 'Poppins', sans-serif;
+          cursor: pointer;
+          transition: all 0.25s ease;
+          text-decoration: none;
+          white-space: nowrap;
+          box-sizing: border-box;
+          letter-spacing: 0.1px;
+        }
+
+        /* View Details — clean outline pill */
         .room-card .room-details .action-buttons .btn-view {
-          background: #f1f5f9;
-          color: #1a1a1a;
+          background: transparent;
+          color: #4b5563;
+          border: 1.5px solid #d1d5db;
         }
-
         .room-card .room-details .action-buttons .btn-view:hover {
-          background: #e2e8f0;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-        }
-
-        .room-card .room-details .action-buttons .btn-book {
-          background: #d4af37;
+          background: #fafafa;
+          border-color: #d4af37;
           color: #1a1a1a;
+          box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+          transform: translateY(-1px);
         }
 
+        /* Book Now — gold pill */
+        .room-card .room-details .action-buttons .btn-book {
+          background: linear-gradient(135deg, #c9a227 0%, #e8c848 55%, #c9a227 100%);
+          background-size: 200% auto;
+          color: #1a1a1a;
+          border: none;
+          font-weight: 700;
+          box-shadow: 0 3px 12px rgba(212,175,55,0.32);
+          transition: background-position 0.4s ease, transform 0.25s ease, box-shadow 0.25s ease;
+        }
         .room-card .room-details .action-buttons .btn-book:hover {
-          background: #c5a028;
+          background-position: right center;
           transform: translateY(-2px);
-          box-shadow: 0 4px 20px rgba(212, 175, 55, 0.35);
+          box-shadow: 0 7px 20px rgba(212,175,55,0.45);
         }
 
+        /* ====== EXPLORE BUTTON ====== */
         .explore-all-wrapper {
           display: flex;
           justify-content: center;
@@ -363,7 +407,27 @@ const Home = () => {
           color: #d4af37;
         }
 
-        /* -------- MODAL STYLES -------- */
+        /* ====== RESPONSIVE ====== */
+        @media (max-width: 1199px) {
+          .rooms-grid { grid-template-columns: repeat(2, 1fr); gap: 18px; }
+          .room-card .room-image { height: 240px; }
+        }
+        @media (min-width: 1200px) {
+          .rooms-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        }
+        @media (max-width: 640px) {
+          .rooms-section { padding: 60px 16px; }
+          .rooms-grid { grid-template-columns: 1fr; gap: 16px; }
+          .rooms-header h2 { font-size: 28px; }
+          .room-card .room-image { height: 220px; }
+          .room-card .room-details { padding: 14px 16px 16px; }
+          .room-card .room-details .action-buttons .btn { font-size: 11.5px; padding: 8px 10px; }
+        }
+        @media (max-width: 380px) {
+          .explore-all-btn { font-size: 15px; padding: 14px 24px; }
+        }
+
+        /* ====== MODAL STYLES ====== */
         .modal-overlay {
           position: fixed;
           inset: 0;
@@ -494,29 +558,7 @@ const Home = () => {
           to { transform: translateY(0); opacity: 1; }
         }
 
-        @media (min-width: 768px) {
-          .rooms-grid { grid-template-columns: repeat(2, 1fr); }
-        }
 
-        @media (min-width: 1024px) {
-          .rooms-grid { grid-template-columns: repeat(4, 1fr); }
-        }
-
-        @media (max-width: 640px) {
-          .rooms-section { padding: 60px 16px; }
-          .rooms-header h2 { font-size: 28px; }
-          .room-card .room-details .room-header { flex-direction: column; align-items: flex-start; gap: 6px; }
-          .room-card .room-image { height: 200px; }
-          .room-card .room-details { padding: 16px 18px 20px; }
-          .room-card .room-details .action-buttons .btn { font-size: 12px; padding: 6px 14px; }
-          .room-card .room-image .price-badge { font-size: 12px; padding: 4px 12px; }
-        }
-
-        @media (max-width: 480px) {
-          .room-card .room-details .action-buttons { flex-direction: column; gap: 8px; }
-          .room-card .room-details .action-buttons .btn { width: 100%; }
-          .explore-all-btn { font-size: 15px; padding: 14px 24px; }
-        }
       `}</style>
 
       <section className="rooms-section" id="rooms">
@@ -540,46 +582,51 @@ const Home = () => {
             {!loading && !error && rooms.length === 0 && (
               <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#6b7280' }}>No rooms available at the moment.</p>
             )}
-            {!loading && rooms.map((room) => (
-              /* Added the inline style for the colored line. Defaults to Gold (#d4af37) */
-              <div key={room.id} className="room-card" style={{ '--card-line-color': '#d4af37' }}>
+            {!loading && rooms.slice(0, 4).map((room) => (
+              <div key={room.id} className="room-card">
+                {/* Image + Overlays */}
                 <div className="room-image">
                   <img src={room.image} alt={room.name} />
-                  
-                  {/* PRICE BADGE BACK ON IMAGE TOP-RIGHT */}
+
+                  {/* Price pill — top right */}
                   <div className="price-badge">
-                    ETB {formatPrice(room.priceETB)} <span>/ night</span>
+                    <span className="price-amount">ETB {formatPrice(room.priceETB)}</span>
+                    <span className="price-label">/ night</span>
                   </div>
 
-                  {/* POPULAR BADGE (Top Left) */}
+                  {/* Popular — bottom left (no overlap with price) */}
                   {room.popular && (
-                    <div className="popular-badge">✦ Popular</div>
+                    <div className="popular-badge">
+                      ✦ Popular
+                    </div>
                   )}
                 </div>
-                
+
+                {/* Card body */}
                 <div className="room-details">
                   <div className="room-header">
-                    <h3>{room.name}</h3>
+                    <h3 title={room.name}>{room.name}</h3>
                     <div className="rating-badge">
-                      <span className="star"><Star size={12} fill="#ffb347" /></span> {room.rating}
-                    </div>
-                  </div>
-                  <p className="short-description">{room.shortDescription}</p>
-                  
-                  <div className="card-footer">
-                    <div className="action-buttons">
-                      <Link to={`/room/${room.id}`} className="btn btn-view">
-                        View Details <ArrowRight size={12} />
-                      </Link>
-                      <button
-                        className="btn btn-book"
-                        onClick={(e) => openBooking(room, e)}
-                      >
-                        Book Now <Calendar size={12} />
-                      </button>
+                      <span className="star"><Star size={11} fill="#f59e0b" /></span>
+                      {room.rating}
                     </div>
                   </div>
 
+                  <div className="card-divider" />
+
+                  <p className="short-description">{room.shortDescription}</p>
+
+                  <div className="action-buttons">
+                    <Link to={`/room/${room.id}`} className="btn btn-view">
+                      <ArrowRight size={13} /> View Details
+                    </Link>
+                    <button
+                      className="btn btn-book"
+                      onClick={(e) => openBooking(room, e)}
+                    >
+                      <Calendar size={13} /> Book Now
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
