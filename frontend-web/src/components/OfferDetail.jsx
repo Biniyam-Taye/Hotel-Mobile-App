@@ -1,115 +1,56 @@
 // src/components/OfferDetail.jsx
 import { useParams, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, Clock, Calendar, Users, Star } from 'lucide-react';
+import { fetchOfferById } from '../services/offersApi';
 
 const OfferDetail = () => {
   const { id } = useParams();
+  const [offer, setOffer] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [activeImage, setActiveImage] = useState('');
 
-  // Full data array for all 4 offers
-  const offers = [
-    {
-      id: 1,
-      title: 'Early Bird Special',
-      subtitle: 'Book 30+ Days in Advance',
-      description: 'Plan ahead and save big! Enjoy 25% off on all room types when you book at least 30 days before your stay. Whether you are planning a family vacation or a solo recharge, this package layers premium perks onto an already exceptional stay.',
-      discount: '25% OFF',
-      highlightSubtitle: 'Sun, sea, and savings on your perfect coastal getaway',
-      price: '240',
-      originalPrice: '320',
-      perNightText: 'per night · participating properties',
-      stayLength: '3+ nights',
-      guests: 'Up to 4',
-      discountPercent: '25%',
-      image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      validUntil: 'August 31, 2026',
-      popular: true,
-      seasonalBadge: 'Seasonal',
-      highlights: [
-        { number: 1, title: '4th Night Free', desc: 'Stay 3 nights, get the 4th complimentary at select beachfront hotels.' },
-        { number: 2, title: 'Daily Breakfast', desc: 'Full buffet or à la carte breakfast for all registered guests.' },
-        { number: 3, title: 'Late Checkout', desc: 'Enjoy until 2 PM on your departure day — subject to availability.' },
-        { number: 4, title: 'Resort Credit', desc: '$50 daily credit toward spa, dining, or activities.' }
-      ]
-    },
-    {
-      id: 2,
-      title: 'Romantic Getaway',
-      subtitle: 'Perfect for Couples',
-      description: 'Indulge in romance with private dinners and spa experiences. Includes champagne on arrival, rose petal turndown, couples spa treatment, and a candlelit dinner under the stars.',
-      discount: '15% OFF',
-      highlightSubtitle: 'Indulge in romance with private dinners and spa experiences.',
-      price: '340',
-      originalPrice: '400',
-      perNightText: 'per night · couple\'s suite',
-      stayLength: '2+ nights',
-      guests: 'Up to 2',
-      discountPercent: '15%',
-      image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      validUntil: 'February 28, 2026',
-      popular: false,
-      seasonalBadge: 'Sweet Deal',
-      highlights: [
-        { number: 1, title: 'Champagne & Roses', desc: 'Champagne on arrival and rose petal turndown service.' },
-        { number: 2, title: 'Couples Spa', desc: 'Complimentary 60-minute couples massage.' },
-        { number: 3, title: 'Candlelit Dinner', desc: 'A curated 3-course dinner at our rooftop restaurant.' },
-        { number: 4, title: 'Late Checkout', desc: 'Enjoy a romantic morning with checkout at 2 PM.' }
-      ]
-    },
-    {
-      id: 3,
-      title: 'Family Fun Package',
-      subtitle: 'Great for Families',
-      description: 'Create unforgettable memories with activities and meals for the kids. Includes connecting rooms, complimentary kids meals, free airport transfers, and a family activity pass.',
-      discount: '20% OFF',
-      highlightSubtitle: 'Create unforgettable memories with activities and meals for the kids.',
-      price: '450',
-      originalPrice: '562',
-      perNightText: 'per night · family suite',
-      stayLength: '3+ nights',
-      guests: 'Up to 4',
-      discountPercent: '20%',
-      image: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      validUntil: 'August 31, 2026',
-      popular: true,
-      seasonalBadge: 'Family Favorite',
-      highlights: [
-        { number: 1, title: 'Connecting Rooms', desc: 'Stay together with guaranteed adjoining room setup.' },
-        { number: 2, title: 'Kids Eat Free', desc: 'Complimentary breakfast, lunch, and dinner for kids under 12.' },
-        { number: 3, title: 'Airport Transfers', desc: 'Free roundtrip airport transfer with the package.' },
-        { number: 4, title: 'Activity Pass', desc: 'Free access to the kids\' club and water park.' }
-      ]
-    },
-    {
-      id: 4,
-      title: 'Business Class',
-      subtitle: 'For Corporate Travelers',
-      description: 'Streamline your work trip with executive perks and premium comfort. Includes executive room, airport transfers, meeting room access, and complimentary business services.',
-      discount: '10% OFF',
-      highlightSubtitle: 'Streamline your work trip with executive perks and premium comfort.',
-      price: '380',
-      originalPrice: '422',
-      perNightText: 'per night · executive room',
-      stayLength: 'Flexible',
-      guests: 'Up to 2',
-      discountPercent: '10%',
-      image: 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      validUntil: 'December 31, 2026',
-      popular: false,
-      seasonalBadge: 'Corporate',
-      highlights: [
-        { number: 1, title: 'Executive Room', desc: 'Access to the exclusive executive lounge with refreshments.' },
-        { number: 2, title: 'Meeting Room', desc: '1 hour of complimentary meeting room usage daily.' },
-        { number: 3, title: 'Business Services', desc: 'Complimentary printing, scanning, and office supplies.' },
-        { number: 4, title: 'City Transfers', desc: 'Complimentary limousine transfers to nearby business districts.' }
-      ]
-    }
-  ];
+  useEffect(() => {
+    const loadOffer = async () => {
+      try {
+        setLoading(true);
+        setError('');
+        const data = await fetchOfferById(id);
+        setOffer(data);
+        setActiveImage(data.image);
+      } catch (err) {
+        setError(err.message || 'Failed to load offer details');
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadOffer();
+  }, [id]);
 
-  const offer = offers.find((o) => o.id === parseInt(id));
-
-  if (!offer) {
-    return <div className="offers-section" style={{padding: '100px 24px', textAlign:'center'}}>Offer not found!</div>;
+  if (loading) {
+    return (
+      <div className="detail-page" style={{ padding: '120px 24px', textAlign: 'center' }}>
+        <div style={{ color: '#d4af37', fontSize: '18px', fontWeight: '600' }}>Loading package details...</div>
+      </div>
+    );
   }
+
+  if (error || !offer) {
+    return (
+      <div className="detail-page" style={{ padding: '120px 24px', textAlign: 'center' }}>
+        <div style={{ color: '#ef4444', fontSize: '18px', fontWeight: '600', marginBottom: '16px' }}>
+          {error || 'Offer not found!'}
+        </div>
+        <Link to="/#offers" className="back-link" style={{ justifyContent: 'center' }}>
+          <ArrowLeft size={16} /> Back to offers
+        </Link>
+      </div>
+    );
+  }
+
+  // Combine main image and detail images for the gallery
+  const galleryImages = [offer.image, ...(offer.detailImages || [])].filter(Boolean);
 
   return (
     <>
@@ -162,11 +103,13 @@ const OfferDetail = () => {
           border-radius: 24px;
           overflow: hidden;
           height: 450px;
+          background: #f3f4f6;
         }
         .main-image-wrapper img {
           width: 100%;
           height: 100%;
           object-fit: cover;
+          transition: opacity 0.3s ease;
         }
         .badge-discount {
           position: absolute;
@@ -340,7 +283,7 @@ const OfferDetail = () => {
           gap: 24px;
         }
         @media (min-width: 768px) {
-          .highlights-grid { grid-template-columns: repeat(4, 1fr); }
+          .highlights-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
         }
 
         .highlight-card {
@@ -463,26 +406,37 @@ const OfferDetail = () => {
             {/* Left Image Column */}
             <div className="detail-images">
               <div className="main-image-wrapper">
-                <img src={offer.image} alt={offer.title} />
-                <div className="badge-discount">{offer.discount} OFF</div>
-                <div className="badge-seasonal">{offer.seasonalBadge}</div>
+                <img src={activeImage} alt={offer.title} />
+                {offer.discount && <div className="badge-discount">{offer.discount}</div>}
+                {offer.seasonalBadge && <div className="badge-seasonal">{offer.seasonalBadge}</div>}
               </div>
-              {/* Thumbnail Carousel */}
-              <div className="thumbnail-strip">
-                <img src={offer.image} className="active" alt="Main" />
-                <img src="https://images.unsplash.com/photo-1596528718950-8a6af2865ad8?w=200&auto=format&fit=crop" alt="Thumb 2" />
-                <img src="https://images.unsplash.com/photo-1582719508461-905c673771fd?w=200&auto=format&fit=crop" alt="Thumb 3" />
-                <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=200&auto=format&fit=crop" alt="Thumb 4" />
-              </div>
+              {/* Thumbnail strip */}
+              {galleryImages.length > 1 && (
+                <div className="thumbnail-strip">
+                  {galleryImages.map((imgUrl, index) => (
+                    <img
+                      key={index}
+                      src={imgUrl}
+                      className={activeImage === imgUrl ? 'active' : ''}
+                      onClick={() => setActiveImage(imgUrl)}
+                      alt={`Thumb ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Right Content Column */}
             <div className="detail-content">
-              <div className="validity-pill">
-                <Clock size={14} /> Valid until {offer.validUntil}
-              </div>
+              {offer.validUntil && (
+                <div className="validity-pill">
+                  <Clock size={14} /> Valid until {offer.validUntil}
+                </div>
+              )}
               <h1 className="detail-title">{offer.title}</h1>
-              <div className="detail-highlight">{offer.highlightSubtitle}</div>
+              {offer.highlightSubtitle && (
+                <div className="detail-highlight">{offer.highlightSubtitle}</div>
+              )}
               <div className="divider-line">
                 <div className="line"></div>
                 <div className="dot"></div>
@@ -493,17 +447,18 @@ const OfferDetail = () => {
               <div className="info-cards">
                 <div className="info-card">
                   <div className="label">Package Pricing</div>
-                  <div className="sub-value" style={{textDecoration: 'line-through', color: '#9ca3af'}}>ETB {offer.originalPrice}</div>
-                  <div className="value">ETB {offer.price}</div>
+                  <div className="value">{offer.price || 'Special Deal'}</div>
                   <div className="sub-value">{offer.perNightText}</div>
-                  <div className="savings-text">Save {offer.discountPercent}% on eligible stays</div>
+                  {offer.discountPercent && (
+                    <div className="savings-text">Save {offer.discountPercent} with package</div>
+                  )}
                 </div>
                 <div className="info-card">
                   <div className="label">Stay Length</div>
                   <div className="value">{offer.stayLength}</div>
                 </div>
                 <div className="info-card">
-                  <div className="label">Guests</div>
+                  <div className="label">Guests Limit</div>
                   <div className="value">{offer.guests}</div>
                 </div>
               </div>
@@ -511,20 +466,22 @@ const OfferDetail = () => {
           </div>
 
           {/* Bottom Highlights Section */}
-          <div className="highlights-section">
-            <span className="highlights-top-badge">✦ Package Perks ✦</span>
-            <h2 className="highlights-title">Package <span>Highlights</span></h2>
-            <div className="highlights-grid">
-              {offer.highlights.map((item) => (
-                <div key={item.number} className="highlight-card">
-                  <div className="number-badge">{item.number}</div>
-                  <h4>{item.title}</h4>
-                  <p>{item.desc}</p>
-                  <div className="bottom-line"></div>
-                </div>
-              ))}
+          {offer.highlights && offer.highlights.length > 0 && (
+            <div className="highlights-section">
+              <span className="highlights-top-badge">✦ Package Perks ✦</span>
+              <h2 className="highlights-title">Package <span>Highlights</span></h2>
+              <div className="highlights-grid">
+                {offer.highlights.map((item) => (
+                  <div key={item.number} className="highlight-card">
+                    <div className="number-badge">{item.number}</div>
+                    <h4>{item.title}</h4>
+                    <p>{item.desc}</p>
+                    <div className="bottom-line"></div>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
         </div>
       </section>

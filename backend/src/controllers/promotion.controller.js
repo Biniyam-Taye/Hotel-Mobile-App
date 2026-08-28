@@ -1,16 +1,35 @@
 const asyncHandler = require('../utils/asyncHandler');
 const ApiResponse = require('../utils/apiResponse');
 const promoService = require('../services/promotion.service');
-const { uploadSingle } = require('../utils/cloudinary');
+const { uploadSingle, uploadMultiple } = require('../utils/cloudinary');
+
+const applyOfferUploads = async (files) => {
+  const result = {};
+
+  if (files?.image?.[0]) {
+    const main = await uploadSingle(files.image[0].buffer, 'offers');
+    result.image = main.url;
+    result.imagePublicId = main.publicId;
+  }
+
+  if (files?.detailImages?.length) {
+    const uploaded = await uploadMultiple(
+      files.detailImages.map((file) => file.buffer),
+      'offers/details'
+    );
+    result.newDetailImages = uploaded.map((item) => ({
+      url: item.url,
+      publicId: item.publicId,
+    }));
+  }
+
+  return result;
+};
 
 // --- Offer Controllers ---
 const createOffer = asyncHandler(async (req, res) => {
-  let image;
-  if (req.file) {
-    const result = await uploadSingle(req.file.buffer, 'offers');
-    image = result.url;
-  }
-  const offer = await promoService.createOffer({ ...req.body, image });
+  const imageData = await applyOfferUploads(req.files);
+  const offer = await promoService.createOffer({ ...req.body, ...imageData });
   res.status(201).json(new ApiResponse(201, { offer }, 'Offer created'));
 });
 
@@ -19,18 +38,19 @@ const getOffers = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, result));
 });
 
+const getPublicOffers = asyncHandler(async (req, res) => {
+  const offers = await promoService.getPublicOffers();
+  res.status(200).json(new ApiResponse(200, { offers }));
+});
+
 const getOffer = asyncHandler(async (req, res) => {
   const offer = await promoService.getOfferById(req.params.id);
   res.status(200).json(new ApiResponse(200, { offer }));
 });
 
 const updateOffer = asyncHandler(async (req, res) => {
-  let data = { ...req.body };
-  if (req.file) {
-    const result = await uploadSingle(req.file.buffer, 'offers');
-    data.image = result.url;
-  }
-  const offer = await promoService.updateOffer(req.params.id, data);
+  const imageData = await applyOfferUploads(req.files);
+  const offer = await promoService.updateOffer(req.params.id, { ...req.body, ...imageData });
   res.status(200).json(new ApiResponse(200, { offer }, 'Offer updated'));
 });
 
@@ -72,7 +92,16 @@ const applyCoupon = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
-  createOffer, getOffers, getOffer, updateOffer, deleteOffer,
-  createCoupon, getCoupons, getCoupon, updateCoupon, deleteCoupon,
+  createOffer,
+  getOffers,
+  getPublicOffers,
+  getOffer,
+  updateOffer,
+  deleteOffer,
+  createCoupon,
+  getCoupons,
+  getCoupon,
+  updateCoupon,
+  deleteCoupon,
   applyCoupon,
 };

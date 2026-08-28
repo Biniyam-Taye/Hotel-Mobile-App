@@ -1,12 +1,34 @@
 // src/components/Offers.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, Users, ArrowRight, Clock, Star, X } from 'lucide-react';
+import { fetchPublicOffers } from '../services/offersApi';
 
 const Offers = () => {
-  // State for the booking modal
+  const [offers, setOffers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+
+  // Booking modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState(null);
+
+  // ── Fetch live offers from backend ──────────────────────────────────────────
+  useEffect(() => {
+    const load = async () => {
+      try {
+        setLoading(true);
+        setLoadError('');
+        const data = await fetchPublicOffers();
+        setOffers(data);
+      } catch (err) {
+        setLoadError(err.message || 'Failed to load offers');
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
 
   const openBookingModal = (offer) => {
     setSelectedOffer(offer);
@@ -17,57 +39,6 @@ const Offers = () => {
     setIsModalOpen(false);
     setSelectedOffer(null);
   };
-
-  const offers = [
-    {
-      id: 1,
-      title: 'Early Bird Special',
-      subtitle: 'Book 30+ Days in Advance',
-      description: 'Plan ahead and save big! Enjoy 25% off on all room types when you book at least 30 days before your stay.',
-      discount: '25% OFF',
-      price: '6,840',
-      image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-      validUntil: 'Valid until Dec 31, 2026',
-      icon: Calendar,
-      popular: true
-    },
-    {
-      id: 2,
-      title: 'Romantic Getaway',
-      subtitle: 'Perfect for Couples',
-      description: 'Includes champagne on arrival, rose petal turndown, couples spa treatment, and a candlelit dinner.',
-      discount: '15% OFF',
-      price: '7,250',
-      image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-      validUntil: 'Valid until Feb 28, 2026',
-      icon: Star,
-      popular: false
-    },
-    {
-      id: 3,
-      title: 'Family Fun Package',
-      subtitle: 'Great for Families',
-      description: 'Includes connecting rooms, complimentary kids meals, free airport transfers, and a family activity pass.',
-      discount: '20% OFF',
-      price: '9,100',
-      image: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-      validUntil: 'Valid until Aug 31, 2026',
-      icon: Users,
-      popular: true
-    },
-    {
-      id: 4,
-      title: 'Business Class',
-      subtitle: 'For Corporate Travelers',
-      description: 'Includes executive room, airport transfers, meeting room access, and complimentary business services.',
-      discount: '10% OFF',
-      price: '8,500',
-      image: 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-      validUntil: 'Valid until Dec 31, 2026',
-      icon: Clock,
-      popular: false
-    }
-  ];
 
   return (
     <>
@@ -283,7 +254,6 @@ const Offers = () => {
           align-items: center;
         }
 
-        /* ===== FIXED: VIEW DETAILS BUTTON - TEXT ALWAYS VISIBLE ===== */
         .btn-view-details {
           display: inline-flex;
           align-items: center;
@@ -311,7 +281,6 @@ const Offers = () => {
           box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
         }
 
-        /* ===== FIXED: BOOK NOW BUTTON ===== */
         .btn-book-offer {
           display: inline-flex;
           align-items: center;
@@ -383,6 +352,15 @@ const Offers = () => {
           border-color: #1a1a1a;
           color: #d4af37;
         }
+
+        /* ── Loading / empty states ── */
+        .offers-status {
+          text-align: center;
+          padding: 60px 24px;
+          color: #9ca3af;
+          font-size: 15px;
+        }
+        .offers-status.err { color: #b91c1c; }
 
         @media (min-width: 1024px) {
           .offers-grid {
@@ -601,88 +579,110 @@ const Offers = () => {
         <div className="offers-container">
           <div className="offers-header">
             <div className="label">✦ Special Offers</div>
-            <h2>Exclusive <span style={{ color: '#d4af37' }}>Deals & Packages</span></h2>
+            <h2>Exclusive <span style={{ color: '#d4af37' }}>Deals &amp; Packages</span></h2>
             <p>
               Make your stay even more memorable with our handpicked offers.
               Book now to enjoy these limited-time benefits.
             </p>
           </div>
 
-          <div className="offers-grid">
-            {offers.map((offer) => (
-              <div 
-                key={offer.id} 
-                className="offer-card" 
-                style={{ '--card-line-color': '#d4af37' }}
-              >
-                <div className="offer-image">
-                  <img src={offer.image} alt={offer.title} />
-                  <div className="discount-badge">{offer.discount}</div>
-                  {offer.popular && (
-                    <div className="popular-badge">✦ Popular</div>
-                  )}
-                </div>
-                <div className="offer-details">
-                  <div className="offer-icon">
-                    <offer.icon size={18} />
-                  </div>
-                  <h3 className="offer-title">{offer.title}</h3>
-                  <div className="offer-subtitle">{offer.subtitle}</div>
-                  <p className="offer-description">{offer.description}</p>
-                  
-                  <div className="offer-footer">
-                    <span className="valid">
-                      <Clock size={12} /> {offer.validUntil}
-                    </span>
-                    <div className="offer-actions">
-                      <Link to={`/offers/${offer.id}`} className="btn-view-details">
-                        View Details <ArrowRight size={14} />
-                      </Link>
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation(); 
-                          openBookingModal(offer);
-                        }} 
-                        className="btn-book-offer"
-                      >
-                        Book Now <ArrowRight size={14} />
-                      </button>
+          {/* ── Content States ── */}
+          {loading ? (
+            <div className="offers-status">Loading offers…</div>
+          ) : loadError ? (
+            <div className="offers-status err">{loadError}</div>
+          ) : offers.length === 0 ? (
+            <div className="offers-status">No special offers available at the moment. Check back soon!</div>
+          ) : (
+            <>
+              <div className="offers-grid">
+                {offers.map((offer) => (
+                  <div
+                    key={offer.id}
+                    className="offer-card"
+                    style={{ '--card-line-color': '#d4af37' }}
+                  >
+                    <div className="offer-image">
+                      <img src={offer.image} alt={offer.title} loading="lazy" />
+                      {offer.discount && (
+                        <div className="discount-badge">{offer.discount}</div>
+                      )}
+                      {offer.popular && (
+                        <div className="popular-badge">✦ Popular</div>
+                      )}
+                    </div>
+
+                    <div className="offer-details">
+                      <div className="offer-icon">
+                        <Calendar size={18} />
+                      </div>
+                      <h3 className="offer-title">{offer.title}</h3>
+                      {offer.subtitle && (
+                        <div className="offer-subtitle">{offer.subtitle}</div>
+                      )}
+                      <p className="offer-description">{offer.description}</p>
+
+                      <div className="offer-footer">
+                        {offer.validUntil && (
+                          <span className="valid">
+                            <Clock size={12} /> Valid until {offer.validUntil}
+                          </span>
+                        )}
+                        <div className="offer-actions">
+                          <Link to={`/offers/${offer.id}`} className="btn-view-details">
+                            View Details <ArrowRight size={14} />
+                          </Link>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openBookingModal(offer);
+                            }}
+                            className="btn-book-offer"
+                          >
+                            Book Now <ArrowRight size={14} />
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          <div className="explore-all-wrapper">
-            <Link to="/offers" className="explore-all-btn">
-              Explore All Offers
-              <span className="arrow-circle">
-                <ArrowRight size={18} />
-              </span>
-            </Link>
-          </div>
+              <div className="explore-all-wrapper">
+                <Link to="/offers" className="explore-all-btn">
+                  Explore All Offers
+                  <span className="arrow-circle">
+                    <ArrowRight size={18} />
+                  </span>
+                </Link>
+              </div>
+            </>
+          )}
         </div>
       </section>
 
-      {/* --- DETAILED BOOKING MODAL POPUP --- */}
+      {/* --- BOOKING MODAL POPUP --- */}
       <div className={`booking-modal-overlay ${isModalOpen ? 'active' : ''}`}>
         <div className="booking-modal">
           <button className="modal-close-btn" onClick={closeBookingModal}>
             <X size={24} />
           </button>
-          
+
           <h2 className="modal-title">{selectedOffer?.title}</h2>
-          <div className="modal-price">
-            ETB {selectedOffer?.price} <span>/ night</span>
-          </div>
+          {selectedOffer?.packagePricing && (
+            <div className="modal-price">
+              {selectedOffer.packagePricing} <span>/ package</span>
+            </div>
+          )}
 
           <div className="modal-package-details">
-            <div className="modal-subtitle">{selectedOffer?.subtitle}</div>
+            {selectedOffer?.subtitle && (
+              <div className="modal-subtitle">{selectedOffer.subtitle}</div>
+            )}
             <p className="modal-desc">{selectedOffer?.description}</p>
           </div>
-          
-          <div className="modal-divider"></div>
+
+          <div className="modal-divider" />
 
           <h4 style={{ margin: '0 0 16px 0', color: '#1a1a1a' }}>Book This Package</h4>
           <form onSubmit={(e) => { e.preventDefault(); alert('Booking Confirmed!'); closeBookingModal(); }}>
@@ -710,7 +710,7 @@ const Offers = () => {
             <div className="form-row-2">
               <div className="form-group">
                 <label>Phone Number</label>
-                <input type="tel" className="form-control" placeholder="+1 234 567 890" required />
+                <input type="tel" className="form-control" placeholder="+251 911 000 000" required />
               </div>
               <div className="form-group">
                 <label>Number of Guests</label>
