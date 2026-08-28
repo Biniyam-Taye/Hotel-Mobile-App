@@ -63,44 +63,142 @@ const Home = () => {
           margin-bottom: 48px;
         }
 
+        /* ── Label Hover: Letter spacing expand & sparkle spin ── */
         .rooms-header .label {
           display: inline-block;
           color: #d4af37;
-          font-size: 13px;
-          font-weight: 600;
+          font-size: 14px;
+          font-weight: 800;
           letter-spacing: 2px;
           text-transform: uppercase;
-          margin-bottom: 8px;
+          margin-bottom: 12px;
           font-family: 'Montserrat', sans-serif;
+          cursor: default;
+          transition: letter-spacing 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), color 0.4s ease;
         }
 
-        /* --- UPDATED TITLE HOVER EFFECT (Background Pop) --- */
+        .rooms-header .label:hover {
+          letter-spacing: 4px;
+          color: #f5d879;
+        }
+
+        .rooms-header .label .sparkle {
+          display: inline-block;
+          margin-right: 4px;
+          transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .rooms-header .label:hover .sparkle {
+          transform: rotate(180deg) scale(1.2);
+        }
+
+        /* ── Title Hover: Elevation & elegant sliding gradient underline ── */
         .rooms-header h2 {
           font-family: 'Montserrat', sans-serif;
-          font-size: 40px;
-          font-weight: 700;
+          font-size: 46px;
+          font-weight: 800;
           color: #1a1a1a;
-          margin-bottom: 12px;
-          line-height: 1.2;
+          margin-bottom: 20px;
+          line-height: 1.25;
+          letter-spacing: -0.5px;
           display: inline-block;
-          padding: 0 8px;
-          border-radius: 4px;
-          transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          position: relative;
           cursor: default;
+          transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), text-shadow 0.4s ease;
         }
 
         .rooms-header h2:hover {
-          background: rgba(212, 175, 55, 0.08);
-          transform: scale(1.02);
+          transform: translateY(-3px);
+          text-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
+        /* Bottom sliding line under heading */
+        .rooms-header h2::after {
+          content: '';
+          position: absolute;
+          bottom: -6px;
+          left: 50%;
+          width: 0;
+          height: 3px;
+          border-radius: 999px;
+          background: linear-gradient(90deg, transparent, #d4af37 50%, transparent);
+          transition: width 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                      left 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .rooms-header h2:hover::after {
+          width: 60%;
+          left: 20%;
+        }
+
+        /* Gold title span specific animation */
+        .rooms-header h2 .gold-title {
+          color: #d4af37;
+          display: inline-block;
+          transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                      color 0.4s ease,
+                      text-shadow 0.4s ease,
+                      letter-spacing 0.4s ease;
+        }
+
+        .rooms-header h2 .gold-title:hover {
+          transform: scale(1.06) translateY(-1px);
+          color: #fce8a6;
+          letter-spacing: 0.5px;
+          text-shadow: 0 0 25px rgba(212, 175, 55, 0.75);
+        }
+
+        /* ── Description Hover: Shift up, color shift, and side brackets fade/slide ── */
         .rooms-header p {
           font-family: 'Poppins', sans-serif;
-          color: #6b7280;
-          font-size: 16px;
-          max-width: 600px;
+          color: #555c68;
+          font-size: 17.5px;
+          max-width: 680px;
           margin: 0 auto;
-          line-height: 1.6;
+          line-height: 1.7;
+          cursor: default;
+          position: relative;
+          padding: 0 28px;
+          transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), color 0.4s ease;
+        }
+
+        /* Gold bracket accents */
+        .rooms-header p::before,
+        .rooms-header p::after {
+          content: '';
+          position: absolute;
+          top: 15%;
+          width: 3px;
+          height: 70%;
+          background: linear-gradient(180deg, #d4af37, #f5d879);
+          border-radius: 99px;
+          opacity: 0;
+          transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .rooms-header p::before {
+          left: 0;
+          transform: translateX(12px);
+        }
+
+        .rooms-header p::after {
+          right: 0;
+          transform: translateX(-12px);
+        }
+
+        .rooms-header p:hover {
+          transform: translateY(-3px);
+          color: #1f2937;
+        }
+
+        .rooms-header p:hover::before {
+          opacity: 1;
+          transform: translateX(-4px);
+        }
+
+        .rooms-header p:hover::after {
+          opacity: 1;
+          transform: translateX(4px);
         }
 
         /* ====== ROOMS GRID — 4 columns ====== */
@@ -117,8 +215,8 @@ const Home = () => {
           overflow: hidden;
           box-shadow: 0 2px 16px rgba(0,0,0,0.07);
           border: 1px solid rgba(0,0,0,0.06);
-          transition: transform 0.38s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-                      box-shadow 0.38s ease, border-color 0.38s ease;
+          transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2),
+                      box-shadow 0.4s ease, border-color 0.4s ease;
           text-decoration: none;
           color: inherit;
           display: flex;
@@ -127,9 +225,9 @@ const Home = () => {
         }
 
         .room-card:hover {
-          transform: translateY(-7px);
-          box-shadow: 0 20px 40px rgba(0,0,0,0.11);
-          border-color: rgba(212, 175, 55, 0.30);
+          transform: translateY(-8px) scale(1.015);
+          box-shadow: 0 22px 44px rgba(0,0,0,0.12), 0 0 0 1px rgba(212, 175, 55, 0.15);
+          border-color: rgba(212, 175, 55, 0.35);
         }
 
         /* Animated gold bottom accent */
@@ -141,7 +239,7 @@ const Home = () => {
           border-radius: 0 0 18px 18px;
           background: linear-gradient(90deg, #d4af37, #f5d879);
           transition: width 0.42s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-          z-index: 2;
+          z-index: 3;
         }
         .room-card:hover::after { width: 100%; }
 
@@ -157,13 +255,16 @@ const Home = () => {
         .room-card .room-image img {
           width: 100%; height: 100%;
           object-fit: cover;
-          transition: transform 0.65s ease;
+          transition: transform 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94);
           display: block;
         }
 
-        .room-card:hover .room-image img { transform: scale(1.07); }
+        /* Image Zoom + Rotate Hover */
+        .room-card:hover .room-image img {
+          transform: scale(1.08) rotate(1deg);
+        }
 
-        /* Gradient overlay */
+        /* Gradient overlay default */
         .room-card .room-image::before {
           content: '';
           position: absolute; inset: 0;
@@ -175,6 +276,20 @@ const Home = () => {
           );
           z-index: 1;
           pointer-events: none;
+        }
+
+        /* Gold vignette overlay on hover */
+        .room-card .room-image .hover-vignette {
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(circle, transparent 40%, rgba(212, 175, 55, 0.18) 100%);
+          opacity: 0;
+          z-index: 1;
+          pointer-events: none;
+          transition: opacity 0.5s ease;
+        }
+        .room-card:hover .room-image .hover-vignette {
+          opacity: 1;
         }
 
         /* ── Price pill — top right ─────────────────────── */
@@ -194,6 +309,10 @@ const Home = () => {
           font-family: 'Montserrat', sans-serif;
           line-height: 1;
           white-space: nowrap;
+          transition: transform 0.4s ease;
+        }
+        .room-card:hover .room-image .price-badge {
+          transform: scale(1.03);
         }
         .price-badge .price-amount {
           font-size: 12px;
@@ -226,6 +345,10 @@ const Home = () => {
           align-items: center;
           gap: 4px;
           white-space: nowrap;
+          transition: transform 0.4s ease;
+        }
+        .room-card:hover .room-image .popular-badge {
+          transform: scale(1.05);
         }
 
         /* ====== ROOM DETAILS ====== */
@@ -245,6 +368,7 @@ const Home = () => {
           margin-bottom: 6px;
         }
 
+        /* Room Title Animation on Hover */
         .room-card .room-details .room-header h3 {
           font-family: 'Montserrat', sans-serif;
           font-size: 13.5px;
@@ -259,6 +383,11 @@ const Home = () => {
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
+          transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), color 0.4s ease;
+        }
+        .room-card:hover .room-details .room-header h3 {
+          transform: translateX(4px);
+          color: #d4af37;
         }
 
         /* Rating chip */
@@ -276,6 +405,10 @@ const Home = () => {
           font-family: 'Montserrat', sans-serif;
           white-space: nowrap;
           flex-shrink: 0;
+          transition: transform 0.4s ease;
+        }
+        .room-card:hover .rating-badge {
+          transform: scale(1.05);
         }
         .rating-badge .star svg {
           fill: #f59e0b;
@@ -290,7 +423,7 @@ const Home = () => {
           margin: 8px 0;
         }
 
-        /* Description */
+        /* Description transition */
         .room-card .room-details .short-description {
           font-family: 'Poppins', sans-serif;
           color: #6b7280;
@@ -302,6 +435,10 @@ const Home = () => {
           -webkit-box-orient: vertical;
           overflow: hidden;
           flex: 1;
+          transition: color 0.4s ease;
+        }
+        .room-card:hover .room-details .short-description {
+          color: #374151;
         }
 
         /* ====== ACTION BUTTONS — side by side 2-col ====== */
@@ -336,12 +473,18 @@ const Home = () => {
           color: #4b5563;
           border: 1.5px solid #d1d5db;
         }
+        .room-card .room-details .action-buttons .btn-view svg {
+          transition: transform 0.3s ease;
+        }
         .room-card .room-details .action-buttons .btn-view:hover {
           background: #fafafa;
           border-color: #d4af37;
           color: #1a1a1a;
           box-shadow: 0 3px 10px rgba(0,0,0,0.07);
           transform: translateY(-1px);
+        }
+        .room-card .room-details .action-buttons .btn-view:hover svg {
+          transform: translateX(3px);
         }
 
         /* Book Now — gold pill */
@@ -354,10 +497,16 @@ const Home = () => {
           box-shadow: 0 3px 12px rgba(212,175,55,0.32);
           transition: background-position 0.4s ease, transform 0.25s ease, box-shadow 0.25s ease;
         }
+        .room-card .room-details .action-buttons .btn-book svg {
+          transition: transform 0.3s ease;
+        }
         .room-card .room-details .action-buttons .btn-book:hover {
           background-position: right center;
-          transform: translateY(-2px);
+          transform: translateY(-2px) scale(1.02);
           box-shadow: 0 7px 20px rgba(212,175,55,0.45);
+        }
+        .room-card .room-details .action-buttons .btn-book:hover svg {
+          transform: scale(1.15) rotate(-8deg);
         }
 
         /* ====== EXPLORE BUTTON ====== */
@@ -368,41 +517,78 @@ const Home = () => {
         }
 
         .explore-all-btn {
+          position: relative;
           display: inline-flex;
           align-items: center;
-          gap: 14px;
-          padding: 16px 36px;
+          gap: 16px;
+          padding: 16px 38px;
           border: 2px solid #d4af37;
           border-radius: 9999px;
           color: #d4af37;
           background: transparent;
           font-weight: 700;
-          font-size: 18px;
+          font-size: 17px;
           text-decoration: none;
-          transition: all 0.3s ease;
           font-family: 'Montserrat', sans-serif;
+          overflow: hidden;
+          z-index: 1;
+          transition: border-color 0.4s ease, box-shadow 0.4s ease, transform 0.4s ease;
         }
 
-        .explore-all-btn:hover {
-          background: #d4af37;
-          color: #1a1a1a;
-          transform: translateY(-3px);
-          box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        /* Slide-in background overlay */
+        .explore-all-btn::before {
+          content: '';
+          position: absolute;
+          top: 0; left: 0;
+          width: 100%; height: 100%;
+          background: linear-gradient(135deg, #d4af37 0%, #f5d879 100%);
+          z-index: -1;
+          transform: scaleX(0);
+          transform-origin: right;
+          transition: transform 0.5s cubic-bezier(0.86, 0, 0.07, 1);
+        }
+
+        .explore-all-btn .btn-text {
+          position: relative;
+          z-index: 2;
+          transition: color 0.4s ease;
         }
 
         .explore-all-btn .arrow-circle {
+          position: relative;
+          z-index: 2;
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 36px;
-          height: 36px;
+          width: 38px;
+          height: 38px;
           border-radius: 50%;
           border: 2px solid #d4af37;
-          transition: all 0.3s ease;
+          background: transparent;
+          color: #d4af37;
+          transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                      background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* Hover states */
+        .explore-all-btn:hover {
+          border-color: transparent;
+          transform: translateY(-4px);
+          box-shadow: 0 12px 30px rgba(212, 175, 55, 0.4);
+        }
+
+        .explore-all-btn:hover::before {
+          transform: scaleX(1);
+          transform-origin: left;
+        }
+
+        .explore-all-btn:hover .btn-text {
+          color: #1a1a1a;
         }
 
         .explore-all-btn:hover .arrow-circle {
-          background: #1a1a1a;
+          transform: translateX(5px);
+          background-color: #1a1a1a;
           border-color: #1a1a1a;
           color: #d4af37;
         }
@@ -564,8 +750,8 @@ const Home = () => {
       <section className="rooms-section" id="rooms">
         <div className="rooms-container">
           <div className="rooms-header">
-            <div className="label">✦ ACCOMMODATIONS</div>
-            <h2>Luxury <span style={{ color: '#d4af37' }}>Rooms & Suites</span></h2>
+            <div className="label"><span className="sparkle">✦</span> ACCOMMODATIONS</div>
+            <h2>Luxury <span className="gold-title">Rooms & Suites</span></h2>
             <p>
               Experience comfort and elegance in our beautifully designed rooms,
               each crafted to provide the perfect stay.
@@ -587,6 +773,7 @@ const Home = () => {
                 {/* Image + Overlays */}
                 <div className="room-image">
                   <img src={room.image} alt={room.name} />
+                  <div className="hover-vignette" />
 
                   {/* Price pill — top right */}
                   <div className="price-badge">
@@ -634,7 +821,7 @@ const Home = () => {
 
           <div className="explore-all-wrapper">
             <Link to="/rooms" className="explore-all-btn">
-              Explore All Rooms
+              <span className="btn-text">Explore All Rooms</span>
               <span className="arrow-circle">
                 <ArrowRight size={18} />
               </span>

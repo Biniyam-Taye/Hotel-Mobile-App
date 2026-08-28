@@ -96,7 +96,7 @@ const RoomDetail = () => {
         .room-detail-page {
           background: #f8f9fa;
           min-height: 100vh;
-          padding: 100px 24px 80px;
+          padding: 120px 24px 80px;
         }
 
         .room-detail-container {
@@ -113,6 +113,7 @@ const RoomDetail = () => {
           font-weight: 500;
           margin-bottom: 24px;
           transition: color 0.3s;
+          font-family: 'Poppins', sans-serif;
         }
 
         .back-link:hover {
@@ -123,38 +124,55 @@ const RoomDetail = () => {
           display: grid;
           grid-template-columns: 1fr;
           gap: 32px;
+          align-items: start;
         }
 
-        /* Main Image */
+        @media (min-width: 992px) {
+          .detail-grid {
+            grid-template-columns: 1.35fr 1fr;
+            gap: 40px;
+          }
+        }
+
+        /* ====== LEFT COLUMN: MEDIA CARD ====== */
+        .detail-media-card {
+          background: #ffffff;
+          border-radius: 24px;
+          padding: 16px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+          border: 1px solid rgba(0,0,0,0.04);
+        }
+
         .detail-image {
           position: relative;
-          border-radius: 16px;
+          border-radius: 18px;
           overflow: hidden;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
 
         .detail-image img {
           width: 100%;
-          aspect-ratio: 16 / 9;
+          aspect-ratio: 16 / 10;
+          max-height: 400px;
           object-fit: cover;
-          transition: opacity 0.3s ease;
+          display: block;
         }
 
         .detail-image .discount-badge {
           position: absolute;
-          top: 20px;
-          left: 20px;
+          top: 16px;
+          left: 16px;
           background: #ef4444;
           color: #ffffff;
-          padding: 8px 20px;
+          padding: 6px 16px;
           border-radius: 9999px;
           font-weight: 700;
-          font-size: 14px;
+          font-size: 13px;
           box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
           z-index: 2;
+          font-family: 'Montserrat', sans-serif;
         }
 
-        /* ===== GALLERY THUMBNAILS ===== */
+        /* Gallery */
         .room-gallery {
           margin-top: 16px;
         }
@@ -162,16 +180,19 @@ const RoomDetail = () => {
         .room-gallery .gallery-label {
           display: flex;
           align-items: center;
-          gap: 8px;
-          font-size: 14px;
-          font-weight: 600;
+          gap: 6px;
+          font-size: 13px;
+          font-weight: 700;
           color: #1a1a1a;
           margin-bottom: 10px;
+          text-transform: uppercase;
+          letter-spacing: 0.8px;
+          font-family: 'Montserrat', sans-serif;
         }
 
         .gallery-thumbnails {
           display: flex;
-          gap: 16px; /* Increased gap for spacing */
+          gap: 12px;
           overflow-x: auto;
           padding-bottom: 8px;
           scroll-behavior: smooth;
@@ -186,34 +207,35 @@ const RoomDetail = () => {
           border-radius: 4px;
         }
 
-        /* UPDATED: Made the thumbnails much larger */
         .gallery-thumb {
-          width: 180px;
+          width: 110px;
           aspect-ratio: 4 / 3;
           object-fit: cover;
           cursor: pointer;
-          border: 2px solid transparent;
-          transition: all 0.3s ease;
+          border: 2.5px solid transparent;
+          border-radius: 8px;
+          transition: all 0.28s ease;
           flex-shrink: 0;
         }
 
         .gallery-thumb:hover {
           border-color: #d4af37;
-          transform: scale(1.05);
+          transform: translateY(-2px);
         }
 
         .gallery-thumb.active {
           border-color: #d4af37;
-          box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+          box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25);
         }
 
-        /* Content Card (right side) */
-        .detail-card {
+        /* ====== LEFT COLUMN: INFO CARD ====== */
+        .detail-info-card {
           background: #ffffff;
-          border-radius: 16px;
+          border-radius: 24px;
           padding: 32px;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-          border: 1px solid #e5e7eb;
+          margin-top: 24px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+          border: 1px solid rgba(0,0,0,0.04);
         }
 
         .detail-location {
@@ -221,56 +243,40 @@ const RoomDetail = () => {
           align-items: center;
           gap: 6px;
           color: #6b7280;
-          font-size: 14px;
-          margin-bottom: 4px;
+          font-size: 13.5px;
+          margin-bottom: 6px;
+          font-weight: 500;
+          font-family: 'Poppins', sans-serif;
         }
 
         .detail-location svg {
           color: #d4af37;
-          width: 16px;
-          height: 16px;
+          width: 15px;
+          height: 15px;
         }
 
         .detail-name {
           font-size: 28px;
-          font-weight: 700;
+          font-weight: 800;
           color: #1a1a1a;
-          margin: 0;
+          margin: 0 0 10px 0;
+          font-family: 'Montserrat', sans-serif;
+          letter-spacing: -0.5px;
         }
 
         .detail-name .bed-type {
           font-size: 16px;
-          font-weight: 400;
+          font-weight: 500;
           color: #6b7280;
+          font-family: 'Poppins', sans-serif;
         }
 
-        .detail-price {
-          margin: 12px 0 8px;
-        }
-
-        .detail-price .original-price {
-          font-size: 16px;
-          color: #9ca3af;
-          text-decoration: line-through;
-        }
-
-        .detail-price .current-price {
-          font-size: 32px;
-          font-weight: 700;
-          color: #d4af37;
-        }
-
-        .detail-price .per-night {
-          font-size: 14px;
-          color: #6b7280;
-          font-weight: 400;
-        }
-
+        /* Rating Row inside Info Card */
         .detail-rating {
           display: flex;
           align-items: center;
           gap: 8px;
-          margin: 8px 0 16px;
+          margin-bottom: 24px;
           flex-wrap: wrap;
         }
 
@@ -280,33 +286,43 @@ const RoomDetail = () => {
         }
 
         .detail-rating .rating-text {
-          font-weight: 600;
+          font-weight: 700;
           color: #1a1a1a;
+          font-family: 'Montserrat', sans-serif;
+          font-size: 14px;
         }
 
         .detail-rating .review-count {
           color: #6b7280;
-          font-size: 14px;
+          font-size: 13.5px;
+          font-family: 'Poppins', sans-serif;
         }
 
         .divider {
           border: none;
-          border-top: 1px solid #e5e7eb;
-          margin: 16px 0;
+          border-top: 1px solid #f1f5f9;
+          margin: 24px 0;
         }
 
+        /* Room Meta Chips styling */
         .room-meta {
           display: flex;
           flex-wrap: wrap;
-          gap: 16px;
+          gap: 12px;
         }
 
         .room-meta .meta-item {
           display: flex;
           align-items: center;
-          gap: 6px;
+          gap: 8px;
           color: #4b5563;
-          font-size: 14px;
+          font-size: 13.5px;
+          background: #f8fafc;
+          padding: 8px 16px;
+          border-radius: 9999px;
+          border: 1px solid #f1f5f9;
+          font-weight: 500;
+          font-family: 'Poppins', sans-serif;
         }
 
         .room-meta .meta-item svg {
@@ -317,25 +333,39 @@ const RoomDetail = () => {
           color: #4b5563;
           font-size: 15px;
           line-height: 1.8;
-          margin: 16px 0;
+          margin: 24px 0;
+          font-family: 'Poppins', sans-serif;
+        }
+
+        /* Features Section */
+        .features-title {
+          font-size: 16px;
+          font-weight: 700;
+          color: #1a1a1a;
+          margin: 0 0 16px 0;
+          font-family: 'Montserrat', sans-serif;
+          text-transform: uppercase;
+          letter-spacing: 0.8px;
         }
 
         .features-list {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 8px;
-          margin: 12px 0;
+          gap: 10px;
+          margin: 0;
         }
 
         .features-list .feature-item {
           display: flex;
           align-items: center;
           gap: 8px;
-          padding: 8px 12px;
-          background: #f8f9fa;
-          border-radius: 8px;
-          font-size: 14px;
+          padding: 10px 14px;
+          background: #f8fafc;
+          border: 1px solid #f1f5f9;
+          border-radius: 12px;
+          font-size: 13.5px;
           color: #374151;
+          font-family: 'Poppins', sans-serif;
         }
 
         .features-list .feature-item svg {
@@ -343,27 +373,67 @@ const RoomDetail = () => {
           flex-shrink: 0;
         }
 
-        /* ----- AvailabilityForm container ----- */
+        /* ====== RIGHT COLUMN: STICKY BOOKING CARD ====== */
+        .booking-sidebar-card {
+          background: #ffffff;
+          border-radius: 24px;
+          padding: 32px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+          border: 1px solid rgba(0,0,0,0.04);
+          position: sticky;
+          top: 120px;
+        }
+
+        .detail-price {
+          margin-bottom: 20px;
+          font-family: 'Montserrat', sans-serif;
+        }
+
+        .detail-price .original-price {
+          font-size: 15px;
+          color: #9ca3af;
+          text-decoration: line-through;
+          margin-bottom: 2px;
+          font-weight: 500;
+        }
+
+        .detail-price .current-price {
+          font-size: 30px;
+          font-weight: 800;
+          color: #d4af37;
+        }
+
+        .detail-price .per-night {
+          font-size: 13.5px;
+          color: #6b7280;
+          font-weight: 500;
+          font-family: 'Poppins', sans-serif;
+        }
+
+        /* Form Container Inside Sidebar */
         .form-wrapper {
-          margin-top: 20px;
+          margin-top: 8px;
         }
 
-        @media (min-width: 992px) {
-          .detail-grid {
-            grid-template-columns: 1fr 1fr;
-          }
-          /* Larger on desktop */
-          .gallery-thumb {
-            width: 200px;
-          }
-        }
-
-        @media (max-width: 768px) {
+        /* Responsive Settings overrides */
+        @media (max-width: 991px) {
           .room-detail-page {
             padding: 90px 16px 60px;
           }
-          .detail-card {
-            padding: 20px;
+          .detail-media-card,
+          .detail-info-card,
+          .booking-sidebar-card {
+            padding: 24px;
+          }
+          .booking-sidebar-card {
+            position: static;
+            margin-top: 24px;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .features-list {
+            grid-template-columns: 1fr;
           }
           .detail-name {
             font-size: 22px;
@@ -371,40 +441,22 @@ const RoomDetail = () => {
           .detail-price .current-price {
             font-size: 26px;
           }
-          /* Slightly smaller on tablets */
-          .gallery-thumb {
-            width: 140px;
-          }
-          .features-list {
-            grid-template-columns: 1fr;
-          }
         }
 
         @media (max-width: 480px) {
           .room-detail-page {
             padding: 80px 12px 40px;
           }
-          .detail-card {
+          .detail-media-card,
+          .detail-info-card,
+          .booking-sidebar-card {
             padding: 16px;
           }
           .detail-name {
-            font-size: 18px;
+            font-size: 20px;
           }
-          .detail-price .current-price {
-            font-size: 22px;
-          }
-          .detail-rating {
-            gap: 4px;
-          }
-          .detail-rating .stars {
-            gap: 1px;
-          }
-          /* Mobile size */
           .gallery-thumb {
-            width: 110px;
-          }
-          .features-list {
-            grid-template-columns: 1fr;
+            width: 85px;
           }
         }
       `}</style>
@@ -417,50 +469,87 @@ const RoomDetail = () => {
           </Link>
 
           <div className="detail-grid">
-            {/* Left Column – Image & Gallery */}
+            {/* Left Column – Media & Info */}
             <div>
-              <div className="detail-image">
-                <img src={selectedImage} alt={room.name} />
-                {room.discount > 0 && (
-                  <div className="discount-badge">{room.discount}% OFF</div>
+              {/* Media Card */}
+              <div className="detail-media-card">
+                <div className="detail-image">
+                  <img src={selectedImage} alt={room.name} />
+                  {room.discount > 0 && (
+                    <div className="discount-badge">{room.discount}% OFF</div>
+                  )}
+                </div>
+
+                {/* Gallery */}
+                {room.gallery && room.gallery.length > 1 && (
+                  <div className="room-gallery">
+                    <div className="gallery-label">
+                      <Sparkles size={14} color="#d4af37" /> More Views
+                    </div>
+                    <div className="gallery-thumbnails">
+                      {room.gallery.map((img, idx) => (
+                        <img
+                          key={idx}
+                          src={img}
+                          alt={`${room.name} view ${idx + 1}`}
+                          className={`gallery-thumb ${selectedImage === img ? 'active' : ''}`}
+                          onClick={() => setSelectedImage(img)}
+                        />
+                      ))}
+                    </div>
+                  </div>
                 )}
               </div>
 
-              {/* Gallery */}
-              {room.gallery && room.gallery.length > 1 && (
-                <div className="room-gallery">
-                  <div className="gallery-label">
-                    <Sparkles size={16} color="#d4af37" /> More Views
-                  </div>
-                  <div className="gallery-thumbnails">
-                    {room.gallery.map((img, idx) => (
-                      <img
-                        key={idx}
-                        src={img}
-                        alt={`${room.name} view ${idx + 1}`}
-                        className={`gallery-thumb ${selectedImage === img ? 'active' : ''}`}
-                        onClick={() => setSelectedImage(img)}
-                      />
-                    ))}
-                  </div>
+              {/* Info Card */}
+              <div className="detail-info-card">
+                {/* Location */}
+                <div className="detail-location">
+                  <MapPin size={15} />
+                  {room.location}
                 </div>
-              )}
+
+                {/* Room Name */}
+                <h1 className="detail-name">
+                  {room.name}
+                  <span className="bed-type"> ({room.bedType})</span>
+                </h1>
+
+                {/* Rating */}
+                <div className="detail-rating">
+                  <div className="stars">{renderStars(room.rating)}</div>
+                  <span className="rating-text">{room.rating}</span>
+                  <span className="review-count">({room.reviews}+ reviews)</span>
+                </div>
+
+                <hr className="divider" />
+
+                {/* Room Meta */}
+                <div className="room-meta">
+                  <span className="meta-item"><Users size={16} /> {room.guests} Guests</span>
+                  <span className="meta-item"><Bed size={16} /> {room.bed}</span>
+                  <span className="meta-item"><Maximize size={16} /> {room.size}</span>
+                </div>
+
+                {/* Description */}
+                <p className="detail-description">{room.longDescription}</p>
+
+                <hr className="divider" />
+
+                {/* Features */}
+                <h4 className="features-title">Room Features</h4>
+                <div className="features-list">
+                  {room.features.map((feature, index) => (
+                    <span key={index} className="feature-item">
+                      {getFeatureIcon(feature)} {feature}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            {/* Right Column – Details + Availability Form */}
-            <div className="detail-card">
-              {/* Location */}
-              <div className="detail-location">
-                <MapPin size={16} />
-                {room.location}
-              </div>
-
-              {/* Room Name */}
-              <h1 className="detail-name">
-                {room.name}
-                <span className="bed-type"> ({room.bedType})</span>
-              </h1>
-
+            {/* Right Column – Booking Sidebar Card */}
+            <div className="booking-sidebar-card">
               {/* Price */}
               <div className="detail-price">
                 {room.originalPriceETB && (
@@ -474,40 +563,9 @@ const RoomDetail = () => {
                 </div>
               </div>
 
-              {/* Rating */}
-              <div className="detail-rating">
-                <div className="stars">{renderStars(room.rating)}</div>
-                <span className="rating-text">{room.rating}</span>
-                <span className="review-count">({room.reviews}+ reviews)</span>
-              </div>
-
               <hr className="divider" />
 
-              {/* Room Meta */}
-              <div className="room-meta">
-                <span className="meta-item"><Users size={16} /> {room.guests} Guests</span>
-                <span className="meta-item"><Bed size={16} /> {room.bed}</span>
-                <span className="meta-item"><Maximize size={16} /> {room.size}</span>
-              </div>
-
-              {/* Description */}
-              <p className="detail-description">{room.longDescription}</p>
-
-              <hr className="divider" />
-
-              {/* Features */}
-              <h4 style={{ fontSize: '16px', fontWeight: 600, color: '#1a1a1a', margin: '0 0 12px 0' }}>
-                Room Features
-              </h4>
-              <div className="features-list">
-                {room.features.map((feature, index) => (
-                  <span key={index} className="feature-item">
-                    {getFeatureIcon(feature)} {feature}
-                  </span>
-                ))}
-              </div>
-
-              {/* ===== AVAILABILITY FORM ===== */}
+              {/* Booking Form */}
               <div className="form-wrapper">
                 <AvailabilityForm roomName={room.name} roomPrice={room.priceETB} />
               </div>
