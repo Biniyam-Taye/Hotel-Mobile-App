@@ -1,12 +1,33 @@
 const asyncHandler = require('../utils/asyncHandler');
 const ApiResponse = require('../utils/apiResponse');
 const roomService = require('../services/room.service');
+const { uploadSingle, uploadMultiple } = require('../utils/cloudinary');
+
+const applyRoomUploads = async (files) => {
+  const result = {};
+
+  if (files?.image?.[0]) {
+    const main = await uploadSingle(files.image[0].buffer, 'rooms');
+    result.mainImage = main.url;
+  }
+
+  if (files?.detailImages?.length) {
+    const uploaded = await uploadMultiple(
+      files.detailImages.map((file) => file.buffer),
+      'rooms/details'
+    );
+    result.newDetailImages = uploaded.map((item) => item.url);
+  }
+
+  return result;
+};
 
 // @desc    Create a room
 // @route   POST /api/v1/rooms
 // @access  Private/Admin
 const createRoom = asyncHandler(async (req, res, next) => {
-  const room = await roomService.createRoom(req.body);
+  const imageData = await applyRoomUploads(req.files);
+  const room = await roomService.createRoom({ ...req.body, ...imageData });
   res.status(201).json(new ApiResponse(201, { room }, 'Room created successfully'));
 });
 
@@ -30,7 +51,8 @@ const getRoom = asyncHandler(async (req, res, next) => {
 // @route   PUT /api/v1/rooms/:id
 // @access  Private/Admin
 const updateRoom = asyncHandler(async (req, res, next) => {
-  const room = await roomService.updateRoomById(req.params.id, req.body);
+  const imageData = await applyRoomUploads(req.files);
+  const room = await roomService.updateRoomById(req.params.id, { ...req.body, ...imageData });
   res.status(200).json(new ApiResponse(200, { room }, 'Room updated successfully'));
 });
 
@@ -49,3 +71,4 @@ module.exports = {
   updateRoom,
   deleteRoom,
 };
+

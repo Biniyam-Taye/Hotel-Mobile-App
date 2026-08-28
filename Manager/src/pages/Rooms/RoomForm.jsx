@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { UploadCloud, X } from 'lucide-react';
 import { amenitiesList } from '../../data/mockData';
 
@@ -39,13 +39,19 @@ const normalizeInitialData = (data) => {
 export default function RoomForm({ initialData, categories = [], onSave, onCancel, saving = false, error = '' }) {
   const [formData, setFormData] = useState(() => normalizeInitialData(initialData));
 
+  const [mainImageFile, setMainImageFile] = useState(null);
   const [mainImagePreview, setMainImagePreview] = useState(
     initialData?.mainImage || initialData?.image || null
   );
+
+  const [detailImageFiles, setDetailImageFiles] = useState([null, null, null]);
   const [detailImagePreviews, setDetailImagePreviews] = useState(() => {
     const images = initialData?.detailImages || [];
     return [0, 1, 2].map((i) => images[i] || null);
   });
+
+  const mainImageInputRef = useRef(null);
+  const detailImageInputRefs = [useRef(null), useRef(null), useRef(null)];
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -67,36 +73,39 @@ export default function RoomForm({ initialData, categories = [], onSave, onCance
   };
 
   const handleMainImageChange = (e) => {
-    // Mock image upload
     const file = e.target.files[0];
     if (file) {
-      const dummyUrl = 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=800&q=80';
-      setMainImagePreview(dummyUrl);
-      setFormData(prev => ({ ...prev, mainImage: dummyUrl }));
+      setMainImageFile(file);
+      setMainImagePreview(URL.createObjectURL(file));
+      setFormData(prev => ({ ...prev, mainImage: '' })); // Clear legacy string if uploading new file
     }
+  };
+
+  const removeMainImage = () => {
+    setMainImageFile(null);
+    setMainImagePreview(null);
+    setFormData(prev => ({ ...prev, mainImage: '' }));
+    if (mainImageInputRef.current) mainImageInputRef.current.value = '';
   };
 
   const handleDetailImageChange = (index, e) => {
     const file = e.target.files[0];
     if (file) {
-      const dummyUrls = [
-        'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=800&q=80'
-      ];
-      const newUrl = dummyUrls[index % 3];
+      const newFiles = [...detailImageFiles];
+      newFiles[index] = file;
+      setDetailImageFiles(newFiles);
       
       const newPreviews = [...detailImagePreviews];
-      newPreviews[index] = newUrl;
+      newPreviews[index] = URL.createObjectURL(file);
       setDetailImagePreviews(newPreviews);
-      
-      const newDetailImages = [...formData.detailImages];
-      newDetailImages[index] = newUrl;
-      setFormData(prev => ({ ...prev, detailImages: newDetailImages }));
     }
   };
 
   const removeDetailImage = (index) => {
+    const newFiles = [...detailImageFiles];
+    newFiles[index] = null;
+    setDetailImageFiles(newFiles);
+
     const newPreviews = [...detailImagePreviews];
     newPreviews[index] = null;
     setDetailImagePreviews(newPreviews);
@@ -104,11 +113,12 @@ export default function RoomForm({ initialData, categories = [], onSave, onCance
     const newDetailImages = [...formData.detailImages];
     newDetailImages[index] = '';
     setFormData(prev => ({ ...prev, detailImages: newDetailImages }));
+    if (detailImageInputRefs[index].current) detailImageInputRefs[index].current.value = '';
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave(formData);
+    onSave(formData, mainImageFile, detailImageFiles);
   };
 
   return (
@@ -127,7 +137,7 @@ export default function RoomForm({ initialData, categories = [], onSave, onCance
               <button 
                 type="button" 
                 className="remove-image-btn"
-                onClick={() => { setMainImagePreview(null); setFormData(prev => ({...prev, mainImage: ''})); }}
+                onClick={removeMainImage}
               >
                 <X size={16} />
               </button>
@@ -136,7 +146,7 @@ export default function RoomForm({ initialData, categories = [], onSave, onCance
             <label className="upload-placeholder">
               <UploadCloud size={32} color="#9ca3af" />
               <span>Click to upload main image</span>
-              <input type="file" accept="image/*" onChange={handleMainImageChange} hidden />
+              <input type="file" accept="image/*" onChange={handleMainImageChange} ref={mainImageInputRef} hidden />
             </label>
           )}
         </div>
@@ -162,7 +172,7 @@ export default function RoomForm({ initialData, categories = [], onSave, onCance
                 <label className="upload-placeholder" style={{ padding: '1rem' }}>
                   <UploadCloud size={24} color="#9ca3af" />
                   <span style={{ fontSize: '0.75rem', marginTop: '0.5rem' }}>Detail {index + 1}</span>
-                  <input type="file" accept="image/*" onChange={(e) => handleDetailImageChange(index, e)} hidden />
+                  <input type="file" accept="image/*" onChange={(e) => handleDetailImageChange(index, e)} ref={detailImageInputRefs[index]} hidden />
                 </label>
               )}
             </div>

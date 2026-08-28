@@ -1,6 +1,8 @@
+// Manager/src/services/roomApi.js
 import { amenitiesList } from '../data/mockData';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+const ADMIN_TOKEN = import.meta.env.VITE_ADMIN_TOKEN || '';
 
 export const formatPrice = (price) =>
   Number(price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -11,6 +13,14 @@ const parseJson = async (response) => {
     throw new Error(data.message || 'Request failed');
   }
   return data;
+};
+
+const authHeaders = () => {
+  const headers = {};
+  if (ADMIN_TOKEN) {
+    headers.Authorization = `Bearer ${ADMIN_TOKEN}`;
+  }
+  return headers;
 };
 
 const mapAmenityNamesToIds = (amenities = []) =>
@@ -34,21 +44,23 @@ export const fetchRooms = async () => {
   return (result.data?.data || []).map(mapRoomForList);
 };
 
-export const createRoom = async (payload) => {
+export const createRoom = async (payload, mainImageFile, detailImageFiles = []) => {
+  const formData = buildRoomFormData(payload, mainImageFile, detailImageFiles);
   const response = await fetch(`${API_BASE}/rooms`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
+    headers: authHeaders(),
+    body: formData,
   });
   const result = await parseJson(response);
   return mapRoomForList(result.data.room);
 };
 
-export const updateRoom = async (id, payload) => {
+export const updateRoom = async (id, payload, mainImageFile, detailImageFiles = []) => {
+  const formData = buildRoomFormData(payload, mainImageFile, detailImageFiles);
   const response = await fetch(`${API_BASE}/rooms/${id}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
+    headers: authHeaders(),
+    body: formData,
   });
   const result = await parseJson(response);
   return mapRoomForList(result.data.room);
@@ -57,8 +69,33 @@ export const updateRoom = async (id, payload) => {
 export const deleteRoom = async (id) => {
   const response = await fetch(`${API_BASE}/rooms/${id}`, {
     method: 'DELETE',
+    headers: authHeaders(),
   });
   await parseJson(response);
+};
+
+const buildRoomFormData = (payload, mainImageFile, detailImageFiles = []) => {
+  const formData = new FormData();
+
+  Object.keys(payload).forEach((key) => {
+    if (key === 'amenities' || key === 'detailImages') {
+      formData.append(key, JSON.stringify(payload[key]));
+    } else if (payload[key] !== undefined && payload[key] !== null) {
+      formData.append(key, String(payload[key]));
+    }
+  });
+
+  if (mainImageFile instanceof File) {
+    formData.append('image', mainImageFile);
+  }
+
+  detailImageFiles.forEach((file) => {
+    if (file instanceof File) {
+      formData.append('detailImages', file);
+    }
+  });
+
+  return formData;
 };
 
 export const buildRoomPayload = (formData, categories) => {

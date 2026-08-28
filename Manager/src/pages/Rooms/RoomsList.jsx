@@ -92,7 +92,7 @@ export default function RoomsList() {
     }
   };
 
-  const handleSaveForm = async (formData) => {
+  const handleSaveForm = async (formData, mainImageFile, detailImageFiles) => {
     try {
       setSaving(true);
       setFormError('');
@@ -109,11 +109,13 @@ export default function RoomsList() {
         return;
       }
 
+      const activeDetailFiles = (detailImageFiles || []).filter(Boolean);
+
       if (editingRoom) {
-        const updated = await updateRoom(editingRoom.id, payload);
+        const updated = await updateRoom(editingRoom.id, payload, mainImageFile, activeDetailFiles);
         setRooms(rooms.map((r) => (r.id === editingRoom.id ? updated : r)));
       } else {
-        const created = await createRoom(payload);
+        const created = await createRoom(payload, mainImageFile, activeDetailFiles);
         setRooms([...rooms, created]);
       }
 
