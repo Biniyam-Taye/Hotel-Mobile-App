@@ -37,6 +37,15 @@ const buildSpaceFilter = async (query) => {
   return filterQuery;
 };
 
+const parseJsonField = (value) => {
+  if (typeof value !== 'string') return value;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value;
+  }
+};
+
 const normalizeSpaceInput = (data) => {
   const payload = { ...data };
 
@@ -47,6 +56,13 @@ const normalizeSpaceInput = (data) => {
 
   if (payload.discountedPrice === '' || payload.discountedPrice === 'null') {
     payload.discountedPrice = null;
+  }
+
+  if (typeof payload.amenities === 'string') {
+    payload.amenities = parseJsonField(payload.amenities);
+  }
+  if (typeof payload.specialRates === 'string') {
+    payload.specialRates = parseJsonField(payload.specialRates);
   }
 
   return payload;
