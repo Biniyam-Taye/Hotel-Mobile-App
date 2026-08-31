@@ -321,3 +321,46 @@
   transform: scale(1.08);
   box-shadow: 0 6px 16px rgba(250, 90, 42, 0.5);
 }
+
+/* Spinner & animations */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.spin {
+  animation: spin 0.8s linear infinite;
+}
+
+/* Placeholders & Empty States */
+.chat-select-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: var(--text-light);
+  font-size: 15px;
+  font-weight: 500;
+  background-color: #fbfbfd;
+}
+
+.chat-empty-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: var(--text-light);
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.chat-loading-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 40px;
+  color: var(--text-light);
+  font-size: 13px;
+}
+

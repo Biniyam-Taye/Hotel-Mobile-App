@@ -2,6 +2,18 @@ import { amenitiesList } from '../data/mockData';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
+const authHeaders = (contentType = 'application/json') => {
+  const headers = {};
+  const token = localStorage.getItem('token') || '';
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  if (contentType) {
+    headers['Content-Type'] = contentType;
+  }
+  return headers;
+};
+
 export const formatPrice = (price) =>
   Number(price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
@@ -36,7 +48,7 @@ export const fetchCategories = async () => {
 export const createCategory = async (payload) => {
   const response = await fetch(`${API_BASE}/room-categories`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: authHeaders('application/json'),
     body: JSON.stringify(payload),
   });
   const result = await parseJson(response);
@@ -46,7 +58,7 @@ export const createCategory = async (payload) => {
 export const updateCategory = async (id, payload) => {
   const response = await fetch(`${API_BASE}/room-categories/${id}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: authHeaders('application/json'),
     body: JSON.stringify(payload),
   });
   const result = await parseJson(response);
@@ -56,6 +68,7 @@ export const updateCategory = async (id, payload) => {
 export const toggleCategoryStatus = async (id) => {
   const response = await fetch(`${API_BASE}/room-categories/${id}/toggle-status`, {
     method: 'PATCH',
+    headers: authHeaders(null),
   });
   const result = await parseJson(response);
   return mapCategoryForList(result.data.category);
@@ -64,6 +77,7 @@ export const toggleCategoryStatus = async (id) => {
 export const deleteCategory = async (id) => {
   const response = await fetch(`${API_BASE}/room-categories/${id}`, {
     method: 'DELETE',
+    headers: authHeaders(null),
   });
   await parseJson(response);
 };

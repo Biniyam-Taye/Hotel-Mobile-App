@@ -32,7 +32,7 @@ router.use('/notifications', notifRouter);
 
 notifRouter.route('/')
   .get(protect, ctrl.getMyNotifications)
-  .post(protect, authorize('admin'), validate(schema.sendNotification), ctrl.sendNotification);
+  .post(protect, authorize('admin', 'manager'), validate(schema.sendNotification), ctrl.sendNotification);
 
 notifRouter.route('/:id/read')
   .put(protect, ctrl.markNotificationAsRead);

@@ -38,6 +38,7 @@ const promotionRoutes = require('./routes/promotion.routes');
 const engagementRoutes = require('./routes/engagement.routes');
 const paymentRoutes = require('./routes/payment.routes');
 const dashboardRoutes = require('./routes/dashboard.routes');
+const messageRoutes = require('./routes/message.routes');
 
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/rooms', roomRoutes);
@@ -51,6 +52,7 @@ app.use('/api/v1/promotions', promotionRoutes);
 app.use('/api/v1/engagement', engagementRoutes);
 app.use('/api/v1/payments', paymentRoutes);
 app.use('/api/v1/dashboard', dashboardRoutes);
+app.use('/api/v1/messages', messageRoutes);
 
 // Handle unknown routes
 app.use((req, res, next) => {

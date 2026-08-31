@@ -14,11 +14,11 @@ router.get('/spaces/public', ctrl.getPublicEventSpaces);
 
 router.route('/spaces')
   .get(ctrl.getEventSpaces)
-  .post(protect, authorize('admin'), upload.single('image'), validate(schema.createEventSpace), ctrl.createEventSpace);
+  .post(protect, authorize('admin', 'manager'), upload.single('image'), validate(schema.createEventSpace), ctrl.createEventSpace);
 
 router.route('/spaces/:id')
   .get(validate(schema.mongoIdParam), ctrl.getEventSpace)
-  .put(protect, authorize('admin'), upload.single('image'), validate(schema.updateEventSpace), ctrl.updateEventSpace)
-  .delete(protect, authorize('admin'), validate(schema.mongoIdParam), ctrl.deleteEventSpace);
+  .put(protect, authorize('admin', 'manager'), upload.single('image'), validate(schema.updateEventSpace), ctrl.updateEventSpace)
+  .delete(protect, authorize('admin', 'manager'), validate(schema.mongoIdParam), ctrl.deleteEventSpace);
 
 module.exports = router;

@@ -1,0 +1,272 @@
+/* Styling matching the provided image */
+
+@keyframes authFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.auth-page {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* Looks like a cloud/sky background, user said they will place "bg.jpg" in public folder. Fallback is sky gradient. */
+  background: url('/bg.jpg') no-repeat center center / cover, linear-gradient(180deg, #b3dcfd 0%, #eef6ff 100%);
+  z-index: 9999;
+  padding: 1rem;
+  overflow-y: auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Glassmorphism Card matches the image shape, color and style */
+.auth-glass-card {
+  width: 100%;
+  max-width: 440px;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 2rem;
+  padding: 3rem 2.5rem;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.02);
+  text-align: center;
+  color: #1a1a1a;
+  animation: authFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+/* Top icon container exactly as image */
+.auth-icon-box {
+  width: 52px;
+  height: 52px;
+  background: #ffffff;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.02);
+}
+
+.auth-heading {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.auth-subheading {
+  font-size: 0.875rem;
+  color: #64748b;
+  line-height: 1.5;
+  margin-bottom: 1.75rem;
+  font-weight: 400;
+}
+
+/* Clean forms & flex layout */
+.auth-form-clean {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  text-align: left;
+}
+
+.auth-row {
+  display: flex;
+  gap: 0.75rem;
+}
+.flex-1 {
+  flex: 1;
+}
+
+/* Clean input group to match the inputs in the image */
+.auth-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.auth-input-icon {
+  position: absolute;
+  left: 1rem;
+  font-size: 0.95rem;
+  color: #8c9ba5;
+  pointer-events: none;
+}
+
+.auth-input-icon-lucide {
+  position: absolute;
+  left: 1rem;
+  color: #94a3b8;
+  pointer-events: none;
+  transition: color 0.2s;
+}
+
+.auth-input-group:focus-within .auth-input-icon-lucide {
+  color: #1e1e24;
+}
+
+.auth-input-group input {
+  width: 100%;
+  padding: 0.875rem 1rem 0.875rem 2.6rem;
+  background: rgba(241, 245, 249, 0.65);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  border-radius: 0.75rem;
+  color: #0f172a;
+  font-size: 0.9rem;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+  box-sizing: border-box;
+}
+
+.auth-input-group input::placeholder {
+  color: #94a3b8;
+}
+
+.auth-input-group input:focus {
+  background: #ffffff;
+  border-color: rgba(148, 163, 184, 0.4);
+  box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.1);
+}
+
+.auth-eye-btn {
+  position: absolute;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0.25rem;
+}
+.auth-eye-btn:hover {
+  color: #334155;
+}
+
+/* Forgot password row */
+.auth-forgot-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: -0.15rem;
+  margin-bottom: 0.75rem;
+}
+
+.auth-forgot-link {
+  background: none;
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+.auth-forgot-link:hover {
+  text-decoration: underline;
+  color: #0f172a;
+}
+
+/* Premium Dark Pill Button like "Get Started" in the image */
+.auth-primary-btn {
+  width: 100%;
+  padding: 0.9rem;
+  background: #1e1e24;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-primary-btn:hover {
+  background: #0f0f12;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+  transform: translateY(-1px);
+}
+
+.auth-primary-btn:active {
+  transform: translateY(0);
+}
+
+/* Switch link styling */
+.auth-switch-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1.75rem;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.auth-switch-link {
+  background: none;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #0f172a;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+.auth-switch-link:hover {
+  text-decoration: underline;
+}
+
+/* Alert Boxes */
+.auth-error-box {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+  color: #b91c1c;
+  border-radius: 0.65rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.825rem;
+  margin-bottom: 1.25rem;
+  text-align: left;
+}
+
+.auth-success-box {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.15);
+  color: #047857;
+  border-radius: 0.65rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.825rem;
+  margin-bottom: 1.25rem;
+  text-align: left;
+}
+
+/* Spinner inside button */
+.auth-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: authSpin 0.7s linear infinite;
+  display: inline-block;
+}
+
+@keyframes authSpin {
+  to { transform: rotate(360deg); }
+}

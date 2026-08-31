@@ -10,6 +10,8 @@ const validate = require('../middlewares/validate.middleware');
 const roomValidation = require('../validations/room.validation');
 const upload = require('../middlewares/upload.middleware');
 
+const { protect, authorize } = require('../middlewares/auth.middleware');
+
 const router = express.Router();
 
 const roomUpload = upload.fields([
@@ -20,13 +22,13 @@ const roomUpload = upload.fields([
 router
   .route('/')
   .get(getRooms)
-  .post(roomUpload, validate(roomValidation.createRoom), createRoom);
+  .post(protect, authorize('admin', 'manager'), roomUpload, validate(roomValidation.createRoom), createRoom);
 
 router
   .route('/:id')
   .get(getRoom)
-  .put(roomUpload, validate(roomValidation.updateRoom), updateRoom)
-  .delete(deleteRoom);
+  .put(protect, authorize('admin', 'manager'), roomUpload, validate(roomValidation.updateRoom), updateRoom)
+  .delete(protect, authorize('admin', 'manager'), deleteRoom);
 
 module.exports = router;
 

@@ -132,3 +132,56 @@
   opacity: 1;
   transform: translateX(0);
 }
+
+/* Logout button specific color */
+.logout-btn:hover {
+  background-color: #fef2f2 !important;
+  color: #ef4444 !important;
+}
+.logout-btn:hover svg {
+  color: #ef4444;
+}
+
+/* Sidebar user info (shown when expanded) */
+.sidebar-user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 4px;
+  border-top: 1px solid var(--border-color);
+  margin-top: 8px;
+}
+
+.sidebar-avatar {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-orange), #ff8c5a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.sidebar-user-details {
+  overflow: hidden;
+}
+
+.sidebar-user-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-user-role {
+  font-size: 11px;
+  color: var(--primary-orange);
+  font-weight: 500;
+  white-space: nowrap;
+}

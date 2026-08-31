@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Messages.css';
-import { Search, MoreVertical, Paperclip, Send, Smile, Loader } from 'lucide-react';
+import { Search, Send, Paperclip, Smile, Loader, MessageSquare, MoreVertical } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
@@ -15,14 +15,14 @@ const Messages = () => {
   const messagesEndRef = useRef(null);
 
   const authHeaders = () => {
-    const token = localStorage.getItem('adminToken');
+    const token = localStorage.getItem('token');
     return {
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     };
   };
 
-  // 1. Fetch Contacts (Managers)
+  // 1. Fetch Contacts (which will be the Owner/Admin in the manager's view)
   const loadContacts = async (silent = false) => {
     if (!silent) setLoadingContacts(true);
     try {
@@ -32,7 +32,7 @@ const Messages = () => {
       const data = await res.json();
       if (res.ok && data?.data?.contacts) {
         setContacts(data.data.contacts);
-        // Automatically select the first contact if none active
+        // Auto select first admin
         if (!activeContact && data.data.contacts.length > 0) {
           setActiveContact(data.data.contacts[0]);
         }
@@ -44,7 +44,7 @@ const Messages = () => {
     }
   };
 
-  // 2. Fetch Conversation for Active Contact
+  // 2. Fetch Conversation
   const loadConversation = async (contactId, silent = false) => {
     if (!contactId) return;
     if (!silent) setLoadingChat(true);
@@ -63,12 +63,11 @@ const Messages = () => {
     }
   };
 
-  // Initial Contacts Load
   useEffect(() => {
     loadContacts();
   }, []);
 
-  // Poll Contacts and Active Conversation every 3 seconds for real-time feel
+  // Poll conversation every 3 seconds
   useEffect(() => {
     if (!activeContact) return;
     loadConversation(activeContact._id, true);
@@ -81,7 +80,6 @@ const Messages = () => {
     return () => clearInterval(interval);
   }, [activeContact]);
 
-  // Scroll to bottom on new message
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -106,7 +104,6 @@ const Messages = () => {
       const data = await res.json();
       if (res.ok && data?.data?.message) {
         setMessages((prev) => [...prev, data.data.message]);
-        // Refresh contacts list to update lastMsg/unread indicators
         loadContacts(true);
       }
     } catch (err) {
@@ -114,7 +111,6 @@ const Messages = () => {
     }
   };
 
-  // Filter contacts by search query
   const filteredContacts = contacts.filter((c) =>
     `${c.firstName} ${c.lastName}`.toLowerCase().includes(search.toLowerCase())
   );
@@ -132,39 +128,44 @@ const Messages = () => {
   };
 
   return (
-    <div className="messages-container">
+    <div className="manager-chat-container">
       {/* Sidebar for Contacts */}
-      <div className="msg-sidebar">
-        <div className="msg-sidebar-header">
-          <h2 className="font-semibold text-lg">Messages</h2>
-          <div className="msg-search">
-            <Search size={16} className="text-light" />
+      <div className="manager-chat-sidebar">
+        <div className="manager-chat-sidebar-header">
+          <h2 className="font-semibold text-lg" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <MessageSquare size={20} style={{ color: '#2563eb' }} />
+            <span>Messages</span>
+          </h2>
+          <div className="manager-chat-search">
+            <Search size={16} className="search-icon" />
             <input
               type="text"
-              placeholder="Search managers..."
+              placeholder="Search admin/owner..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
         </div>
 
-        <div className="msg-contacts-list">
+        <div className="manager-chat-contacts-list">
           {loadingContacts && contacts.length === 0 ? (
             <div className="chat-loading-placeholder">
               <Loader size={20} className="spin" />
-              <span>Loading contacts...</span>
+              <span>Loading owners...</span>
             </div>
           ) : filteredContacts.length === 0 ? (
-            <div className="chat-empty-placeholder">No managers found</div>
+            <div className="chat-empty-placeholder">No admins found</div>
           ) : (
             filteredContacts.map((contact) => (
               <div
                 key={contact._id}
-                className={`msg-contact-item ${activeContact?._id === contact._id ? 'active' : ''}`}
+                className={`manager-chat-contact-item ${activeContact?._id === contact._id ? 'active' : ''}`}
                 onClick={() => setActiveContact(contact)}
               >
-                <div className="contact-avatar">
-                  {getAvatarLetter(contact)}
+                <div className="contact-avatar-wrapper">
+                  <div className="contact-avatar">
+                    {getAvatarLetter(contact)}
+                  </div>
                   {contact.online && <div className="online-dot" />}
                 </div>
                 <div className="contact-info">
@@ -192,21 +193,23 @@ const Messages = () => {
       </div>
 
       {/* Main Chat Area */}
-      <div className="msg-chat-area">
+      <div className="manager-chat-area">
         {activeContact ? (
           <>
             <div className="chat-header">
               <div className="chat-header-info">
-                <div className="contact-avatar small">
-                  {getAvatarLetter(activeContact)}
+                <div className="contact-avatar-wrapper small">
+                  <div className="contact-avatar">
+                    {getAvatarLetter(activeContact)}
+                  </div>
                   {activeContact.online && <div className="online-dot" />}
                 </div>
                 <div>
                   <div className="font-semibold">
                     {activeContact.firstName} {activeContact.lastName}
                   </div>
-                  <div className="text-xs text-light" style={{ textTransform: 'capitalize' }}>
-                    {activeContact.role}
+                  <div className="text-xs text-muted" style={{ textTransform: 'capitalize' }}>
+                    {activeContact.role === 'admin' ? 'Hotel Owner' : activeContact.role}
                   </div>
                 </div>
               </div>
@@ -223,14 +226,12 @@ const Messages = () => {
                 </div>
               ) : messages.length === 0 ? (
                 <div className="chat-empty-placeholder">
-                  No messages yet. Send a message to start the conversation!
+                  No messages yet. Say hello to the hotel owner!
                 </div>
               ) : (
                 messages.map((msg) => {
-                  const isMine = msg.sender === localStorage.getItem('adminUser') ? JSON.parse(localStorage.getItem('adminUser')).id : '';
-                  // Check if sender matches current logged in admin user
-                  const currentAdmin = JSON.parse(localStorage.getItem('adminUser'));
-                  const msgIsMine = msg.sender === currentAdmin?.id || msg.sender === currentAdmin?._id;
+                  const currentUser = JSON.parse(localStorage.getItem('user'));
+                  const msgIsMine = msg.sender === currentUser?.id || msg.sender === currentUser?._id;
 
                   return (
                     <div
@@ -249,7 +250,7 @@ const Messages = () => {
             </div>
 
             <form className="chat-input-area" onSubmit={handleSend}>
-              <button type="button" className="icon-btn text-light">
+              <button type="button" className="icon-btn text-muted">
                 <Paperclip size={20} />
               </button>
               <div className="chat-input-wrapper">
@@ -260,7 +261,7 @@ const Messages = () => {
                   onChange={(e) => setMsgInput(e.target.value)}
                   required
                 />
-                <button type="button" className="icon-btn text-light">
+                <button type="button" className="icon-btn text-muted">
                   <Smile size={20} />
                 </button>
               </div>
@@ -271,7 +272,7 @@ const Messages = () => {
           </>
         ) : (
           <div className="chat-select-placeholder">
-            <h3>Select a manager to start messaging</h3>
+            <h3>Select the hotel owner to start messaging</h3>
           </div>
         )}
       </div>

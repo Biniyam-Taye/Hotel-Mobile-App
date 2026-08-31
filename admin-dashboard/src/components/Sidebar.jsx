@@ -3,8 +3,12 @@ import { NavLink } from 'react-router-dom';
 import './Sidebar.css';
 import { LayoutGrid, Calendar, Mail, FileText, Users, Settings, HelpCircle, LogOut, ChevronRight, ChevronLeft } from 'lucide-react';
 
-const Sidebar = () => {
+const Sidebar = ({ onLogout, adminUser }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const avatarInitials = adminUser
+    ? (adminUser.firstName?.[0] || '') + (adminUser.lastName?.[0] || '')
+    : 'A';
 
   return (
     <div className={`sidebar ${isExpanded ? 'expanded' : ''}`}>
@@ -60,10 +64,28 @@ const Sidebar = () => {
           <HelpCircle size={20} />
           <span className="nav-label">Help</span>
         </NavLink>
-        <div className="nav-item">
+
+        {/* Logout button */}
+        <button
+          className="nav-item logout-btn"
+          onClick={onLogout}
+          title="Sign Out"
+          style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+        >
           <LogOut size={20} />
           <span className="nav-label">Logout</span>
-        </div>
+        </button>
+
+        {/* Admin user info when expanded */}
+        {isExpanded && adminUser && (
+          <div className="sidebar-user-info">
+            <div className="sidebar-avatar">{avatarInitials}</div>
+            <div className="sidebar-user-details">
+              <div className="sidebar-user-name">{adminUser.firstName} {adminUser.lastName}</div>
+              <div className="sidebar-user-role">Hotel Owner</div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

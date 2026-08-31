@@ -11,8 +11,9 @@ const parseJson = async (response) => {
 
 const authHeaders = () => {
   const headers = {};
-  if (ADMIN_TOKEN) {
-    headers.Authorization = `Bearer ${ADMIN_TOKEN}`;
+  const token = localStorage.getItem('token') || ADMIN_TOKEN || '';
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
   }
   return headers;
 };

@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['customer', 'admin'],
+      enum: ['customer', 'admin', 'manager'],
       default: 'customer',
     },
     profilePicture: {
@@ -48,6 +48,11 @@ const userSchema = new mongoose.Schema(
     isActive: {
       type: Boolean,
       default: true,
+    },
+    approvalStatus: {
+      type: String,
+      enum: ['approved', 'pending', 'suspended'],
+      default: 'approved', // customers & admins are auto-approved; managers set to pending on register
     },
   },
   {
@@ -80,5 +85,6 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 // Add Indexes for performance optimization
 userSchema.index({ role: 1 });
 userSchema.index({ isActive: 1 });
+userSchema.index({ approvalStatus: 1 });
 
 module.exports = mongoose.model('User', userSchema);
