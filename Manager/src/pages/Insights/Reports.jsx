@@ -1,87 +1,113 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  BarChart3, Send, FileText, Upload, Trash2, Check,
-  TrendingUp, DollarSign, Users, BedDouble, Calendar,
-  Mail, Paperclip, X, Eye, Clock, CheckCircle
+  BarChart3, Send, FileText, Upload, Check,
+  TrendingUp, Users, BedDouble, Calendar,
+  Mail, Paperclip, X, Clock, CheckCircle, Loader, AlertCircle
 } from 'lucide-react';
 
-const sentReports = [
-  {
-    id: 1,
-    subject: 'Monthly Performance Report — July 2026',
-    to: 'owner@villaalpha.com',
-    sentAt: 'Aug 1, 2026, 09:00 AM',
-    attachments: ['July_Report.pdf'],
-    status: 'delivered',
-  },
-  {
-    id: 2,
-    subject: 'Q2 Revenue Summary 2026',
-    to: 'owner@villaalpha.com',
-    sentAt: 'Jul 1, 2026, 08:30 AM',
-    attachments: ['Q2_Revenue.pdf', 'Q2_Occupancy.pdf'],
-    status: 'delivered',
-  },
-  {
-    id: 3,
-    subject: 'Guest Satisfaction Report — June 2026',
-    to: 'owner@villaalpha.com',
-    sentAt: 'Jun 30, 2026, 11:00 AM',
-    attachments: [],
-    status: 'delivered',
-  },
-];
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
 const quickStats = [
   { label: 'Occupancy Rate', value: '78%', change: '+5%', icon: BedDouble, color: '#dbeafe', iconColor: '#1d4ed8' },
-  { label: 'Total Guests', value: '1,240', change: '+8%', icon: Users, color: '#ede9fe', iconColor: '#6d28d9' },
-  { label: 'Avg. Stay Length', value: '3.4 nights', change: '+0.2', icon: Calendar, color: '#fef3c7', iconColor: '#b45309' },
+  { label: 'Total Guests',   value: '1,240', change: '+8%', icon: Users,     color: '#ede9fe', iconColor: '#6d28d9' },
+  { label: 'Avg. Stay',      value: '3.4 nights', change: '+0.2', icon: Calendar, color: '#fef3c7', iconColor: '#b45309' },
 ];
 
 const reportTypes = [
   'Monthly Performance Report',
   'Occupancy & Room Report',
+  'Revenue Summary',
   'Guest Satisfaction Report',
+  'Maintenance Log',
   'Custom Report',
 ];
 
-export default function ReportsPage() {
-  const [sent, setSent] = useState(sentReports);
-  const [ownerEmail, setOwnerEmail] = useState('owner@villaalpha.com');
-  const [subject, setSubject] = useState('');
-  const [reportType, setReportType] = useState(reportTypes[0]);
-  const [message, setMessage] = useState('');
-  const [files, setFiles] = useState([]);
-  const [sending, setSending] = useState(false);
-  const [successMsg, setSuccessMsg] = useState('');
+const input = {
+  width: '100%', padding: '0.625rem 1rem', borderRadius: '0.625rem',
+  border: '1px solid #e5e7eb', fontSize: '0.875rem', outline: 'none', fontFamily: 'inherit',
+};
 
+export default function ReportsPage() {
+  const [sent, setSent]           = useState([]);
+  const [loadingSent, setLoadingSent] = useState(true);
+  const [subject, setSubject]     = useState('');
+  const [reportType, setReportType] = useState(reportTypes[0]);
+  const [message, setMessage]     = useState('');
+  const [files, setFiles]         = useState([]);
+  const [sending, setSending]     = useState(false);
+  const [successMsg, setSuccessMsg] = useState('');
+  const [error, setError]         = useState('');
+
+  const token = localStorage.getItem('token');
+  const authHeaders = { Authorization: `Bearer ${token}` };
+
+  // ── Load sent reports ────────────────────────────────────────────────────────
+  const loadSent = async () => {
+    setLoadingSent(true);
+    try {
+      const res  = await fetch(`${API_BASE}/reports/my`, { headers: authHeaders });
+      const data = await res.json();
+      if (res.ok) setSent(data.data.reports || []);
+    } catch {
+      // silently fail
+    } finally {
+      setLoadingSent(false);
+    }
+  };
+
+  useEffect(() => { loadSent(); }, []);
+
+  // ── File handlers ────────────────────────────────────────────────────────────
   const handleFileChange = (e) => {
     const newFiles = Array.from(e.target.files);
     setFiles(prev => [...prev, ...newFiles]);
     e.target.value = '';
   };
+  const removeFile = (i) => setFiles(files.filter((_, idx) => idx !== i));
 
-  const removeFile = (index) => setFiles(files.filter((_, i) => i !== index));
-
-  const handleSend = () => {
-    if (!subject.trim()) { alert('Please enter a subject.'); return; }
+  // ── Send Report ──────────────────────────────────────────────────────────────
+  const handleSend = async () => {
+    setError('');
+    if (!subject.trim()) { setError('Please enter a subject.'); return; }
     setSending(true);
-    setTimeout(() => {
-      setSending(false);
-      setSuccessMsg(`Report sent to ${ownerEmail} successfully!`);
-      setSent(prev => [{
-        id: Date.now(),
-        subject,
-        to: ownerEmail,
-        sentAt: new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-        attachments: files.map(f => f.name),
-        status: 'delivered',
-      }, ...prev]);
+
+    try {
+      const formData = new FormData();
+      formData.append('subject', subject.trim());
+      formData.append('reportType', reportType);
+      formData.append('message', message);
+      files.forEach(f => formData.append('files', f));
+
+      const res = await fetch(`${API_BASE}/reports`, {
+        method: 'POST',
+        headers: authHeaders, // NOTE: no Content-Type – browser sets multipart boundary
+        body: formData,
+      });
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message || 'Failed to send report');
+
+      setSuccessMsg('Report sent to owner successfully!');
       setSubject('');
       setMessage('');
       setFiles([]);
-      setTimeout(() => setSuccessMsg(''), 4000);
-    }, 1800);
+      loadSent();
+      setTimeout(() => setSuccessMsg(''), 5000);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const formatDate = (iso) =>
+    iso ? new Date(iso).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+
+  const formatSize = (bytes) => {
+    if (!bytes) return '';
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
   return (
@@ -91,7 +117,7 @@ export default function ReportsPage() {
       </h1>
 
       {/* Quick Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '1rem', marginBottom: '2rem' }}>
         {quickStats.map(s => {
           const Icon = s.icon;
           return (
@@ -111,7 +137,7 @@ export default function ReportsPage() {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', alignItems: 'start' }}>
 
-        {/* Compose Report */}
+        {/* ── Compose Report ── */}
         <div style={{ background: 'white', borderRadius: '1.25rem', padding: '2rem', border: '1px solid #f3f4f6', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid #f3f4f6' }}>
             <div style={{ width: 38, height: 38, borderRadius: '0.75rem', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -119,40 +145,29 @@ export default function ReportsPage() {
             </div>
             <div>
               <h2 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 700, color: '#111827' }}>Send Report to Owner</h2>
-              <p style={{ margin: 0, fontSize: '0.75rem', color: '#9ca3af' }}>Compose and deliver a report via email</p>
+              <p style={{ margin: 0, fontSize: '0.75rem', color: '#9ca3af' }}>Upload files and deliver to the hotel owner</p>
             </div>
           </div>
 
+          {/* Alerts */}
           {successMsg && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '0.625rem', padding: '0.75rem 1rem', marginBottom: '1.25rem' }}>
               <CheckCircle size={16} color="#16a34a" />
               <span style={{ fontSize: '0.875rem', color: '#166534', fontWeight: 500 }}>{successMsg}</span>
             </div>
           )}
+          {error && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '0.625rem', padding: '0.75rem 1rem', marginBottom: '1.25rem' }}>
+              <AlertCircle size={16} color="#ef4444" />
+              <span style={{ fontSize: '0.875rem', color: '#991b1b', fontWeight: 500 }}>{error}</span>
+            </div>
+          )}
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.125rem' }}>
-            {/* To */}
-            <div>
-              <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '0.4rem' }}>To (Owner Email)</label>
-              <div style={{ position: 'relative' }}>
-                <Mail size={15} style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} />
-                <input
-                  type="email"
-                  value={ownerEmail}
-                  onChange={e => setOwnerEmail(e.target.value)}
-                  style={{ width: '100%', padding: '0.625rem 1rem 0.625rem 2.5rem', borderRadius: '0.625rem', border: '1px solid #e5e7eb', fontSize: '0.875rem', outline: 'none', fontFamily: 'inherit' }}
-                />
-              </div>
-            </div>
-
             {/* Report Type */}
             <div>
               <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '0.4rem' }}>Report Type</label>
-              <select
-                value={reportType}
-                onChange={e => { setReportType(e.target.value); setSubject(e.target.value); }}
-                style={{ width: '100%', padding: '0.625rem 1rem', borderRadius: '0.625rem', border: '1px solid #e5e7eb', fontSize: '0.875rem', outline: 'none', fontFamily: 'inherit', color: '#111827', background: 'white' }}
-              >
+              <select value={reportType} onChange={e => { setReportType(e.target.value); if (!subject) setSubject(e.target.value); }} style={{ ...input, color: '#111827', background: 'white' }}>
                 {reportTypes.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
@@ -160,50 +175,41 @@ export default function ReportsPage() {
             {/* Subject */}
             <div>
               <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '0.4rem' }}>Subject *</label>
-              <input
-                type="text"
-                placeholder="e.g. Monthly Performance Report — August 2026"
-                value={subject}
-                onChange={e => setSubject(e.target.value)}
-                style={{ width: '100%', padding: '0.625rem 1rem', borderRadius: '0.625rem', border: '1px solid #e5e7eb', fontSize: '0.875rem', outline: 'none', fontFamily: 'inherit' }}
-              />
+              <input type="text" placeholder="e.g. Monthly Performance Report — August 2026" value={subject} onChange={e => setSubject(e.target.value)} style={input} />
             </div>
 
             {/* Message */}
             <div>
               <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '0.4rem' }}>Message / Summary</label>
-              <textarea
-                placeholder="Write a summary or any notes for the owner..."
-                value={message}
-                onChange={e => setMessage(e.target.value)}
-                rows={5}
-                style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '0.625rem', border: '1px solid #e5e7eb', fontSize: '0.875rem', outline: 'none', fontFamily: 'inherit', resize: 'vertical', lineHeight: 1.6 }}
-              />
+              <textarea placeholder="Write a summary or notes for the owner..." value={message} onChange={e => setMessage(e.target.value)} rows={4}
+                style={{ ...input, resize: 'vertical', lineHeight: 1.6, padding: '0.75rem 1rem' }} />
             </div>
 
-            {/* File Attachments */}
+            {/* File upload */}
             <div>
-              <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '0.4rem' }}>Attach PDF Reports</label>
+              <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '0.4rem' }}>
+                Attach Files (PDF, DOCX, XLSX, ZIP, MP4…)
+              </label>
               <label
-                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '1.25rem', borderRadius: '0.75rem', border: '2px dashed #e5e7eb', cursor: 'pointer', background: '#f9fafb', transition: 'border-color 0.15s' }}
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem', padding: '1.25rem', borderRadius: '0.75rem', border: '2px dashed #e5e7eb', cursor: 'pointer', background: '#f9fafb' }}
                 onMouseEnter={e => e.currentTarget.style.borderColor = '#93c5fd'}
                 onMouseLeave={e => e.currentTarget.style.borderColor = '#e5e7eb'}
               >
                 <Upload size={22} color="#9ca3af" />
-                <span style={{ fontSize: '0.825rem', color: '#6b7280', fontWeight: 500 }}>Click to upload PDF files</span>
-                <span style={{ fontSize: '0.72rem', color: '#9ca3af' }}>Supports .pdf, .xlsx, .csv</span>
-                <input type="file" multiple accept=".pdf,.xlsx,.csv" onChange={handleFileChange} hidden />
+                <span style={{ fontSize: '0.825rem', color: '#6b7280', fontWeight: 500 }}>Click to upload files</span>
+                <span style={{ fontSize: '0.72rem', color: '#9ca3af' }}>PDF, DOCX, XLSX, ZIP, MP4 and more · up to 100 MB each</span>
+                <input type="file" multiple onChange={handleFileChange} hidden />
               </label>
 
               {files.length > 0 && (
-                <div style={{ marginTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <div style={{ marginTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                   {files.map((file, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.625rem 0.875rem', background: '#eff6ff', borderRadius: '0.625rem', border: '1px solid #bfdbfe' }}>
-                      <FileText size={16} color="#3b82f6" />
-                      <span style={{ flex: 1, fontSize: '0.825rem', color: '#1d4ed8', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{file.name}</span>
-                      <span style={{ fontSize: '0.7rem', color: '#9ca3af', flexShrink: 0 }}>{(file.size / 1024).toFixed(1)} KB</span>
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 0.875rem', background: '#eff6ff', borderRadius: '0.625rem', border: '1px solid #bfdbfe' }}>
+                      <FileText size={15} color="#3b82f6" />
+                      <span style={{ flex: 1, fontSize: '0.8rem', color: '#1d4ed8', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{file.name}</span>
+                      <span style={{ fontSize: '0.7rem', color: '#9ca3af', flexShrink: 0 }}>{formatSize(file.size)}</span>
                       <button onClick={() => removeFile(i)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: 2, display: 'flex', alignItems: 'center' }}>
-                        <X size={14} />
+                        <X size={13} />
                       </button>
                     </div>
                   ))}
@@ -215,21 +221,16 @@ export default function ReportsPage() {
             <button
               onClick={handleSend}
               disabled={sending}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem', padding: '0.875rem 1.5rem', borderRadius: '0.75rem', border: 'none', background: sending ? '#6b7280' : 'linear-gradient(135deg, #3b82f6, #2563eb)', color: 'white', fontWeight: 600, fontSize: '0.9rem', cursor: sending ? 'not-allowed' : 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(59,130,246,0.3)' }}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem', padding: '0.875rem', borderRadius: '0.75rem', border: 'none', background: sending ? '#6b7280' : 'linear-gradient(135deg,#3b82f6,#2563eb)', color: 'white', fontWeight: 600, fontSize: '0.9rem', cursor: sending ? 'not-allowed' : 'pointer', boxShadow: '0 4px 12px rgba(59,130,246,0.3)' }}
             >
-              {sending ? (
-                <>
-                  <span style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: 'white', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} />
-                  Sending...
-                </>
-              ) : (
-                <><Send size={17} /> Send Report to Owner</>
-              )}
+              {sending
+                ? <><Loader size={16} style={{ animation: 'rSpin 0.8s linear infinite' }} /> Uploading &amp; Sending…</>
+                : <><Send size={17} /> Send Report to Owner</>}
             </button>
           </div>
         </div>
 
-        {/* Sent Reports History */}
+        {/* ── Sent Reports History ── */}
         <div style={{ background: 'white', borderRadius: '1.25rem', padding: '2rem', border: '1px solid #f3f4f6', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid #f3f4f6' }}>
             <div style={{ width: 38, height: 38, borderRadius: '0.75rem', background: '#f0fdf4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -241,35 +242,45 @@ export default function ReportsPage() {
             </div>
           </div>
 
-          {sent.length === 0 ? (
+          {loadingSent ? (
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem', color: '#9ca3af', gap: '0.5rem', alignItems: 'center' }}>
+              <Loader size={20} style={{ animation: 'rSpin 0.8s linear infinite' }} /> Loading…
+            </div>
+          ) : sent.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '3rem', color: '#9ca3af' }}>
-              <FileText size={40} style={{ margin: '0 auto 1rem', display: 'block' }} />
-              <p>No reports sent yet.</p>
+              <FileText size={40} style={{ margin: '0 auto 1rem', display: 'block', opacity: 0.3 }} />
+              <p style={{ fontSize: '0.875rem' }}>No reports sent yet.</p>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem', maxHeight: '480px', overflowY: 'auto' }}>
               {sent.map(r => (
-                <div key={r.id} style={{ padding: '1rem 1.25rem', borderRadius: '0.875rem', border: '1px solid #f3f4f6', background: '#fafafa', transition: 'border-color 0.15s' }}
+                <div key={r._id}
+                  style={{ padding: '1rem 1.25rem', borderRadius: '0.875rem', border: '1px solid #f3f4f6', background: '#fafafa' }}
                   onMouseEnter={e => e.currentTarget.style.borderColor = '#dbeafe'}
                   onMouseLeave={e => e.currentTarget.style.borderColor = '#f3f4f6'}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', marginBottom: '0.5rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', marginBottom: '0.4rem' }}>
                     <h4 style={{ margin: 0, fontSize: '0.875rem', fontWeight: 600, color: '#111827', lineHeight: 1.4 }}>{r.subject}</h4>
                     <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', background: '#d1fae5', color: '#065f46', fontSize: '0.7rem', fontWeight: 600, padding: '0.2rem 0.6rem', borderRadius: '9999px', flexShrink: 0 }}>
                       <Check size={11} /> Delivered
                     </span>
                   </div>
-                  <div style={{ display: 'flex', gap: '1.5rem', fontSize: '0.75rem', color: '#9ca3af', marginBottom: r.attachments.length > 0 ? '0.625rem' : 0 }}>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}><Mail size={12} /> {r.to}</span>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}><Clock size={12} /> {r.sentAt}</span>
+                  <div style={{ display: 'flex', gap: '1.5rem', fontSize: '0.75rem', color: '#9ca3af', marginBottom: r.attachments?.length > 0 ? '0.5rem' : 0 }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}><Clock size={12} /> {formatDate(r.createdAt)}</span>
                   </div>
-                  {r.attachments.length > 0 && (
-                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                      {r.attachments.map((a, i) => (
-                        <span key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', background: '#eff6ff', color: '#1d4ed8', fontSize: '0.72rem', fontWeight: 500, padding: '0.2rem 0.6rem', borderRadius: '0.375rem' }}>
-                          <Paperclip size={11} /> {a}
-                        </span>
-                      ))}
+                  {r.attachments?.length > 0 && (
+                    <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                      {r.attachments.map((a, i) => {
+                        const dlUrl = a.publicId 
+                          ? `${API_BASE}/reports/download/${a.publicId}?name=${encodeURIComponent(a.originalName)}&token=${token}`
+                          : a.fileUrl;
+                        return (
+                          <a key={i} href={dlUrl} target="_blank" rel="noreferrer" download={a.originalName}
+                            style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', background: '#eff6ff', color: '#1d4ed8', fontSize: '0.72rem', fontWeight: 500, padding: '0.2rem 0.6rem', borderRadius: '0.375rem', textDecoration: 'none' }}>
+                            <Paperclip size={11} /> {a.originalName}
+                          </a>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
@@ -277,12 +288,9 @@ export default function ReportsPage() {
             </div>
           )}
         </div>
-
       </div>
 
-      <style>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
-      `}</style>
+      <style>{`@keyframes rSpin { to { transform: rotate(360deg); } }`}</style>
     </section>
   );
 }

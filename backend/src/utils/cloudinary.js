@@ -51,4 +51,41 @@ const deleteImage = async (publicId) => {
   await cloudinary.uploader.destroy(publicId);
 };
 
-module.exports = { uploadSingle, uploadMultiple, deleteImage };
+/**
+ * Upload any file (PDF, DOCX, ZIP, MP4, etc.) to Cloudinary.
+ * Uses resource_type: 'auto' so Cloudinary detects the type.
+ * @param {Buffer} fileBuffer - The file buffer from multer
+ * @param {string} folder - The Cloudinary folder
+ * @param {string} originalName - Original filename (for display)
+ * @returns {Promise<{url: string, publicId: string}>}
+ */
+const uploadRaw = (fileBuffer, folder, originalName) => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder,
+        resource_type: 'auto',
+        use_filename: true,
+        unique_filename: true,
+      },
+      (error, result) => {
+        if (error) return reject(new ApiError(500, `Cloudinary upload failed: ${error.message}`));
+        resolve({ url: result.secure_url, publicId: result.public_id });
+      }
+    );
+    uploadStream.end(fileBuffer);
+  });
+};
+
+/**
+ * Delete any resource (image, raw, video) from Cloudinary.
+ * @param {string} publicId
+ * @param {'image'|'raw'|'video'|'auto'} resourceType
+ */
+const deleteRaw = async (publicId, resourceType = 'auto') => {
+  if (!publicId) return;
+  await cloudinary.uploader.destroy(publicId, { resource_type: resourceType });
+};
+
+module.exports = { uploadSingle, uploadMultiple, deleteImage, uploadRaw, deleteRaw };
+

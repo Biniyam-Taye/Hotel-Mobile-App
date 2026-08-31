@@ -4,11 +4,17 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const errorHandler = require('./middlewares/error.middleware');
 
+const path = require('path');
+
 const app = express();
 
 // Global Middlewares
-app.use(helmet());
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(cors());
+
+// Serve uploaded files statically for instant browser preview
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+
 // Stripe Webhook must be parsed as raw body before express.json()
 app.post(
   '/api/v1/payments/webhook',
@@ -39,6 +45,7 @@ const engagementRoutes = require('./routes/engagement.routes');
 const paymentRoutes = require('./routes/payment.routes');
 const dashboardRoutes = require('./routes/dashboard.routes');
 const messageRoutes = require('./routes/message.routes');
+const reportRoutes  = require('./routes/report.routes');
 
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/rooms', roomRoutes);
@@ -53,6 +60,7 @@ app.use('/api/v1/engagement', engagementRoutes);
 app.use('/api/v1/payments', paymentRoutes);
 app.use('/api/v1/dashboard', dashboardRoutes);
 app.use('/api/v1/messages', messageRoutes);
+app.use('/api/v1/reports',  reportRoutes);
 
 // Handle unknown routes
 app.use((req, res, next) => {
