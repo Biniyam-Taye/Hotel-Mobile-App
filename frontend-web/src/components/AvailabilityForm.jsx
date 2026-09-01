@@ -1,6 +1,6 @@
 // src/components/AvailabilityForm.jsx
 import { useState } from 'react';
-import { Calendar, Users, ArrowRight, CheckCircle, XCircle } from 'lucide-react';
+import { Calendar, Users, ArrowRight, CheckCircle, XCircle, X } from 'lucide-react';
 
 const AvailabilityForm = ({ roomName, roomPrice }) => {
   const [checkIn, setCheckIn] = useState('');
@@ -8,19 +8,46 @@ const AvailabilityForm = ({ roomName, roomPrice }) => {
   const [guests, setGuests] = useState(1);
   const [availabilityStatus, setAvailabilityStatus] = useState(null);
   const [isChecking, setIsChecking] = useState(false);
+  const [showBookingModal, setShowBookingModal] = useState(false);
+
+  // Booking Modal Form State
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [bookingSuccess, setBookingSuccess] = useState(false);
 
   const handleCheckAvailability = (e) => {
     e.preventDefault();
+
+    if (availabilityStatus === 'available') {
+      setShowBookingModal(true);
+      return;
+    }
+
     setIsChecking(true);
     setAvailabilityStatus(null);
 
-    // Simulate API call
+    // Simulate API check
     setTimeout(() => {
-      // Random availability for demo
-      const isAvailable = Math.random() > 0.3;
+      const isAvailable = Math.random() > 0.15; // High chance of available
       setAvailabilityStatus(isAvailable ? 'available' : 'unavailable');
       setIsChecking(false);
-    }, 1000);
+    }, 800);
+  };
+
+  const handleConfirmBooking = (e) => {
+    e.preventDefault();
+    setBookingSuccess(true);
+    setTimeout(() => {
+      setBookingSuccess(false);
+      setShowBookingModal(false);
+      setAvailabilityStatus(null);
+      setCheckIn('');
+      setCheckOut('');
+      setFullName('');
+      setEmail('');
+      setPhone('');
+    }, 2500);
   };
 
   // Calculate number of nights
@@ -117,7 +144,7 @@ const AvailabilityForm = ({ roomName, roomPrice }) => {
           color: #1a1a1a;
           border: none;
           border-radius: 9999px;
-          font-weight: 600;
+          font-weight: 700;
           font-size: 16px;
           cursor: pointer;
           transition: all 0.3s ease;
@@ -133,6 +160,18 @@ const AvailabilityForm = ({ roomName, roomPrice }) => {
           background: #c5a028;
           transform: translateY(-2px);
           box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+        }
+
+        .availability-card .btn-check.btn-book-now {
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+          color: #ffffff;
+          box-shadow: 0 4px 18px rgba(16, 185, 129, 0.35);
+        }
+
+        .availability-card .btn-check.btn-book-now:hover {
+          background: linear-gradient(135deg, #059669 0%, #047857 100%);
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(16, 185, 129, 0.45);
         }
 
         .availability-card .btn-check:disabled {
@@ -205,6 +244,59 @@ const AvailabilityForm = ({ roomName, roomPrice }) => {
           to { transform: rotate(360deg); }
         }
 
+        /* ===== MODAL STYLES ===== */
+        .modal-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.6);
+          backdrop-filter: blur(6px);
+          z-index: 1000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 20px;
+        }
+
+        .modal-card {
+          background: #ffffff;
+          border-radius: 20px;
+          max-width: 480px;
+          width: 100%;
+          padding: 28px;
+          box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+          position: relative;
+          animation: modalUp 0.3s ease;
+        }
+
+        @keyframes modalUp {
+          from { transform: translateY(20px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-close {
+          position: absolute;
+          top: 20px;
+          right: 20px;
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: #6b7280;
+          transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+          color: #1a1a1a;
+        }
+
+        .modal-summary {
+          background: #f8fafc;
+          border-radius: 12px;
+          padding: 14px 18px;
+          margin: 16px 0;
+          font-size: 13.5px;
+          color: #4b5563;
+        }
+
         @media (max-width: 480px) {
           .availability-card {
             padding: 18px 16px;
@@ -256,7 +348,10 @@ const AvailabilityForm = ({ roomName, roomPrice }) => {
             <label>Guests</label>
             <select
               value={guests}
-              onChange={(e) => setGuests(parseInt(e.target.value))}
+              onChange={(e) => {
+                setGuests(parseInt(e.target.value));
+                setAvailabilityStatus(null);
+              }}
             >
               <option value={1}>1 Guest</option>
               <option value={2}>2 Guests</option>
@@ -268,12 +363,16 @@ const AvailabilityForm = ({ roomName, roomPrice }) => {
 
           <button
             type="submit"
-            className="btn-check"
+            className={`btn-check ${availabilityStatus === 'available' ? 'btn-book-now' : ''}`}
             disabled={isChecking || !checkIn || !checkOut}
           >
             {isChecking ? (
               <>
                 <span className="spinner"></span> Checking...
+              </>
+            ) : availabilityStatus === 'available' ? (
+              <>
+                Book Now <Calendar size={18} />
               </>
             ) : (
               <>
@@ -285,7 +384,7 @@ const AvailabilityForm = ({ roomName, roomPrice }) => {
 
         {nights > 0 && totalPrice > 0 && availabilityStatus === 'available' && (
           <div style={{ textAlign: 'center', marginTop: '12px', fontSize: '14px', color: '#4b5563' }}>
-            <span style={{ fontWeight: 600 }}>{nights} nights</span> · Total: <span style={{ fontWeight: 700, color: '#d4af37' }}>ETB {totalPrice.toLocaleString()}</span>
+            <span style={{ fontWeight: 600 }}>{nights} nights</span> · Total: <span style={{ fontWeight: 700, color: '#10b981' }}>ETB {totalPrice.toLocaleString()}</span>
           </div>
         )}
 
@@ -300,10 +399,7 @@ const AvailabilityForm = ({ roomName, roomPrice }) => {
             <div>
               ✅ Available!
               <div className="details">
-                Room is available for your selected dates.
-                {nights > 0 && totalPrice > 0 && (
-                  <> Total: <strong>ETB {totalPrice.toLocaleString()}</strong></>
-                )}
+                Room is available for your selected dates. Click <strong>Book Now</strong> above to complete your booking.
               </div>
             </div>
           </div>
@@ -322,6 +418,84 @@ const AvailabilityForm = ({ roomName, roomPrice }) => {
           </div>
         )}
       </div>
+
+      {/* ===== BOOKING CONFIRMATION MODAL ===== */}
+      {showBookingModal && (
+        <div className="modal-overlay" onClick={() => setShowBookingModal(false)}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setShowBookingModal(false)}>
+              <X size={20} />
+            </button>
+
+            {bookingSuccess ? (
+              <div style={{ textAlign: 'center', padding: '20px 0' }}>
+                <CheckCircle size={48} color="#10b981" style={{ margin: '0 auto 16px' }} />
+                <h3 style={{ fontSize: '22px', color: '#1a1a1a', margin: '0 0 8px' }}>Booking Confirmed!</h3>
+                <p style={{ color: '#6b7280', fontSize: '14px', margin: 0 }}>
+                  🎉 Thank you {fullName}! Your reservation for {roomName} is confirmed. We look forward to hosting you!
+                </p>
+              </div>
+            ) : (
+              <>
+                <h3 style={{ fontSize: '20px', color: '#1a1a1a', margin: '0 0 4px', fontFamily: 'Montserrat, sans-serif' }}>
+                  Complete Your Booking
+                </h3>
+                <p style={{ fontSize: '13.5px', color: '#6b7280', margin: 0 }}>
+                  {roomName}
+                </p>
+
+                <div className="modal-summary">
+                  <div><strong>Check-In:</strong> {checkIn}</div>
+                  <div><strong>Check-Out:</strong> {checkOut} ({nights} nights)</div>
+                  <div><strong>Guests:</strong> {guests}</div>
+                  <div style={{ marginTop: '6px', fontSize: '15px', color: '#10b981', fontWeight: 700 }}>
+                    Total: ETB {totalPrice.toLocaleString()}
+                  </div>
+                </div>
+
+                <form onSubmit={handleConfirmBooking}>
+                  <div className="availability-card" style={{ padding: 0, boxShadow: 'none', border: 'none', maxWidth: '100%' }}>
+                    <div className="form-group">
+                      <label>Full Name</label>
+                      <input
+                        type="text"
+                        placeholder="John Doe"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Email Address</label>
+                      <input
+                        type="email"
+                        placeholder="john@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Phone Number</label>
+                      <input
+                        type="tel"
+                        placeholder="+251 91 234 5678"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <button type="submit" className="btn-check btn-book-now">
+                      Confirm & Reserve Room
+                    </button>
+                  </div>
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </>
   );
 };

@@ -1,7 +1,7 @@
 // src/components/OfferDetail.jsx
 import { useParams, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Clock, Calendar, Users, Star } from 'lucide-react';
+import { ArrowLeft, Clock, Calendar, Users, Star, CheckCircle, XCircle, X, ArrowRight } from 'lucide-react';
 import { fetchOfferById } from '../services/offersApi';
 
 const OfferDetail = () => {
@@ -10,6 +10,20 @@ const OfferDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeImage, setActiveImage] = useState('');
+
+  // Check Availability State
+  const [checkIn, setCheckIn] = useState('');
+  const [checkOut, setCheckOut] = useState('');
+  const [guests, setGuests] = useState(2);
+  const [availabilityStatus, setAvailabilityStatus] = useState(null);
+  const [isChecking, setIsChecking] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+
+  // Contact State
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [bookingSuccess, setBookingSuccess] = useState(false);
 
   useEffect(() => {
     const loadOffer = async () => {
@@ -27,6 +41,38 @@ const OfferDetail = () => {
     };
     loadOffer();
   }, [id]);
+
+  const handleCheckAvailability = (e) => {
+    e.preventDefault();
+
+    if (availabilityStatus === 'available') {
+      setShowModal(true);
+      return;
+    }
+
+    setIsChecking(true);
+    setAvailabilityStatus(null);
+
+    setTimeout(() => {
+      setAvailabilityStatus('available');
+      setIsChecking(false);
+    }, 750);
+  };
+
+  const handleConfirmBooking = (e) => {
+    e.preventDefault();
+    setBookingSuccess(true);
+    setTimeout(() => {
+      setBookingSuccess(false);
+      setShowModal(false);
+      setAvailabilityStatus(null);
+      setCheckIn('');
+      setCheckOut('');
+      setFullName('');
+      setEmail('');
+      setPhone('');
+    }, 2500);
+  };
 
   if (loading) {
     return (
@@ -49,7 +95,6 @@ const OfferDetail = () => {
     );
   }
 
-  // Combine main image and detail images for the gallery
   const galleryImages = [offer.image, ...(offer.detailImages || [])].filter(Boolean);
 
   return (
@@ -216,6 +261,7 @@ const OfferDetail = () => {
           display: grid;
           grid-template-columns: 1fr;
           gap: 12px;
+          margin-bottom: 24px;
         }
         @media (min-width: 480px) {
           .info-cards { grid-template-columns: repeat(3, 1fr); }
@@ -253,6 +299,105 @@ const OfferDetail = () => {
           margin-top: 4px;
         }
 
+        /* --- Check Availability Card --- */
+        .availability-box {
+          background: #ffffff;
+          border-radius: 18px;
+          padding: 24px;
+          border: 1px solid #e5e7eb;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+          margin-top: 10px;
+        }
+        .availability-box h4 {
+          margin: 0 0 16px;
+          font-size: 16px;
+          font-weight: 700;
+          color: #1a1a1a;
+          font-family: 'Montserrat', sans-serif;
+        }
+        .form-row-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+          margin-bottom: 14px;
+        }
+        .form-field label {
+          display: block;
+          font-size: 12px;
+          font-weight: 600;
+          color: #374151;
+          margin-bottom: 4px;
+        }
+        .form-field input, .form-field select {
+          width: 100%;
+          padding: 10px 12px;
+          border: 1px solid #d1d5db;
+          border-radius: 10px;
+          font-size: 13.5px;
+          font-family: 'Poppins', sans-serif;
+          box-sizing: border-box;
+          background: #f9fafb;
+        }
+        .btn-check-avail {
+          width: 100%;
+          padding: 13px;
+          background: #d4af37;
+          color: #1a1a1a;
+          border: none;
+          border-radius: 9999px;
+          font-weight: 700;
+          font-size: 15px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          font-family: 'Poppins', sans-serif;
+        }
+        .btn-check-avail:hover {
+          background: #c5a028;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(212,175,55,0.35);
+        }
+        .btn-check-avail.btn-book-now {
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+          color: #ffffff;
+          box-shadow: 0 4px 18px rgba(16, 185, 129, 0.35);
+        }
+        .btn-check-avail.btn-book-now:hover {
+          background: linear-gradient(135deg, #059669 0%, #047857 100%);
+          box-shadow: 0 8px 25px rgba(16, 185, 129, 0.45);
+        }
+
+        /* --- Modal Styles --- */
+        .modal-overlay {
+          position: fixed; inset: 0;
+          background: rgba(0,0,0,0.6);
+          backdrop-filter: blur(6px);
+          z-index: 1000;
+          display: flex; align-items: center; justify-content: center;
+          padding: 20px;
+        }
+        .modal-card {
+          background: #ffffff;
+          border-radius: 20px;
+          max-width: 480px;
+          width: 100%;
+          padding: 28px;
+          box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+          position: relative;
+          animation: modalUp 0.3s ease;
+        }
+        @keyframes modalUp {
+          from { transform: translateY(20px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+        .modal-close {
+          position: absolute; top: 20px; right: 20px;
+          background: none; border: none; cursor: pointer; color: #6b7280;
+        }
+
         /* --- Package Highlights --- */
         .highlights-section {
           margin-top: 60px;
@@ -274,9 +419,7 @@ const OfferDetail = () => {
           margin: 0 0 40px 0;
           color: #1a1a1a;
         }
-        .highlights-title span {
-          color: #d4af37;
-        }
+        .highlights-title span { color: #d4af37; }
         .highlights-grid {
           display: grid;
           grid-template-columns: 1fr;
@@ -297,102 +440,16 @@ const OfferDetail = () => {
           cursor: default;
           border: 1px solid #f1f3f5;
         }
-
-        .highlight-card::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 4px;
-          background: #d4af37;
-          transform: scaleX(0);
-          transform-origin: left;
-          transition: transform 0.4s ease;
-          z-index: 1;
-        }
-
-        .highlight-card:hover::before {
-          transform: scaleX(1);
-        }
-
         .highlight-card:hover {
           transform: translateY(-8px);
           box-shadow: 0 16px 40px rgba(0,0,0,0.06);
           border-color: rgba(212, 175, 55, 0.2);
         }
 
-        .highlight-card .number-badge {
-          background: #d4af37;
-          color: #1a1a1a;
-          width: 32px;
-          height: 32px;
-          border-radius: 10px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: 700;
-          font-size: 14px;
-          margin-bottom: 12px;
-          transition: transform 0.4s ease, box-shadow 0.4s ease;
-        }
-
-        .highlight-card:hover .number-badge {
-          transform: scale(1.05);
-          box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
-        }
-
-        .highlight-card h4 {
-          font-size: 16px;
-          font-weight: 700;
-          margin: 0 0 6px 0;
-          color: #1a1a1a;
-        }
-        .highlight-card p {
-          font-size: 13px;
-          color: #6b7280;
-          line-height: 1.5;
-          margin: 0;
-        }
-
-        .highlight-card .bottom-line {
-          height: 3px;
-          width: 30px;
-          margin-top: 16px;
-          border-radius: 99px;
-          background: #d4af37;
-          transition: width 0.4s ease;
-        }
-
-        .highlight-card:hover .bottom-line {
-          width: 100%;
-        }
-
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
-          .detail-title {
-            font-size: 32px;
-          }
-          .main-image-wrapper {
-            height: 320px;
-          }
-          .highlights-title {
-            font-size: 26px;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .detail-title { font-size: 26px; }
-          .main-image-wrapper { height: 240px; }
-          .detail-highlight { font-size: 15px; }
-          .highlights-title { font-size: 22px; }
-          .thumbnail-strip img {
-            width: 60px;
-            height: 60px;
-          }
-          .info-card .value {
-            font-size: 15px;
-          }
+          .detail-title { font-size: 32px; }
+          .main-image-wrapper { height: 320px; }
+          .form-row-grid { grid-template-columns: 1fr; }
         }
       `}</style>
 
@@ -462,6 +519,70 @@ const OfferDetail = () => {
                   <div className="value">{offer.guests}</div>
                 </div>
               </div>
+
+              {/* ===== CHECK AVAILABILITY & BOOKING FORM ===== */}
+              <div className="availability-box">
+                <h4>Check Availability & Book Package</h4>
+                <form onSubmit={handleCheckAvailability}>
+                  <div className="form-row-grid">
+                    <div className="form-field">
+                      <label>Check-In Date</label>
+                      <input
+                        type="date"
+                        value={checkIn}
+                        onChange={(e) => { setCheckIn(e.target.value); setAvailabilityStatus(null); }}
+                        required
+                        min={new Date().toISOString().split('T')[0]}
+                      />
+                    </div>
+                    <div className="form-field">
+                      <label>Check-Out Date</label>
+                      <input
+                        type="date"
+                        value={checkOut}
+                        onChange={(e) => { setCheckOut(e.target.value); setAvailabilityStatus(null); }}
+                        required
+                        min={checkIn || new Date().toISOString().split('T')[0]}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-field" style={{ marginBottom: '16px' }}>
+                    <label>Guests</label>
+                    <select
+                      value={guests}
+                      onChange={(e) => { setGuests(parseInt(e.target.value)); setAvailabilityStatus(null); }}
+                    >
+                      <option value={1}>1 Guest</option>
+                      <option value={2}>2 Guests</option>
+                      <option value={3}>3 Guests</option>
+                      <option value={4}>4 Guests</option>
+                      <option value={5}>5+ Guests</option>
+                    </select>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className={`btn-check-avail ${availabilityStatus === 'available' ? 'btn-book-now' : ''}`}
+                    disabled={isChecking || !checkIn || !checkOut}
+                  >
+                    {isChecking ? (
+                      <>Checking Availability...</>
+                    ) : availabilityStatus === 'available' ? (
+                      <>Book Package Now <Calendar size={18} /></>
+                    ) : (
+                      <>Check Availability <ArrowRight size={18} /></>
+                    )}
+                  </button>
+                </form>
+
+                {availabilityStatus === 'available' && (
+                  <div style={{ marginTop: '14px', padding: '12px', background: '#dcfce7', color: '#16a34a', borderRadius: '10px', fontSize: '13.5px', fontWeight: 600, textAlign: 'center' }}>
+                    ✅ Special package is available! Click <strong>Book Package Now</strong> above to complete.
+                  </div>
+                )}
+              </div>
+
             </div>
           </div>
 
@@ -485,6 +606,75 @@ const OfferDetail = () => {
 
         </div>
       </section>
+
+      {/* ===== BOOKING CONFIRMATION MODAL ===== */}
+      {showModal && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setShowModal(false)}>
+              <X size={20} />
+            </button>
+
+            {bookingSuccess ? (
+              <div style={{ textAlign: 'center', padding: '20px 0' }}>
+                <CheckCircle size={48} color="#10b981" style={{ margin: '0 auto 16px' }} />
+                <h3 style={{ fontSize: '22px', color: '#1a1a1a', margin: '0 0 8px' }}>Offer Booked!</h3>
+                <p style={{ color: '#6b7280', fontSize: '14px', margin: 0 }}>
+                  🎉 Thank you {fullName}! Your booking for {offer.title} has been confirmed!
+                </p>
+              </div>
+            ) : (
+              <>
+                <h3 style={{ fontSize: '20px', color: '#1a1a1a', margin: '0 0 4px', fontFamily: 'Montserrat, sans-serif' }}>
+                  Complete Package Reservation
+                </h3>
+                <p style={{ fontSize: '13.5px', color: '#6b7280', margin: '0 0 16px' }}>
+                  {offer.title} ({checkIn} to {checkOut})
+                </p>
+
+                <form onSubmit={handleConfirmBooking}>
+                  <div className="form-field" style={{ marginBottom: '12px' }}>
+                    <label>Full Name</label>
+                    <input
+                      type="text"
+                      placeholder="John Doe"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="form-field" style={{ marginBottom: '12px' }}>
+                    <label>Email Address</label>
+                    <input
+                      type="email"
+                      placeholder="john@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="form-field" style={{ marginBottom: '16px' }}>
+                    <label>Phone Number</label>
+                    <input
+                      type="tel"
+                      placeholder="+251 91 234 5678"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <button type="submit" className="btn-check-avail btn-book-now">
+                    Confirm & Reserve Package
+                  </button>
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </>
   );
 };

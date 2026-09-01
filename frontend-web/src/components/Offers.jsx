@@ -97,17 +97,18 @@ const Offers = () => {
 
         .offers-grid {
           display: grid;
-          grid-template-columns: 1fr;
-          gap: 24px;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 20px;
         }
 
         .offer-card {
           background: #ffffff;
-          border-radius: 16px;
+          border-radius: 18px;
           overflow: hidden;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-          border: 1px solid #e5e7eb;
-          transition: all 0.4s ease;
+          box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+          border: 1px solid rgba(0,0,0,0.06);
+          transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2),
+                      box-shadow 0.4s ease, border-color 0.4s ease;
           display: flex;
           flex-direction: column;
           position: relative;
@@ -116,9 +117,9 @@ const Offers = () => {
         }
 
         .offer-card:hover {
-          transform: translateY(-8px);
-          border-color: rgba(212, 175, 55, 0.2);
-          box-shadow: 0 16px 48px rgba(0,0,0,0.08);
+          transform: translateY(-8px) scale(1.015);
+          box-shadow: 0 22px 44px rgba(0,0,0,0.12), 0 0 0 1px rgba(212, 175, 55, 0.15);
+          border-color: rgba(212, 175, 55, 0.35);
         }
 
         .offer-card::after {
@@ -127,11 +128,11 @@ const Offers = () => {
           bottom: 0;
           left: 0;
           width: 0;
-          height: 5px;
-          border-radius: 0 0 16px 16px;
-          background: var(--card-line-color, #d4af37);
-          transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-          z-index: 2;
+          height: 3px;
+          border-radius: 0 0 18px 18px;
+          background: linear-gradient(90deg, #d4af37, #f5d879);
+          transition: width 0.42s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          z-index: 3;
         }
 
         .offer-card:hover::after {
@@ -140,104 +141,142 @@ const Offers = () => {
 
         .offer-card .offer-image {
           position: relative;
-          height: 180px;
+          height: 200px;
           overflow: hidden;
           background: #f3f4f6;
+          flex-shrink: 0;
         }
 
         .offer-card .offer-image img {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          transition: transform 0.6s ease;
+          transition: transform 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          display: block;
         }
 
         .offer-card:hover .offer-image img {
-          transform: scale(1.06);
+          transform: scale(1.08) rotate(1deg);
+        }
+
+        .offer-card .offer-image::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            to bottom,
+            rgba(0,0,0,0.25) 0%,
+            transparent 50%,
+            rgba(0,0,0,0.15) 100%
+          );
+          z-index: 1;
+          pointer-events: none;
+        }
+
+        .offer-card .offer-image .hover-vignette {
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(circle, transparent 40%, rgba(212, 175, 55, 0.18) 100%);
+          opacity: 0;
+          z-index: 1;
+          pointer-events: none;
+          transition: opacity 0.5s ease;
+        }
+        .offer-card:hover .offer-image .hover-vignette {
+          opacity: 1;
         }
 
         .offer-card .offer-image .discount-badge {
           position: absolute;
-          top: 12px;
-          left: 12px;
+          top: 10px;
+          left: 10px;
           background: #ef4444;
           color: #ffffff;
-          padding: 4px 14px;
+          padding: 4px 12px;
           border-radius: 9999px;
-          font-weight: 700;
-          font-size: 13px;
+          font-weight: 800;
+          font-size: 11.5px;
           box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+          z-index: 2;
+          font-family: 'Montserrat', sans-serif;
         }
 
         .offer-card .offer-image .popular-badge {
           position: absolute;
-          top: 12px;
-          right: 12px;
-          background: #d4af37;
-          color: #1a1a1a;
-          padding: 4px 12px;
+          top: 10px;
+          right: 10px;
+          background: linear-gradient(135deg, #d4af37 0%, #f5d879 100%);
+          color: #3d2e00;
+          padding: 4px 10px;
           border-radius: 9999px;
-          font-size: 10px;
-          font-weight: 700;
+          font-size: 9px;
+          font-weight: 900;
           text-transform: uppercase;
           letter-spacing: 1px;
+          box-shadow: 0 3px 10px rgba(212,175,55,0.50);
+          z-index: 2;
+          font-family: 'Montserrat', sans-serif;
         }
 
         .offer-card .offer-details {
-          padding: 18px 20px 20px;
+          padding: 14px 16px 16px;
           flex: 1;
           display: flex;
           flex-direction: column;
         }
 
-        .offer-card .offer-details .offer-icon {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 40px;
-          height: 40px;
-          background: rgba(212, 175, 55, 0.08);
-          border-radius: 50%;
-          color: #d4af37;
-          margin-bottom: 10px;
-        }
-
         .offer-card .offer-details .offer-title {
-          font-size: 18px;
-          font-weight: 700;
+          font-family: 'Montserrat', sans-serif;
+          font-size: 14px;
+          font-weight: 800;
           color: #1a1a1a;
-          margin: 0 0 2px;
+          margin: 0 0 3px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), color 0.4s ease;
+        }
+        .offer-card:hover .offer-details .offer-title {
+          transform: translateX(4px);
+          color: #d4af37;
         }
 
         .offer-card .offer-details .offer-subtitle {
-          font-size: 12px;
+          font-size: 10.5px;
           color: #d4af37;
-          font-weight: 600;
+          font-weight: 700;
           text-transform: uppercase;
           letter-spacing: 0.5px;
           margin-bottom: 6px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
         .offer-card .offer-details .offer-description {
-          font-size: 13px;
+          font-family: 'Poppins', sans-serif;
+          font-size: 12px;
           color: #6b7280;
           line-height: 1.5;
-          margin: 0 0 12px;
+          margin: 0 0 10px;
           flex: 1;
           display: -webkit-box;
-          -webkit-line-clamp: 3;
+          -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
+          transition: color 0.4s ease;
+        }
+        .offer-card:hover .offer-details .offer-description {
+          color: #374151;
         }
 
         .offer-card .offer-details .offer-footer {
           display: flex;
-          justify-content: space-between;
-          align-items: center;
+          flex-direction: column;
+          gap: 10px;
+          margin-top: auto;
           padding-top: 10px;
-          border-top: 1px solid #f1f3f5;
-          flex-wrap: wrap;
-          gap: 8px;
+          border-top: 1px solid #f1f5f9;
         }
 
         .offer-card .offer-details .offer-footer .valid {
@@ -246,65 +285,70 @@ const Offers = () => {
           display: flex;
           align-items: center;
           gap: 4px;
+          font-family: 'Poppins', sans-serif;
         }
 
         .offer-actions {
-          display: flex;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
           gap: 8px;
-          align-items: center;
+          width: 100%;
         }
 
         .btn-view-details {
-          display: inline-flex;
+          display: flex;
           align-items: center;
           justify-content: center;
-          gap: 6px;
-          padding: 8px 18px;
-          border: 2px solid #d4af37;
+          gap: 5px;
+          padding: 8px 6px;
+          border: 1.5px solid #d1d5db;
           background: transparent;
-          color: #d4af37;
+          color: #4b5563;
           border-radius: 9999px;
           font-weight: 600;
-          font-size: 13px;
+          font-size: 11.5px;
           cursor: pointer;
-          transition: all 0.3s ease;
+          transition: all 0.25s ease;
           text-decoration: none;
           font-family: 'Poppins', sans-serif;
           white-space: nowrap;
-          min-width: 120px;
+          box-sizing: border-box;
         }
 
         .btn-view-details:hover {
-          background: #d4af37;
+          background: #fafafa;
+          border-color: #d4af37;
           color: #1a1a1a !important;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+          box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+          transform: translateY(-1px);
         }
 
         .btn-book-offer {
-          display: inline-flex;
+          display: flex;
           align-items: center;
           justify-content: center;
-          gap: 6px;
-          padding: 8px 20px;
-          background: #d4af37;
+          gap: 5px;
+          padding: 8px 6px;
+          background: linear-gradient(135deg, #c9a227 0%, #e8c848 55%, #c9a227 100%);
+          background-size: 200% auto;
           color: #1a1a1a;
           border: none;
           border-radius: 9999px;
-          font-weight: 600;
-          font-size: 13px;
+          font-weight: 700;
+          font-size: 11.5px;
           cursor: pointer;
-          transition: all 0.3s ease;
+          transition: background-position 0.4s ease, transform 0.25s ease, box-shadow 0.25s ease;
           font-family: 'Poppins', sans-serif;
           white-space: nowrap;
-          min-width: 120px;
+          box-sizing: border-box;
+          box-shadow: 0 3px 12px rgba(212,175,55,0.32);
         }
 
         .btn-book-offer:hover {
-          background: #c5a028;
+          background-position: right center;
           color: #1a1a1a !important;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+          transform: translateY(-2px) scale(1.02);
+          box-shadow: 0 7px 20px rgba(212,175,55,0.45);
         }
 
         .explore-all-wrapper {
@@ -353,72 +397,33 @@ const Offers = () => {
           color: #d4af37;
         }
 
-        /* ── Loading / empty states ── */
-        .offers-status {
-          text-align: center;
-          padding: 60px 24px;
-          color: #9ca3af;
-          font-size: 15px;
-        }
-        .offers-status.err { color: #b91c1c; }
-
-        @media (min-width: 1024px) {
-          .offers-grid {
-            grid-template-columns: repeat(4, 1fr);
-            gap: 24px;
-          }
-          .offer-card .offer-image {
-            height: 200px;
-          }
-          .offers-section {
-            padding: 100px 24px;
-          }
-        }
-
-        @media (min-width: 640px) and (max-width: 1023px) {
+        /* ── Responsive Grid ── */
+        @media (max-width: 1199px) {
           .offers-grid {
             grid-template-columns: repeat(2, 1fr);
-            gap: 24px;
+            gap: 18px;
           }
           .offer-card .offer-image {
-            height: 200px;
+            height: 220px;
           }
         }
 
-        @media (max-width: 480px) {
+        @media (max-width: 640px) {
           .offers-section {
             padding: 60px 16px;
+          }
+          .offers-grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
           }
           .offers-header h2 {
             font-size: 28px;
           }
           .offer-card .offer-image {
-            height: 180px;
+            height: 200px;
           }
           .offer-card .offer-details {
-            padding: 16px;
-          }
-          .offer-card .offer-details .offer-title {
-            font-size: 16px;
-          }
-          .offer-card .offer-details .offer-footer {
-            flex-direction: column;
-            align-items: stretch;
-          }
-          .offer-actions {
-            width: 100%;
-          }
-          .btn-view-details,
-          .btn-book-offer {
-            flex: 1;
-            justify-content: center;
-            font-size: 12px;
-            padding: 6px 12px;
-            min-width: auto;
-          }
-          .explore-all-btn {
-            font-size: 15px;
-            padding: 14px 24px;
+            padding: 14px 16px 16px;
           }
         }
 
@@ -604,6 +609,7 @@ const Offers = () => {
                   >
                     <div className="offer-image">
                       <img src={offer.image} alt={offer.title} loading="lazy" />
+                      <div className="hover-vignette" />
                       {offer.discount && (
                         <div className="discount-badge">{offer.discount}</div>
                       )}
