@@ -9,7 +9,9 @@ import Amenities from './components/Amenities';
 import RoomDetail from './components/RoomDetail';
 import RoomsPage from './pages/RoomsPage';
 import HospitalityPage from './pages/HospitalityPage';
+import HotelServicesPage from './pages/HotelServicesPage';
 import FacilitiesWellnessPage from './pages/FacilitiesWellnessPage';
+
 import EventsConferencesPage from './pages/EventsConferencesPage';
 import ExperiencePage from './pages/ExperiencePage';
 import AboutPage from './pages/AboutPage';
@@ -76,7 +78,9 @@ function App() {
             {/* ===== MAIN PAGES ===== */}
             <Route path="/rooms" element={<RoomsPage />} />
             <Route path="/hospitality" element={<HospitalityPage />} />
+            <Route path="/hotel-services" element={<HotelServicesPage />} />
             <Route path="/facilities-wellness" element={<FacilitiesWellnessPage />} />
+
             <Route path="/events-conferences" element={<EventsConferencesPage />} />
             <Route path="/experience" element={<ExperiencePage />} />
             <Route path="/about" element={<AboutPage />} />

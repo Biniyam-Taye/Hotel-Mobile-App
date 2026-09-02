@@ -1,870 +1,912 @@
 // src/pages/HospitalityPage.jsx
-import { useState, useEffect } from 'react';
-import { useSearchParams, Link, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
-  ArrowRight, MapPin, Check, Filter, ChevronDown, X, User, Lock,
-  Calendar, LockKeyhole, LayoutGrid, Compass, Sparkles, Dumbbell,
-  HeartPulse, ConciergeBell, PartyPopper, Plane, Waves, Star, Banknote, Coffee
+  Sparkles, BedDouble, Utensils, HeartPulse, ConciergeBell, PartyPopper,
+  Plane, Waves, Star, ShieldCheck, CheckCircle2, PhoneCall, ArrowRight,
+  Clock, Award, Coffee, Gift, Compass, Car, ChevronRight, Check
 } from 'lucide-react';
 
-import { fetchHotelServices } from '../services/hospitalityApi';
-import EventBookingForm from "../components/EventBookingForm";
-
-
-
-// Service types for the specialized hotel services
-const SERVICE_TYPES = [
-  { key: 'All',              label: 'All Services',       Icon: LayoutGrid,     color: '#6b7280' },
-  { key: 'airport_transfer', label: 'Airport Transfer',   Icon: Plane,          color: '#0ea5e9' },
-  { key: 'room_service',     label: 'Room Service',       Icon: Coffee,         color: '#f59e0b' },
-  { key: 'laundry',          label: 'Laundry & Cleaning',  Icon: Check,          color: '#10b981' },
-  { key: 'concierge',        label: 'Concierge & Porter', Icon: ConciergeBell,  color: '#6366f1' },
-  { key: 'other',            label: 'Other Services',     Icon: LayoutGrid,     color: '#6b7280' },
+const HOSPITALITY_PILLARS = [
+  {
+    id: 'suites',
+    number: '01',
+    title: 'Luxury Accommodations & Royal Suites',
+    tag: 'STAY IN ELEGANCE',
+    description: 'Immerse yourself in supreme comfort with soundproof sanctuary suites, plush King beds, panoramic balcony vistas, marble bathrooms, and automated smart-room ambient controls.',
+    image: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80',
+    features: ['24/7 Personal Butler Service', 'Marble Bathrooms & Heated Jacuzzis', 'Smart Lighting & Climate Touchpads', 'In-Room Espresso & Wine Bar'],
+    link: '/rooms',
+    linkText: 'Explore Suites & Rooms',
+  },
+  {
+    id: 'dining',
+    number: '02',
+    title: 'Fine Dining & Gastronomic Mastery',
+    tag: 'SAVOR THE FLAVORS',
+    description: 'Indulge in a culinary journey crafted by international chefs. From authentic Ethiopian coffee ceremonies to continental gourmet buffets and rooftop cocktail lounges.',
+    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80',
+    features: ['Rooftop Skyline Bar & Bistro', 'Traditional Ethiopian Coffee Rituals', '24-Hour Gourmet In-Room Dining', 'Sommelier Wine & Spirits Pairing'],
+    link: '/restaurant',
+    linkText: 'Discover Fine Dining',
+  },
+  {
+    id: 'wellness',
+    number: '03',
+    title: 'Holistic Wellness & Spa Sanctuary',
+    tag: 'REJUVENATE BODY & MIND',
+    description: 'Reclaim inner peace with therapeutic deep-tissue massages, aromatherapy steam baths, infinity thermal pool access, and state-of-the-art cardio and strength training.',
+    image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80',
+    features: ['Deep Tissue & Aromatherapy Massage', 'Eucalyptus Steam & Finnish Sauna', 'Temperature-Controlled Infinity Pool', 'Private Personal Fitness Trainers'],
+    link: '/facilities-wellness',
+    linkText: 'Explore Wellness & Spa',
+  },
+  {
+    id: 'concierge',
+    number: '04',
+    title: '24/7 VIP Concierge & Valet Chauffeur',
+    tag: 'UNRIVALED CONVENIENCE',
+    description: 'Enjoy effortless travel with airport limousine transfers, private city excursions, express dry cleaning, and dedicated personal assistants for all your requests.',
+    image: 'https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=1200&q=80',
+    features: ['Airport Limousine & Shuttle Pickups', 'Private Chauffeured Mercedes Fleet', 'Express Same-Day Laundry & Pressing', '24/7 Personal Booking Assistant'],
+    link: '/contact',
+    linkText: 'Request VIP Concierge',
+  },
+  {
+    id: 'events',
+    number: '05',
+    title: 'Grand Ballrooms & Corporate Conference Hubs',
+    tag: 'HOST WITH PRESTIGE',
+    description: 'Transform your weddings, galas, and high-level executive summits into unforgettable occasions in our grand ballrooms equipped with cutting-edge audiovisual systems.',
+    image: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80',
+    features: ['Grand Ballroom (Up to 800 Guests)', 'HD Projection & Live Stream Audio', 'Custom Catering & Banquet Menu', 'Dedicated Event Planners'],
+    link: '/events-conferences',
+    linkText: 'Plan Your Event',
+  },
+  {
+    id: 'experiences',
+    number: '06',
+    title: 'Bespoke Curated Guest Experiences',
+    tag: 'CREATE LASTING MEMORIES',
+    description: 'Enhance your trip with exclusive tailored packages, private poolside champagne dinners, cultural city heritage tours, and VIP anniversary setups.',
+    image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80',
+    features: ['Romantic Sunset Champagne Dinners', 'Guided Historical City Excursions', 'Tailored Anniversary & Birthday Decor', 'VIP Priority Access to All Amenities'],
+    link: '/experience',
+    linkText: 'Browse Experiences',
+  },
 ];
 
-const categories = SERVICE_TYPES.map(s => s.key);
+const SERVICES_GRID = [
+  { icon: Clock, title: '24/7 Room Service', desc: 'Fresh gourmet meals and beverages delivered directly to your door at any hour.' },
+  { icon: Car, title: 'Airport Limousine Pickup', desc: 'Seamless, luxury chauffeured transfer from airport arrival straight to hotel lobby.' },
+  { icon: Sparkles, title: 'Express Laundry & Valet', desc: 'Professional eco-friendly dry cleaning, laundering, and garment pressing.' },
+  { icon: ConciergeBell, title: 'Dedicated Personal Butler', desc: 'Attentive personal assistance for unpacking, itinerary planning, and room setup.' },
+  { icon: Waves, title: 'Thermal Pool & Spa Access', desc: 'Complimentary access to heated infinity pool, steam room, and relaxation lounge.' },
+  { icon: ShieldCheck, title: 'High-Level Security & Privacy', desc: 'Discrete, round-the-clock professional security and private entry suites.' },
+  { icon: Coffee, title: 'Authentic Coffee Ceremony', desc: 'Experience traditional Ethiopian coffee roasting rituals served freshly in the lounge.' },
+  { icon: Gift, title: 'Custom Loyalty Perks', desc: 'Exclusive room upgrades, late check-out options, and anniversary gifts for members.' },
+];
+
+const REVIEWS = [
+  {
+    name: 'Elena Rostova',
+    role: 'International Ambassador',
+    comment: 'The hospitality at Villa Alpha is simply world-class. From the moment the airport chauffeur greeted me to the personalized butler service, every detail surpassed expectations.',
+    rating: 5,
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+  },
+  {
+    name: 'Marcus Vance',
+    role: 'Tech Executive & Frequent Guest',
+    comment: 'I travel globally, and Villa Alpha ranks among the top 1% in genuine warmth and hospitality. The rooftop dining and spa treatments are unmatched in East Africa.',
+    rating: 5,
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
+  },
+  {
+    name: 'Dr. Sophia Williams',
+    role: 'Conference Keynote Speaker',
+    comment: 'Hosted our regional summit in the Grand Ballroom. The hospitality staff executed every request flawlessly. Exceptional food, immaculate suites, and 24/7 support.',
+    rating: 5,
+    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80',
+  },
+];
 
 const HospitalityPage = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const legacyCategory = searchParams.get('category');
-
-  if (legacyCategory === 'Wellness') {
-    return <Navigate to="/facilities-wellness" replace />;
-  }
-  if (legacyCategory === 'Events') {
-    return <Navigate to="/events-conferences" replace />;
-  }
-
-  const categoryParam = legacyCategory === 'Services' ? 'All' : (legacyCategory || 'All');
-
-  const [activeCategory, setActiveCategory] = useState(categoryParam);
-  const [activePrice, setActivePrice] = useState('All');
-  const [sortBy, setSortBy] = useState('popular');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [apiItems, setApiItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState('');
-
-  const [selectedService, setSelectedService] = useState(null);
-  const [bookingStep, setBookingStep] = useState('availability');
-  const [checkInDate, setCheckInDate] = useState('');
-  const [checkOutDate, setCheckOutDate] = useState('');
-  const [guests, setGuests] = useState('1 Guest');
-  const [isChecking, setIsChecking] = useState(false);
-  const [availabilityStatus, setAvailabilityStatus] = useState(null);
-  const [checkMessage, setCheckMessage] = useState('');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [loginError, setLoginError] = useState('');
-
   useEffect(() => {
-    if (activeCategory === 'All') setSearchParams({}, { replace: true });
-    else setSearchParams({ category: activeCategory }, { replace: true });
-  }, [activeCategory, setSearchParams]);
+    // Scroll reveal animation observer
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
 
-  useEffect(() => {
-    if (categoryParam && categories.includes(categoryParam)) {
-      setActiveCategory(categoryParam);
-    } else {
-      setActiveCategory('All');
-    }
-  }, [categoryParam, categories]);
+    const elements = document.querySelectorAll('.reveal-on-scroll');
+    elements.forEach((el) => observer.observe(el));
 
-  useEffect(() => {
-    const loadItems = async () => {
-      try {
-        setLoading(true);
-        setLoadError('');
-        const items = await fetchHotelServices();
-        setApiItems(items);
-      } catch (err) {
-        setLoadError(err.message || 'Failed to load hospitality content');
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadItems();
+    return () => observer.disconnect();
   }, []);
-
-  // Only show manager-posted hotel services (API data only — no static data)
-  const allServices = apiItems;
-
-
-  const priceRanges = ['All', '100-300', '300-500', '500-1000'];
-  const sortOptions = [
-    { id: 'popular', label: 'Popularity' },
-    { id: 'price-low', label: 'Price Low to High' },
-    { id: 'price-high', label: 'Price High to Low' },
-    { id: 'newest', label: 'Newest First' },
-  ];
-
-  const filteredByCategory = activeCategory === 'All'
-    ? allServices
-    : allServices.filter((s) => s.category === activeCategory);
-  const filteredByPrice = filteredByCategory.filter(s => {
-    if (activePrice === 'All') return true;
-    if (activePrice === '100-300') return s.price >= 100 && s.price <= 300;
-    if (activePrice === '300-500') return s.price >= 300 && s.price <= 500;
-    if (activePrice === '500-1000') return s.price >= 500 && s.price <= 1000;
-    return true;
-  });
-
-  const sortedServices = [...filteredByPrice].sort((a, b) => {
-    if (sortBy === 'price-low') return a.price - b.price;
-    if (sortBy === 'price-high') return b.price - a.price;
-    if (sortBy === 'newest') return new Date(b.dateAdded) - new Date(a.dateAdded);
-    return 0;
-  });
-
-  const openBookingModal = (service) => {
-    setSelectedService(service);
-    setBookingStep('availability');
-    setCheckInDate('');
-    setCheckOutDate('');
-    setAvailabilityStatus(null);
-    setLoginError('');
-  };
-
-  const closeModal = () => {
-    setSelectedService(null);
-    setIsChecking(false);
-    setAvailabilityStatus(null);
-  };
-
-  const parseDate = (dateStr) => {
-    if (!dateStr) return null;
-    const parts = dateStr.split('-');
-    if (parts.length !== 3) return null;
-    return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
-  };
-
-  const handleCheckAvailability = () => {
-    const checkIn = parseDate(checkInDate);
-    const checkOut = parseDate(checkOutDate);
-    if (!checkIn || !checkOut) {
-      setAvailabilityStatus('unavailable');
-      setCheckMessage("Please select both dates.");
-      return;
-    }
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    if (checkIn < today) {
-      setAvailabilityStatus('unavailable');
-      setCheckMessage("Dates are in the past.");
-      return;
-    }
-    if (checkOut <= checkIn) {
-      setAvailabilityStatus('unavailable');
-      setCheckMessage("Check-out must be after Check-in.");
-      return;
-    }
-    setIsChecking(true);
-    setAvailabilityStatus(null);
-    setCheckMessage('');
-    setTimeout(() => {
-      setIsChecking(false);
-      setAvailabilityStatus('available');
-      setCheckMessage("Great news! Dates are available.");
-    }, 1500);
-  };
-
-  const handleLoginSubmit = (e) => {
-    e.preventDefault();
-    setLoginError('');
-    setTimeout(() => {
-      setIsLoggedIn(true);
-      setBookingStep('form');
-    }, 800);
-  };
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&display=swap');
 
-        /* ══ Page shell ══ */
-        .hp {
-          background: #f0f1f5;
+        /* ===== LIGHT LUXURY SHELL ===== */
+        .hosp-page-light {
+          background: #fdfbf7;
+          color: #1a1a1a;
+          font-family: 'Plus Jakarta Sans', sans-serif;
           min-height: 100vh;
-          padding: 110px 0 90px;
-          font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
-        }
-        .hp-inner {
-          max-width: 1320px;
-          margin: 0 auto;
-          padding: 0 40px;
+          overflow-x: hidden;
+          padding-top: 100px;
         }
 
-        /* ══ Page header ══ */
-        .hp-header {
+        /* ===== SCROLL REVEAL ANIMATIONS ===== */
+        .reveal-on-scroll {
+          opacity: 0;
+          transform: translateY(35px);
+          transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+          will-change: opacity, transform;
+        }
+
+        .reveal-on-scroll.visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        /* ===== HERO BANNER (LIGHT LUXURY) ===== */
+        .hosp-hero-light {
+          position: relative;
+          padding: 110px 24px 90px;
+          background: radial-gradient(circle at 50% 30%, rgba(212, 175, 55, 0.08) 0%, transparent 65%),
+                      linear-gradient(180deg, #ffffff 0%, #fdfbf7 100%);
           text-align: center;
-          margin-bottom: 48px;
+          border-bottom: 1px solid rgba(212, 175, 55, 0.15);
         }
-        .hp-header .lbl {
-          display: inline-block;
-          color: #c9970c;
-          font-size: 11px; font-weight: 800;
-          letter-spacing: 3px; text-transform: uppercase;
+
+        .hosp-badge-light {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px 22px;
+          background: #fef8eb;
+          border: 1px solid rgba(212, 175, 55, 0.4);
+          border-radius: 9999px;
+          color: #b8860b;
+          font-size: 12px;
+          font-weight: 800;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          margin-bottom: 24px;
+          box-shadow: 0 4px 15px rgba(212, 175, 55, 0.08);
+          transition: transform 0.3s;
+        }
+
+        .hosp-badge-light:hover {
+          transform: translateY(-2px);
+        }
+
+        .hosp-hero-title-light {
+          font-family: 'Playfair Display', Georgia, serif;
+          font-size: 56px;
+          font-weight: 700;
+          line-height: 1.15;
+          color: #111827;
+          max-width: 920px;
+          margin: 0 auto 22px;
+          letter-spacing: -0.5px;
+        }
+
+        .hosp-hero-title-light span {
+          color: #b8860b;
+          background: linear-gradient(135deg, #c9970c 0%, #92700a 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+
+        .hosp-hero-sub-light {
+          font-size: 17.5px;
+          color: #555e6d;
+          max-width: 700px;
+          margin: 0 auto 40px;
+          line-height: 1.7;
+        }
+
+        .hosp-hero-btns {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 18px;
+          flex-wrap: wrap;
+        }
+
+        /* ===== BUTTON HOVER EFFECTS ===== */
+        .btn-gold-light {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          padding: 16px 36px;
+          background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+          color: #ffffff;
+          border-radius: 9999px;
+          font-weight: 700;
+          font-size: 15px;
+          text-decoration: none;
+          transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: 0 8px 25px rgba(184, 134, 11, 0.3);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .btn-gold-light::before {
+          content: '';
+          position: absolute;
+          top: 0; left: -100%;
+          width: 100%; height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+          transition: left 0.6s ease;
+        }
+
+        .btn-gold-light:hover::before {
+          left: 100%;
+        }
+
+        .btn-gold-light:hover {
+          transform: translateY(-3px) scale(1.02);
+          box-shadow: 0 14px 35px rgba(184, 134, 11, 0.45);
+        }
+
+        .btn-outline-dark {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          padding: 16px 36px;
+          background: #ffffff;
+          border: 1.5px solid #111827;
+          color: #111827;
+          border-radius: 9999px;
+          font-weight: 700;
+          font-size: 15px;
+          text-decoration: none;
+          transition: all 0.35s ease;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-outline-dark:hover {
+          background: #111827;
+          color: #ffffff;
+          transform: translateY(-3px);
+          box-shadow: 0 10px 30px rgba(17, 24, 39, 0.25);
+        }
+
+        /* ===== METRICS COUNTER BAR (LIGHT MODE) ===== */
+        .hosp-metrics-light {
+          max-width: 1200px;
+          margin: -45px auto 100px;
+          padding: 0 24px;
+          position: relative;
+          z-index: 10;
+        }
+
+        .metrics-card-light {
+          background: #ffffff;
+          border: 1px solid rgba(212, 175, 55, 0.25);
+          border-radius: 28px;
+          padding: 36px 40px;
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 24px;
+          box-shadow: 0 15px 45px rgba(184, 134, 11, 0.08);
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .metrics-card-light:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 22px 60px rgba(184, 134, 11, 0.14);
+        }
+
+        .metric-item-light {
+          text-align: center;
+          border-right: 1px solid #f3f4f6;
+        }
+
+        .metric-item-light:last-child {
+          border-right: none;
+        }
+
+        .metric-val-light {
+          font-family: 'Playfair Display', serif;
+          font-size: 40px;
+          font-weight: 700;
+          color: #b8860b;
+          margin-bottom: 4px;
+          transition: transform 0.3s;
+        }
+
+        .metric-item-light:hover .metric-val-light {
+          transform: scale(1.08);
+        }
+
+        .metric-label-light {
+          font-size: 13px;
+          color: #6b7280;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        /* ===== SECTION HEADINGS ===== */
+        .sec-head-light {
+          text-align: center;
+          max-width: 720px;
+          margin: 0 auto 65px;
+          padding: 0 24px;
+        }
+
+        .sec-tag-light {
+          font-size: 12px;
+          font-weight: 800;
+          letter-spacing: 2.5px;
+          color: #b8860b;
+          text-transform: uppercase;
+          margin-bottom: 12px;
+          display: block;
+        }
+
+        .sec-title-light {
+          font-family: 'Playfair Display', serif;
+          font-size: 42px;
+          font-weight: 700;
+          color: #111827;
+          margin: 0 0 16px;
+          line-height: 1.22;
+        }
+
+        .sec-desc-light {
+          font-size: 16px;
+          color: #6b7280;
+          line-height: 1.7;
+          margin: 0;
+        }
+
+        /* ===== PILLARS SHOWCASE SECTION ===== */
+        .pillars-sec-light {
+          max-width: 1240px;
+          margin: 0 auto 130px;
+          padding: 0 24px;
+        }
+
+        .pillar-card-light {
+          background: #ffffff;
+          border: 1px solid #f1eeea;
+          border-radius: 32px;
+          padding: 44px;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 60px;
+          align-items: center;
+          margin-bottom: 50px;
+          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.03);
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .pillar-card-light:hover {
+          transform: translateY(-8px);
+          border-color: rgba(212, 175, 55, 0.4);
+          box-shadow: 0 22px 60px rgba(184, 134, 11, 0.14);
+        }
+
+        .pillar-card-light.reverse {
+          direction: rtl;
+        }
+
+        .pillar-card-light.reverse > * {
+          direction: ltr;
+        }
+
+        .pillar-img-box {
+          position: relative;
+          border-radius: 24px;
+          overflow: hidden;
+          aspect-ratio: 4 / 3;
+          box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+        }
+
+        .pillar-img-box img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .pillar-card-light:hover .pillar-img-box img {
+          transform: scale(1.08) rotate(0.5deg);
+        }
+
+        .pillar-overlay-tag {
+          position: absolute;
+          top: 20px;
+          left: 20px;
+          background: rgba(255, 255, 255, 0.92);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(212, 175, 55, 0.4);
+          padding: 6px 16px;
+          border-radius: 9999px;
+          color: #b8860b;
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: 1px;
+        }
+
+        .pillar-num-light {
+          font-family: 'Playfair Display', serif;
+          font-size: 48px;
+          font-weight: 700;
+          color: rgba(212, 175, 55, 0.35);
+          line-height: 1;
+          margin-bottom: 6px;
+        }
+
+        .pillar-tag-light {
+          font-size: 11px;
+          font-weight: 800;
+          color: #b8860b;
+          letter-spacing: 2px;
+          text-transform: uppercase;
           margin-bottom: 8px;
-        }
-        .hp-header h1 {
-          font-family: 'Georgia', serif;
-          font-size: 42px; font-weight: 700;
-          color: #111827; margin: 0 0 12px;
-        }
-        .hp-header p {
-          font-size: 16px; color: #6b7280;
-          max-width: 580px; margin: 0 auto; line-height: 1.65;
+          display: block;
         }
 
-        /* ══ Layout: sidebar + grid ══ */
-        .hp-layout {
-          display: grid;
-          grid-template-columns: 220px 1fr;
-          gap: 32px;
-          align-items: start;
+        .pillar-title-light {
+          font-family: 'Playfair Display', serif;
+          font-size: 32px;
+          font-weight: 700;
+          color: #111827;
+          margin: 0 0 14px;
+          line-height: 1.25;
         }
 
-        /* ══ Sidebar ══ */
-        .sidebar {
-          background: #fff;
-          border-radius: 20px;
-          padding: 20px 16px 24px;
-          border: 1px solid #e9eaf0;
-          height: fit-content;
-          position: sticky;
-          top: 100px;
-          box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+        .pillar-desc-light {
+          font-size: 15px;
+          color: #555e6d;
+          line-height: 1.7;
+          margin-bottom: 24px;
         }
 
-        /* sidebar header row */
-        .sb-head {
-          display: flex; align-items: center; justify-content: space-between;
-          margin-bottom: 20px;
-        }
-        .sb-head-title {
-          display: flex; align-items: center; gap: 8px;
-          font-size: 13px; font-weight: 800;
-          letter-spacing: 1.5px; text-transform: uppercase; color: #111827;
-        }
-        .sb-head-icon {
-          width: 30px; height: 30px; border-radius: 8px;
-          background: linear-gradient(135deg, #c9970c, #e2b84a);
-          display: flex; align-items: center; justify-content: center;
-        }
-        .sb-x-btn {
-          background: #f3f4f6; border: none; cursor: pointer;
-          width: 28px; height: 28px; border-radius: 8px;
-          display: flex; align-items: center; justify-content: center;
-          color: #6b7280; transition: background 0.15s;
-        }
-        .sb-x-btn:hover { background: #fee2e2; color: #b91c1c; }
-
-        .sb-section-title {
-          font-size: 10px; font-weight: 800;
-          letter-spacing: 2px; text-transform: uppercase;
-          color: #9ca3af; margin-bottom: 10px; padding-left: 4px;
+        .pillar-features-light {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          margin-bottom: 32px;
         }
 
-        /* ── Icon-pill category buttons ── */
-        .cat-btn-list {
-          display: flex; flex-direction: column; gap: 6px;
-          margin-bottom: 0;
+        .pillar-feature-row {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-size: 14.5px;
+          color: #374151;
+          font-weight: 500;
         }
-        .cat-btn {
-          display: flex; align-items: center; gap: 12px;
-          padding: 10px 12px; border-radius: 13px;
-          cursor: pointer; border: none; background: transparent;
-          font-size: 14px; font-weight: 500; color: #4b5563;
-          text-align: left; width: 100%;
-          transition: all 0.18s ease;
-          font-family: inherit;
-        }
-        .cat-btn:hover { background: #f9fafb; color: #111827; }
-        .cat-btn.active { font-weight: 700; }
-        .cat-btn-icon {
-          width: 34px; height: 34px; border-radius: 10px;
-          display: flex; align-items: center; justify-content: center;
+
+        .pillar-feature-icon-light {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          background: #fef8eb;
+          border: 1px solid rgba(212, 175, 55, 0.3);
+          color: #b8860b;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           flex-shrink: 0;
-          transition: transform 0.18s ease;
-        }
-        .cat-btn:hover .cat-btn-icon { transform: scale(1.1); }
-        .cat-btn-label { flex: 1; line-height: 1.2; }
-
-        .sb-divider { border: none; border-top: 1px solid #f1f3f8; margin: 18px 0 14px; }
-
-        /* ── Price rows ── */
-        .price-row {
-          display: flex; align-items: center; gap: 10px;
-          padding: 9px 12px; border-radius: 11px;
-          cursor: pointer; font-size: 13px; font-weight: 500;
-          color: #6b7280; transition: all 0.15s; margin-bottom: 4px;
-        }
-        .price-row:hover { background: #f9fafb; color: #111827; }
-        .price-row.active {
-          background: #fef9ec; color: #92700a; font-weight: 700;
-        }
-        .price-dot {
-          width: 10px; height: 10px; border-radius: 50%;
-          flex-shrink: 0;
+          transition: transform 0.25s, background 0.25s;
         }
 
-        /* sort radio */
-        .sort-option {
-          display: flex; align-items: center; gap: 10px;
-          padding: 8px 12px; border-radius: 10px;
-          cursor: pointer; font-size: 13px; color: #6b7280;
-          transition: background 0.15s; margin-bottom: 2px;
+        .pillar-feature-row:hover .pillar-feature-icon-light {
+          transform: scale(1.15);
+          background: #b8860b;
+          color: #ffffff;
         }
-        .sort-option:hover { background: #f9fafb; }
-        .sort-option.active { color: #c9970c; font-weight: 700; background: #fef9ec; }
-        .radio-circle {
-          width: 16px; height: 16px; border-radius: 50%;
-          border: 2px solid #d1d5db;
-          display: flex; align-items: center; justify-content: center;
-          flex-shrink: 0; transition: border-color 0.15s;
-        }
-        .sort-option.active .radio-circle { border-color: #d4af37; }
-        .inner {
-          width: 8px; height: 8px; border-radius: 50%;
-          background: transparent; transition: background 0.15s;
-        }
-        .sort-option.active .inner { background: #d4af37; }
 
-        /* mobile toggle */
-        .mobile-filter-toggle {
-          display: none; width: 100%; padding: 12px 20px;
-          background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
-          font-size: 14px; font-weight: 600; color: #1a1a1a;
-          cursor: pointer; font-family: inherit;
-          justify-content: space-between; align-items: center;
-          margin-bottom: 16px;
+        .pillar-link-light {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          color: #b8860b;
+          font-weight: 700;
+          font-size: 14.5px;
+          text-decoration: none;
+          transition: all 0.25s ease;
         }
-        .mobile-filter-toggle:hover { border-color: #d4af37; }
-        .sidebar-overlay {
-          display: none; position: fixed; inset: 0;
-          background: rgba(0,0,0,0.4); z-index: 999;
-        }
-        .sidebar-overlay.active { display: block; }
 
-        /* ══ 3-column card grid ══ */
-        .services-grid {
+        .pillar-link-light:hover {
+          color: #92700a;
+          gap: 14px;
+        }
+
+        /* ===== SERVICES GRID SECTION (LIGHT MODE) ===== */
+        .services-sec-light {
+          background: #f7f4ed;
+          border-top: 1px solid rgba(212, 175, 55, 0.15);
+          border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+          padding: 110px 0;
+          margin-bottom: 130px;
+        }
+
+        .services-container-light {
+          max-width: 1240px;
+          margin: 0 auto;
+          padding: 0 24px;
+        }
+
+        .services-grid-light {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
+          grid-template-columns: repeat(4, 1fr);
           gap: 24px;
         }
 
-        /* ══ SERVICE CARD – Nike-style ══ */
-        .svc-card {
-          background: #fff;
-          border-radius: 22px;
-          overflow: hidden;
-          box-shadow: 0 2px 16px rgba(0,0,0,0.07);
-          transition: transform 0.22s ease, box-shadow 0.22s ease;
+        .svc-card-light {
+          background: #ffffff;
+          border: 1px solid #eae6df;
+          border-radius: 24px;
+          padding: 32px 26px;
+          transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+        }
+
+        .svc-card-light:hover {
+          background: #ffffff;
+          border-color: rgba(212, 175, 55, 0.5);
+          transform: translateY(-8px);
+          box-shadow: 0 18px 45px rgba(184, 134, 11, 0.14);
+        }
+
+        .svc-icon-box-light {
+          width: 56px;
+          height: 56px;
+          border-radius: 18px;
+          background: #fef8eb;
+          border: 1px solid rgba(212, 175, 55, 0.3);
+          color: #b8860b;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 22px;
+          transition: all 0.35s ease;
+        }
+
+        .svc-card-light:hover .svc-icon-box-light {
+          transform: scale(1.12) rotate(3deg);
+          background: linear-gradient(135deg, #d4af37, #b8860b);
+          color: #ffffff;
+          box-shadow: 0 8px 20px rgba(184, 134, 11, 0.3);
+        }
+
+        .svc-feature-title-light {
+          font-size: 18px;
+          font-weight: 700;
+          color: #111827;
+          margin: 0 0 10px;
+        }
+
+        .svc-feature-desc-light {
+          font-size: 14px;
+          color: #6b7280;
+          line-height: 1.65;
+          margin: 0;
+        }
+
+        /* ===== TESTIMONIALS (LIGHT MODE) ===== */
+        .reviews-sec-light {
+          max-width: 1240px;
+          margin: 0 auto 130px;
+          padding: 0 24px;
+        }
+
+        .reviews-grid-light {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 28px;
+        }
+
+        .review-card-light {
+          background: #ffffff;
+          border: 1px solid #f0ebe1;
+          border-radius: 28px;
+          padding: 36px;
           display: flex;
           flex-direction: column;
-          cursor: default;
-        }
-        .svc-card:hover {
-          transform: translateY(-6px);
-          box-shadow: 0 16px 48px rgba(0,0,0,0.14);
-        }
-
-        /* ── Top image section ── */
-        .svc-img-wrap {
-          position: relative;
-          width: 100%;
-          aspect-ratio: 4 / 3;
-          overflow: hidden;
-          background: #f3f4f6;
-        }
-        .svc-img-wrap img {
-          width: 100%; height: 100%;
-          object-fit: cover;
-          display: block;
-          transition: transform 0.5s ease;
-        }
-        .svc-card:hover .svc-img-wrap img {
-          transform: scale(1.06);
-        }
-
-        /* "Popular" badge – top-left overlay */
-        .svc-badge {
-          position: absolute; top: 14px; left: 14px;
-          background: rgba(255,255,255,0.92);
-          backdrop-filter: blur(4px);
-          padding: 4px 12px;
-          border-radius: 999px;
-          font-size: 11px; font-weight: 700;
-          color: #1a1a1a;
-          letter-spacing: 0.4px;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-        }
-
-        /* category pill – top-right overlay */
-        .svc-cat-pill {
-          position: absolute; top: 14px; right: 14px;
-          background: rgba(212,175,55,0.92);
-          backdrop-filter: blur(4px);
-          padding: 4px 12px;
-          border-radius: 999px;
-          font-size: 11px; font-weight: 700;
-          color: #1a1a1a;
-          letter-spacing: 0.3px;
-        }
-
-        /* ── Card content ── */
-        .svc-body {
-          display: flex; flex-direction: column;
-          padding: 18px 18px 20px;
-          gap: 6px; flex: 1;
-        }
-
-        /* provider / hotel name */
-        .svc-provider {
-          font-size: 11px; font-weight: 700;
-          color: #c9970c; text-transform: uppercase;
-          letter-spacing: 0.8px;
-        }
-
-        /* service title */
-        .svc-title {
-          font-size: 17px; font-weight: 800;
-          color: #111827; margin: 0; line-height: 1.3;
-        }
-
-        /* description */
-        .svc-desc {
-          font-size: 13px; color: #6b7280;
-          line-height: 1.6; margin: 0;
-          display: -webkit-box;
-          -webkit-line-clamp: 3;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-
-        /* location */
-        .svc-loc {
-          display: flex; align-items: center; gap: 5px;
-          font-size: 12px; color: #9ca3af;
-        }
-        .svc-loc svg { color: #d4af37; flex-shrink: 0; }
-
-        /* amenity tags */
-        .svc-tags {
-          display: flex; flex-wrap: wrap; gap: 6px;
-          margin-top: 2px;
-        }
-        .svc-tag {
-          display: flex; align-items: center; gap: 4px;
-          padding: 3px 10px;
-          background: #f3f4f6; border-radius: 999px;
-          font-size: 11px; color: #4b5563; font-weight: 500;
-        }
-        .svc-tag svg { color: #d4af37; }
-
-        /* spacer */
-        .svc-spacer { flex: 1; }
-
-        /* ── Card footer: price pill + Book Now ── */
-        .svc-footer {
-          display: flex; align-items: center;
           justify-content: space-between;
-          gap: 12px; margin-top: 14px;
+          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.03);
+          transition: all 0.35s ease;
         }
-        /* price pill – dark rounded */
-        .svc-price-pill {
-          display: flex; align-items: center;
-          background: #f3f4f6;
-          border-radius: 999px;
-          padding: 8px 16px;
-          font-size: 15px; font-weight: 800;
+
+        .review-card-light:hover {
+          transform: translateY(-6px);
+          border-color: rgba(212, 175, 55, 0.35);
+          box-shadow: 0 18px 45px rgba(184, 134, 11, 0.12);
+        }
+
+        .review-stars-light {
+          display: flex;
+          gap: 4px;
+          color: #d4af37;
+          margin-bottom: 18px;
+        }
+
+        .review-text-light {
+          font-size: 15px;
+          color: #4b5563;
+          line-height: 1.75;
+          font-style: italic;
+          margin-bottom: 28px;
+        }
+
+        .review-author-light {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+        }
+
+        .review-avatar-light {
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          object-fit: cover;
+          border: 2px solid #d4af37;
+          box-shadow: 0 4px 12px rgba(184, 134, 11, 0.2);
+        }
+
+        .author-name-light {
+          font-size: 16px;
+          font-weight: 700;
           color: #111827;
-          letter-spacing: -0.3px;
-          white-space: nowrap;
+          margin: 0;
         }
-        /* "Book Now →" dark button */
-        .svc-book-btn {
-          display: inline-flex; align-items: center; gap: 7px;
-          background: #111827; color: #fff;
-          border: none; cursor: pointer;
-          padding: 10px 18px; border-radius: 999px;
-          font-size: 13px; font-weight: 700;
-          white-space: nowrap;
-          transition: background 0.2s ease, transform 0.15s ease;
-          box-shadow: 0 4px 14px rgba(0,0,0,0.2);
-          font-family: inherit;
+
+        .author-role-light {
+          font-size: 13px;
+          color: #6b7280;
+          margin: 0;
         }
-        .svc-book-btn:hover {
-          background: #1f2937;
-          transform: translateY(-1px);
-          box-shadow: 0 6px 20px rgba(0,0,0,0.28);
+
+        /* ===== CALL TO ACTION BANNER (LIGHT MODE) ===== */
+        .hosp-cta-light {
+          max-width: 1240px;
+          margin: 0 auto 110px;
+          padding: 0 24px;
         }
-        .svc-book-btn:active { transform: scale(0.97); }
 
-        /* ══ Status / empty states ══ */
-        .hp-status {
-          text-align: center; padding: 60px 24px;
-          color: #9ca3af; font-size: 15px;
-          grid-column: 1 / -1;
+        .cta-box-light {
+          background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+          border-radius: 36px;
+          padding: 80px 40px;
+          text-align: center;
+          position: relative;
+          overflow: hidden;
+          box-shadow: 0 25px 60px rgba(17, 24, 39, 0.25);
+          color: #ffffff;
         }
-        .hp-status.err { color: #b91c1c; }
-        @keyframes spin2 { to { transform: rotate(360deg); } }
-        .spin2 { animation: spin2 1s linear infinite; }
 
-        /* ══ MODAL (fully preserved) ══ */
-        .booking-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .booking-modal { background: #fff; border-radius: 20px; max-width: 480px; width: 100%; max-height: 90vh; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.2); position: relative; display: flex; flex-direction: column; }
-        .booking-modal-header { padding: 20px 24px; border-bottom: 1px solid #f1f3f5; display: flex; justify-content: space-between; align-items: center; }
-        .booking-modal-header h3 { margin: 0; font-size: 18px; color: #1a1a1a; font-weight: 700; }
-        .booking-modal-close { background: #f3f4f6; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #6b7280; transition: all 0.3s ease; }
-        .booking-modal-close:hover { background: #ef4444; color: #fff; }
-        .booking-modal-body { padding: 24px; overflow-y: auto; }
-
-        .step-indicator { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; position: relative; }
-        .step-indicator::before { content: ''; position: absolute; top: 12px; left: 0; right: 0; height: 2px; background: #e5e7eb; z-index: 0; }
-        .step-item { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; color: #9ca3af; position: relative; z-index: 1; width: 33%; }
-        .step-item.active { color: #d4af37; font-weight: 700; }
-        .step-num { width: 24px; height: 24px; border-radius: 50%; background: #fff; border: 2px solid #e5e7eb; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
-        .step-item.active .step-num { background: #d4af37; border-color: #d4af37; color: #fff; }
-
-        .avail-check-box { text-align: center; padding: 0 10px; }
-        .avail-check-box svg { color: #d4af37; margin-bottom: 12px; }
-        .avail-check-box h4 { margin: 0 0 8px; color: #1a1a1a; font-size: 20px; }
-        .avail-check-box p { color: #6b7280; font-size: 14px; margin-bottom: 24px; line-height: 1.6; }
-
-        .booking-form-stack { display: flex; flex-direction: column; gap: 16px; text-align: left; margin-bottom: 20px; }
-        .form-group { display: flex; flex-direction: column; gap: 6px; }
-        .form-group label { font-size: 14px; font-weight: 700; color: #1a1a1a; }
-
-        .date-input-wrapper { position: relative; }
-        .date-input-wrapper input[type="date"] { width: 100%; height: 48px; padding: 0 44px 0 16px; border: 1px solid #e5e7eb; border-radius: 10px; background: #fff; font-family: inherit; font-size: 14px; color: #1a1a1a; outline: none; transition: all 0.2s ease; -webkit-appearance: none; appearance: none; }
-        .date-input-wrapper input[type="date"]:focus { border-color: #d4af37; box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
-        input[type="date"]::-webkit-datetime-edit { -webkit-appearance: none; appearance: none; color: #6b7280; }
-        input[type="date"]::-webkit-datetime-edit-fields-wrapper { background: transparent; }
-        input[type="date"]::-webkit-datetime-edit-month-field:focus,
-        input[type="date"]::-webkit-datetime-edit-day-field:focus,
-        input[type="date"]::-webkit-datetime-edit-year-field:focus { background: transparent; color: #1a1a1a; outline: none; }
-        input[type="date"]:valid::-webkit-datetime-edit { color: #1a1a1a; }
-        input[type="date"]::-webkit-calendar-picker-indicator { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; cursor: pointer; opacity: 0.6; }
-
-        .select-wrapper { position: relative; }
-        .select-wrapper select { width: 100%; height: 48px; padding: 0 44px 0 16px; border: 1px solid #e5e7eb; border-radius: 10px; background: #fff; font-family: inherit; font-size: 14px; color: #1a1a1a; outline: none; transition: all 0.2s ease; cursor: pointer; appearance: none; -webkit-appearance: none; }
-        .select-wrapper select:focus { border-color: #d4af37; box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
-        .select-wrapper svg { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #9ca3af; pointer-events: none; }
-
-        .status-msg { display: flex; align-items: center; gap: 8px; padding: 12px; border-radius: 10px; font-size: 14px; margin-bottom: 16px; justify-content: center; }
-        .status-msg.available { background: #ecfdf5; border: 1px solid #a7f3d0; color: #047857; }
-        .status-msg.unavailable { background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; }
-
-        .btn-primary { width: 100%; height: 48px; background: #d4af37; color: #1a1a1a; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: all 0.3s ease; font-family: inherit; margin-top: 4px; letter-spacing: 0.5px; }
-        .btn-primary:disabled { background: #e5e7eb; color: #9ca3af; cursor: not-allowed; }
-        .btn-primary:hover:not(:disabled) { background: #c5a028; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(212,175,55,0.3); }
-
-        .secure-note { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; color: #9ca3af; margin-top: 16px; }
-        .loading-spinner { border: 3px solid rgba(0,0,0,0.1); border-top: 3px solid #d4af37; border-radius: 50%; width: 20px; height: 20px; animation: spin2 1s linear infinite; }
-
-        .login-box { text-align: center; }
-        .login-box .input-group { margin-bottom: 16px; text-align: left; }
-        .login-box label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; }
-        .login-box .input-wrapper { position: relative; }
-        .login-box .input-wrapper svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af; }
-        .login-box input { width: 100%; padding: 12px 12px 12px 40px; background: #f8f9fa; border: 1px solid #e5e7eb; border-radius: 10px; font-family: inherit; font-size: 14px; outline: none; transition: all 0.2s; }
-        .login-box input:focus { background: #fff; border-color: #d4af37; box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
-        .error-msg { color: #ef4444; font-size: 13px; margin-top: 8px; }
-
-        /* ══ Responsive ══ */
-        @media (max-width: 1100px) {
-          .services-grid { grid-template-columns: repeat(2, 1fr); }
+        .cta-box-light::before {
+          content: '';
+          position: absolute;
+          top: -50%; right: -20%;
+          width: 500px; height: 500px;
+          background: radial-gradient(circle, rgba(212, 175, 55, 0.18) 0%, transparent 70%);
+          pointer-events: none;
         }
-        @media (max-width: 860px) {
-          .hp-layout { grid-template-columns: 1fr; }
-          .sidebar { position: static; }
-          .services-grid { grid-template-columns: repeat(2, 1fr); }
-          .mobile-filter-toggle { display: flex; }
-          .sidebar { position: fixed; top: 0; right: -100%; width: 85%; max-width: 320px; height: 100vh; border-radius: 0; border: none; box-shadow: -4px 0 30px rgba(0,0,0,0.12); padding: 24px 20px; overflow-y: auto; z-index: 1000; transition: right 0.3s ease; }
-          .sidebar.open { right: 0; }
+
+        .cta-title-light {
+          font-family: 'Playfair Display', serif;
+          font-size: 44px;
+          font-weight: 700;
+          color: #ffffff;
+          margin: 0 0 18px;
         }
-        @media (max-width: 560px) {
-          .hp { padding: 90px 0 60px; }
-          .hp-inner { padding: 0 16px; }
-          .hp-header h1 { font-size: 30px; }
-          .services-grid { grid-template-columns: 1fr; }
+
+        .cta-desc-light {
+          font-size: 17px;
+          color: rgba(255, 255, 255, 0.75);
+          max-width: 620px;
+          margin: 0 auto 40px;
+          line-height: 1.7;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+          .metrics-card-light { grid-template-columns: repeat(2, 1fr); gap: 32px; }
+          .metric-item-light { border-right: none; }
+          .services-grid-light { grid-template-columns: repeat(2, 1fr); }
+          .reviews-grid-light { grid-template-columns: 1fr; }
+          .pillar-card-light, .pillar-card-light.reverse { grid-template-columns: 1fr; gap: 36px; padding: 32px; direction: ltr; }
+          .pillar-card-light.reverse > * { direction: ltr; }
+        }
+
+        @media (max-width: 640px) {
+          .hosp-hero-title-light { font-size: 38px; }
+          .metrics-card-light { grid-template-columns: 1fr; padding: 28px 20px; }
+          .services-grid-light { grid-template-columns: 1fr; }
+          .sec-title-light { font-size: 32px; }
+          .cta-title-light { font-size: 32px; }
+          .pillar-card-light { padding: 24px; }
         }
       `}</style>
 
-      <div className="hp">
-        <div className="hp-inner">
+      <div className="hosp-page-light">
+        {/* ===== HERO BANNER ===== */}
+        <section className="hosp-hero-light reveal-on-scroll">
+          <div className="hosp-badge-light">
+            <Sparkles size={14} /> VILLA ALPHA HOSPITALITY SHOWCASE
+          </div>
+          <h1 className="hosp-hero-title-light">
+            The Art of Unrivaled <span>Luxury &amp; Warmth</span>
+          </h1>
+          <p className="hosp-hero-sub-light">
+            From imperial royal suites and gourmet gastronomy to 24/7 VIP concierge care and holistic spa sanctuaries — experience true Ethiopian hospitality elevated to international perfection.
+          </p>
+          <div className="hosp-hero-btns">
+            <a href="#pillars" className="btn-gold-light">
+              Explore Our Hospitality <ArrowRight size={16} />
+            </a>
+            <Link to="/rooms" className="btn-outline-dark">
+              Book A Suite
+            </Link>
+          </div>
+        </section>
 
-          {/* ── Page Header ── */}
-          <div className="hp-header">
-            <div className="lbl">✦ 24/7 Concierge</div>
-            <h1>Hotel Services</h1>
-            <p>Airport transfers, room service, laundry, concierge support, and personalized guest services.</p>
+        {/* ===== METRICS COUNTER BAR ===== */}
+        <section className="hosp-metrics-light reveal-on-scroll">
+          <div className="metrics-card-light">
+            <div className="metric-item-light">
+              <div className="metric-val-light">100%</div>
+              <div className="metric-label-light">Guest Satisfaction</div>
+            </div>
+            <div className="metric-item-light">
+              <div className="metric-val-light">24/7</div>
+              <div className="metric-label-light">VIP Butler Service</div>
+            </div>
+            <div className="metric-item-light">
+              <div className="metric-val-light">5 ★</div>
+              <div className="metric-label-light">Luxury Standard</div>
+            </div>
+            <div className="metric-item-light">
+              <div className="metric-val-light">50+</div>
+              <div className="metric-label-light">Tailored Offerings</div>
+            </div>
+          </div>
+        </section>
+
+        {/* ===== HOSPITALITY PILLARS SHOWCASE ===== */}
+        <section id="pillars" className="pillars-sec-light">
+          <div className="sec-head-light reveal-on-scroll">
+            <span className="sec-tag-light">✦ OUR SIX PILLARS OF EXCELLENCE</span>
+            <h2 className="sec-title-light">Hospitality Redefined At Villa Alpha</h2>
+            <p className="sec-desc-light">
+              Every moment of your stay is curated with precision, elegance, and genuine care. Discover what makes our hospitality world-renowned.
+            </p>
           </div>
 
-          {/* mobile toggle */}
-          <button className="mobile-filter-toggle" onClick={() => setMobileMenuOpen(true)}>
-            <span><Filter size={16} /> Filters &amp; Sort</span>
-            <ChevronDown size={16} />
-          </button>
-
-          <div className={`sidebar-overlay ${mobileMenuOpen ? 'active' : ''}`} onClick={() => setMobileMenuOpen(false)} />
-
-          <div className="hp-layout">
-
-            {/* ════ Sidebar — icon-pill design ════ */}
-            <aside className={`sidebar ${mobileMenuOpen ? 'open' : ''}`}>
-
-              {/* header */}
-              <div className="sb-head">
-                <div className="sb-head-title">
-                  <div className="sb-head-icon">
-                    <Filter size={15} color="#fff" />
-                  </div>
-                  Filters
-                </div>
-                <button className="sb-x-btn" onClick={() => setMobileMenuOpen(false)}>
-                  <X size={15} />
-                </button>
+          {HOSPITALITY_PILLARS.map((p, idx) => (
+            <div
+              key={p.id}
+              className={`pillar-card-light reveal-on-scroll ${idx % 2 === 1 ? 'reverse' : ''}`}
+            >
+              <div className="pillar-img-box">
+                <img src={p.image} alt={p.title} loading="lazy" />
+                <div className="pillar-overlay-tag">PILLAR {p.number}</div>
               </div>
 
-              {/* ── Service Type ── */}
-              <div className="sb-section-title">Service Type</div>
-              {SERVICE_TYPES.map(({ key, label, Icon, color }) => {
-                const isActive = activeCategory === key;
+              <div className="pillar-content">
+                <div className="pillar-num-light">{p.number}</div>
+                <span className="pillar-tag-light">{p.tag}</span>
+                <h3 className="pillar-title-light">{p.title}</h3>
+                <p className="pillar-desc-light">{p.description}</p>
+
+                <div className="pillar-features-light">
+                  {p.features.map((feat, i) => (
+                    <div key={i} className="pillar-feature-row">
+                      <div className="pillar-feature-icon-light">
+                        <Check size={13} />
+                      </div>
+                      <span>{feat}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <Link to={p.link} className="pillar-link-light">
+                  {p.linkText} <ChevronRight size={16} />
+                </Link>
+              </div>
+            </div>
+          ))}
+        </section>
+
+        {/* ===== SERVICES GRID SECTION ===== */}
+        <section className="services-sec-light">
+          <div className="services-container-light">
+            <div className="sec-head-light reveal-on-scroll">
+              <span className="sec-tag-light">✦ COMPREHENSIVE AMENITIES</span>
+              <h2 className="sec-title-light">Tailored Hospitality Services</h2>
+              <p className="sec-desc-light">
+                Whether traveling for leisure or executive business, our dedicated staff provides non-stop support for a flawless stay.
+              </p>
+            </div>
+
+            <div className="services-grid-light">
+              {SERVICES_GRID.map((s, idx) => {
+                const IconComponent = s.icon;
                 return (
-                  <div
-                    key={key}
-                    className={`price-row${isActive ? ' active' : ''}`}
-                    onClick={() => { setActiveCategory(key); if (window.innerWidth <= 860) setMobileMenuOpen(false); }}
-                  >
-                    <Icon size={16} color={color} style={{ flexShrink: 0 }} />
-                    {label}
+                  <div key={idx} className="svc-card-light reveal-on-scroll">
+                    <div className="svc-icon-box-light">
+                      <IconComponent size={26} />
+                    </div>
+                    <h3 className="svc-feature-title-light">{s.title}</h3>
+                    <p className="svc-feature-desc-light">{s.desc}</p>
                   </div>
                 );
               })}
-
-              <hr className="sb-divider" />
-
-              {/* ── Price filter ── */}
-              <div className="sb-section-title">Price (ETB)</div>
-              {[
-                { label: 'All Prices',       range: 'All',     color: '#6b7280' },
-                { label: '100 – 300 ETB',    range: '100-300', color: '#22c55e' },
-                { label: '300 – 500 ETB',    range: '300-500', color: '#f59e0b' },
-                { label: '500 – 1,000 ETB',  range: '500-1000',color: '#ef4444' },
-              ].map(({ label, range, color }) => (
-                <div
-                  key={range}
-                  className={`price-row${activePrice === range ? ' active' : ''}`}
-                  onClick={() => { setActivePrice(range); if (window.innerWidth <= 860) setMobileMenuOpen(false); }}
-                >
-                  <Banknote size={16} color={color} style={{ flexShrink: 0 }} />
-                  {label}
-                </div>
-              ))}
-
-              <hr className="sb-divider" />
-
-              {/* ── Sort ── */}
-              <div className="sb-section-title">Sort by</div>
-              {sortOptions.map((opt) => (
-                <div
-                  key={opt.id}
-                  className={`sort-option ${sortBy === opt.id ? 'active' : ''}`}
-                  onClick={() => { setSortBy(opt.id); if (window.innerWidth <= 860) setMobileMenuOpen(false); }}
-                >
-                  <div className="radio-circle"><div className="inner" /></div>
-                  {opt.label}
-                </div>
-              ))}
-            </aside>
-
-            {/* ════ 3-column Card Grid ════ */}
-            <div className="services-grid">
-              {loading ? (
-                <div className="hp-status">Loading hospitality content…</div>
-              ) : loadError ? (
-                <div className="hp-status err">{loadError}</div>
-              ) : sortedServices.length === 0 ? (
-                <div className="hp-status">No services found for the selected filters.</div>
-              ) : (
-                sortedServices.map((service) => (
-                  <div key={service.id} className="svc-card">
-
-                    {/* ── Top: full-width image with overlays ── */}
-                    <div className="svc-img-wrap">
-                      <img src={service.image} alt={service.title} loading="lazy" />
-
-                      {/* "Popular" badge top-left */}
-                      {service.popular && (
-                        <div className="svc-badge">✦ Popular</div>
-                      )}
-
-                      {/* Category pill top-right */}
-                      <div className="svc-cat-pill">{service.category}</div>
-                    </div>
-
-                    {/* ── Card body ── */}
-                    <div className="svc-body">
-                      {/* provider */}
-                      {service.provider && (
-                        <div className="svc-provider">{service.provider}</div>
-                      )}
-
-                      {/* title */}
-                      <h3 className="svc-title">{service.title}</h3>
-
-                      {/* description */}
-                      <p className="svc-desc">{service.description}</p>
-
-                      {/* location */}
-                      {service.location && (
-                        <div className="svc-loc">
-                          <MapPin size={13} />
-                          {service.location}
-                        </div>
-                      )}
-
-                      {/* amenity tags */}
-                      {service.amenities?.length > 0 && (
-                        <div className="svc-tags">
-                          {service.amenities.map((a, i) => (
-                            <span key={i} className="svc-tag">
-                              <Check size={11} /> {a}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-
-                      <div className="svc-spacer" />
-
-                      {/* ── Footer: price pill + Book Now ── */}
-                      <div className="svc-footer">
-                        <div className="svc-price-pill">
-                          {service.displayPrice || `From ${service.price.toLocaleString()} ETB`}
-                          {service.priceSuffix && ` ${service.priceSuffix}`}
-                        </div>
-                        <button className="svc-book-btn" onClick={() => openBookingModal(service)}>
-                          Book Now <ArrowRight size={14} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
             </div>
-
           </div>
-        </div>
-      </div>
+        </section>
 
-      {/* ════ Booking Modal (fully preserved) ════ */}
-      {selectedService && (
-        <div className="booking-modal-overlay" onClick={closeModal}>
-          <div className="booking-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="booking-modal-header">
-              <h3>Book: {selectedService.title}</h3>
-              <button className="booking-modal-close" onClick={closeModal}><X size={18} /></button>
-            </div>
+        {/* ===== REVIEWS & TESTIMONIALS ===== */}
+        <section className="reviews-sec-light">
+          <div className="sec-head-light reveal-on-scroll">
+            <span className="sec-tag-light">✦ GUEST PRAISE</span>
+            <h2 className="sec-title-light">What Our Guests Say About Our Hospitality</h2>
+            <p className="sec-desc-light">
+              Hear directly from our global dignitaries, corporate leaders, and returning guests.
+            </p>
+          </div>
 
-            <div className="booking-modal-body">
-              <div className="step-indicator">
-                <div className={`step-item ${bookingStep === 'availability' ? 'active' : ''}`}>
-                  <div className="step-num">1</div> Availability
+          <div className="reviews-grid-light">
+            {REVIEWS.map((r, idx) => (
+              <div key={idx} className="review-card-light reveal-on-scroll">
+                <div>
+                  <div className="review-stars-light">
+                    {[...Array(r.rating)].map((_, i) => (
+                      <Star key={i} size={16} fill="#d4af37" color="#d4af37" />
+                    ))}
+                  </div>
+                  <p className="review-text-light">"{r.comment}"</p>
                 </div>
-                <div className={`step-item ${bookingStep === 'login' ? 'active' : ''}`}>
-                  <div className="step-num">2</div> Login
-                </div>
-                <div className={`step-item ${bookingStep === 'form' ? 'active' : ''}`}>
-                  <div className="step-num">3</div> Book
+                <div className="review-author-light">
+                  <img src={r.avatar} alt={r.name} className="review-avatar-light" />
+                  <div>
+                    <h4 className="author-name-light">{r.name}</h4>
+                    <p className="author-role-light">{r.role}</p>
+                  </div>
                 </div>
               </div>
+            ))}
+          </div>
+        </section>
 
-              {bookingStep === 'availability' && (
-                <div className="avail-check-box">
-                  <Calendar size={48} />
-                  <h4>Check Availability</h4>
-                  <p>Select your dates to see if {selectedService.title} is available.</p>
-
-                  <div className="booking-form-stack">
-                    <div className="form-group">
-                      <label>Check-In</label>
-                      <div className="date-input-wrapper">
-                        <input type="date" value={checkInDate} onChange={(e) => setCheckInDate(e.target.value)} />
-                      </div>
-                    </div>
-                    <div className="form-group">
-                      <label>Check-Out</label>
-                      <div className="date-input-wrapper">
-                        <input type="date" value={checkOutDate} onChange={(e) => setCheckOutDate(e.target.value)} />
-                      </div>
-                    </div>
-                    <div className="form-group">
-                      <label>Guests</label>
-                      <div className="select-wrapper">
-                        <select value={guests} onChange={(e) => setGuests(e.target.value)}>
-                          <option>1 Guest</option>
-                          <option>2 Guests</option>
-                          <option>3 Guests</option>
-                          <option>4 Guests</option>
-                          <option>5+ Guests</option>
-                        </select>
-                        <ChevronDown size={16} />
-                      </div>
-                    </div>
-                  </div>
-
-                  {availabilityStatus === 'available' && <div className="status-msg available"><Check size={16} /> {checkMessage}</div>}
-                  {availabilityStatus === 'unavailable' && <div className="status-msg unavailable"><X size={16} /> {checkMessage}</div>}
-
-                  <button className="btn-primary" onClick={handleCheckAvailability} disabled={isChecking}>
-                    {isChecking ? (<><div className="loading-spinner" /> Checking...</>) : (<>Check Availability <ArrowRight size={16} /></>)}
-                  </button>
-
-                  <div className="secure-note">
-                    <LockKeyhole size={14} /> You won't be charged yet
-                  </div>
-
-                  {availabilityStatus === 'available' && (
-                    <button className="btn-primary" style={{ marginTop: '12px', background: '#059669', color: 'white' }} onClick={() => setBookingStep(isLoggedIn ? 'form' : 'login')}>
-                      Continue to Booking <ArrowRight size={16} />
-                    </button>
-                  )}
-                </div>
-              )}
-
-              {bookingStep === 'login' && (
-                <div className="login-box">
-                  <h4 style={{ margin: '0 0 16px', color: '#1a1a1a' }}>Login Required</h4>
-                  <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '20px' }}>You must be logged in to proceed.</p>
-                  <form onSubmit={handleLoginSubmit}>
-                    <div className="input-group">
-                      <label>Email Address</label>
-                      <div className="input-wrapper"><User size={16} /><input type="email" placeholder="you@example.com" required /></div>
-                    </div>
-                    <div className="input-group">
-                      <label>Password</label>
-                      <div className="input-wrapper"><Lock size={16} /><input type="password" placeholder="••••••••" required /></div>
-                    </div>
-                    {loginError && <div className="error-msg">{loginError}</div>}
-                    <button type="submit" className="btn-primary">Login &amp; Continue <ArrowRight size={16} /></button>
-                  </form>
-                </div>
-              )}
-
-              {bookingStep === 'form' && (
-                <div>
-                  <div style={{ background: '#ecfdf5', border: '1px solid #a7f3d0', color: '#047857', padding: '10px', borderRadius: '8px', marginBottom: '16px', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Check size={16} /> Confirmed for {checkInDate} to {checkOutDate}!
-                  </div>
-                  <EventBookingForm key={selectedService.id} roomName={selectedService.title} roomPrice={selectedService.price} />
-                </div>
-              )}
+        {/* ===== CALL TO ACTION FOOTER BANNER ===== */}
+        <section className="hosp-cta-light reveal-on-scroll">
+          <div className="cta-box-light">
+            <h2 className="cta-title-light">Experience Hospitality at Its Finest</h2>
+            <p className="cta-desc-light">
+              Your unforgettable retreat awaits. Reserve your stay today and allow our concierge team to prepare your royal welcome.
+            </p>
+            <div className="hosp-hero-btns">
+              <Link to="/rooms" className="btn-gold-light">
+                Book Your Stay Now <ArrowRight size={16} />
+              </Link>
+              <Link to="/contact" className="btn-outline-dark" style={{ background: 'transparent', borderColor: '#ffffff', color: '#ffffff' }}>
+                <PhoneCall size={16} /> Contact Concierge
+              </Link>
             </div>
           </div>
-        </div>
-      )}
+        </section>
+      </div>
     </>
   );
 };

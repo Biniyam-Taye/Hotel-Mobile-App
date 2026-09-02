@@ -1,0 +1,622 @@
+// src/pages/HotelServicesPage.jsx
+import { useState, useEffect } from 'react';
+import { useSearchParams, Link, Navigate } from 'react-router-dom';
+import {
+  ArrowRight, MapPin, Check, Filter, ChevronDown, X, User, Lock,
+  Calendar, LockKeyhole, LayoutGrid, Compass, Sparkles, Dumbbell,
+  HeartPulse, ConciergeBell, PartyPopper, Plane, Waves, Star, Banknote, Coffee
+} from 'lucide-react';
+
+import { fetchHotelServices } from '../services/hospitalityApi';
+
+// Service types for the specialized hotel services
+const SERVICE_TYPES = [
+  { key: 'All',              label: 'All Services',       Icon: LayoutGrid,     color: '#6b7280' },
+  { key: 'airport_transfer', label: 'Airport Transfer',   Icon: Plane,          color: '#0ea5e9' },
+  { key: 'room_service',     label: 'Room Service',       Icon: Coffee,         color: '#f59e0b' },
+  { key: 'laundry',          label: 'Laundry & Cleaning',  Icon: Check,          color: '#10b981' },
+  { key: 'concierge',        label: 'Concierge & Porter', Icon: ConciergeBell,  color: '#6366f1' },
+  { key: 'other',            label: 'Other Services',     Icon: LayoutGrid,     color: '#6b7280' },
+];
+
+const categories = SERVICE_TYPES.map(s => s.key);
+
+const HotelServicesPage = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const legacyCategory = searchParams.get('category');
+
+  if (legacyCategory === 'Wellness') {
+    return <Navigate to="/facilities-wellness" replace />;
+  }
+  if (legacyCategory === 'Events') {
+    return <Navigate to="/events-conferences" replace />;
+  }
+
+  const categoryParam = legacyCategory === 'Services' ? 'All' : (legacyCategory || 'All');
+
+  const [activeCategory, setActiveCategory] = useState(categoryParam);
+  const [activePrice, setActivePrice] = useState('All');
+  const [sortBy, setSortBy] = useState('popular');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [apiItems, setApiItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+
+  const [selectedService, setSelectedService] = useState(null);
+  const [bookingStep, setBookingStep] = useState('availability');
+  const [checkInDate, setCheckInDate] = useState('');
+  const [checkOutDate, setCheckOutDate] = useState('');
+  const [guests, setGuests] = useState('1 Guest');
+  const [isChecking, setIsChecking] = useState(false);
+  const [availabilityStatus, setAvailabilityStatus] = useState(null);
+  const [checkMessage, setCheckMessage] = useState('');
+
+  useEffect(() => {
+    if (activeCategory === 'All') setSearchParams({}, { replace: true });
+    else setSearchParams({ category: activeCategory }, { replace: true });
+  }, [activeCategory, setSearchParams]);
+
+  useEffect(() => {
+    if (categoryParam && categories.includes(categoryParam)) {
+      setActiveCategory(categoryParam);
+    } else {
+      setActiveCategory('All');
+    }
+  }, [categoryParam]);
+
+  useEffect(() => {
+    const loadItems = async () => {
+      try {
+        setLoading(true);
+        setLoadError('');
+        const items = await fetchHotelServices();
+        setApiItems(items);
+      } catch (err) {
+        setLoadError(err.message || 'Failed to load services');
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadItems();
+  }, []);
+
+  const allServices = apiItems;
+
+  const sortOptions = [
+    { id: 'popular', label: 'Popularity' },
+    { id: 'price-low', label: 'Price Low to High' },
+    { id: 'price-high', label: 'Price High to Low' },
+    { id: 'newest', label: 'Newest First' },
+  ];
+
+  const filteredByCategory = activeCategory === 'All'
+    ? allServices
+    : allServices.filter((s) => s.category === activeCategory);
+  const filteredByPrice = filteredByCategory.filter(s => {
+    if (activePrice === 'All') return true;
+    if (activePrice === '100-300') return s.price >= 100 && s.price <= 300;
+    if (activePrice === '300-500') return s.price >= 300 && s.price <= 500;
+    if (activePrice === '500-1000') return s.price >= 500 && s.price <= 1000;
+    return true;
+  });
+
+  const sortedServices = [...filteredByPrice].sort((a, b) => {
+    if (sortBy === 'price-low') return a.price - b.price;
+    if (sortBy === 'price-high') return b.price - a.price;
+    if (sortBy === 'newest') return new Date(b.dateAdded) - new Date(a.dateAdded);
+    return 0;
+  });
+
+  const openBookingModal = (service) => {
+    setSelectedService(service);
+    setBookingStep('availability');
+    setCheckInDate('');
+    setCheckOutDate('');
+    setAvailabilityStatus(null);
+  };
+
+  const closeModal = () => {
+    setSelectedService(null);
+    setIsChecking(false);
+    setAvailabilityStatus(null);
+  };
+
+  const parseDate = (dateStr) => {
+    if (!dateStr) return null;
+    const parts = dateStr.split('-');
+    if (parts.length !== 3) return null;
+    return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+  };
+
+  const handleCheckAvailability = () => {
+    const checkIn = parseDate(checkInDate);
+    const checkOut = parseDate(checkOutDate);
+    if (!checkIn || !checkOut) {
+      setAvailabilityStatus('unavailable');
+      setCheckMessage("Please select both dates.");
+      return;
+    }
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (checkIn < today) {
+      setAvailabilityStatus('unavailable');
+      setCheckMessage("Dates are in the past.");
+      return;
+    }
+    if (checkOut <= checkIn) {
+      setAvailabilityStatus('unavailable');
+      setCheckMessage("Check-out must be after Check-in.");
+      return;
+    }
+    setIsChecking(true);
+    setAvailabilityStatus(null);
+    setCheckMessage('');
+    setTimeout(() => {
+      setIsChecking(false);
+      setAvailabilityStatus('available');
+      setCheckMessage("Great news! Dates are available.");
+    }, 1200);
+  };
+
+  return (
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        .hp {
+          background: #f0f1f5;
+          min-height: 100vh;
+          padding: 110px 0 90px;
+          font-family: 'Inter', sans-serif;
+        }
+        .hp-inner {
+          max-width: 1320px;
+          margin: 0 auto;
+          padding: 0 40px;
+        }
+        .hp-header {
+          text-align: center;
+          margin-bottom: 48px;
+        }
+        .hp-header .lbl {
+          display: inline-block;
+          color: #c9970c;
+          font-size: 11px; font-weight: 800;
+          letter-spacing: 3px; text-transform: uppercase;
+          margin-bottom: 8px;
+        }
+        .hp-header h1 {
+          font-family: 'Georgia', serif;
+          font-size: 42px; font-weight: 700;
+          color: #111827; margin: 0 0 12px;
+        }
+        .hp-header p {
+          font-size: 16px; color: #6b7280;
+          max-width: 580px; margin: 0 auto; line-height: 1.65;
+        }
+        .hp-layout {
+          display: grid;
+          grid-template-columns: 220px 1fr;
+          gap: 32px;
+          align-items: start;
+        }
+        .sidebar {
+          background: #fff;
+          border-radius: 20px;
+          padding: 20px 16px 24px;
+          border: 1px solid #e9eaf0;
+          height: fit-content;
+          position: sticky;
+          top: 100px;
+          box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+        }
+        .sb-head {
+          display: flex; align-items: center; justify-content: space-between;
+          margin-bottom: 20px;
+        }
+        .sb-head-title {
+          display: flex; align-items: center; gap: 8px;
+          font-size: 13px; font-weight: 800;
+          letter-spacing: 1.5px; text-transform: uppercase; color: #111827;
+        }
+        .sb-head-icon {
+          width: 30px; height: 30px; border-radius: 8px;
+          background: linear-gradient(135deg, #c9970c, #e2b84a);
+          display: flex; align-items: center; justify-content: center;
+        }
+        .sb-x-btn {
+          background: #f3f4f6; border: none; cursor: pointer;
+          width: 28px; height: 28px; border-radius: 8px;
+          display: flex; align-items: center; justify-content: center;
+          color: #6b7280; transition: background 0.15s;
+        }
+        .sb-x-btn:hover { background: #fee2e2; color: #b91c1c; }
+
+        .sb-section-title {
+          font-size: 10px; font-weight: 800;
+          letter-spacing: 2px; text-transform: uppercase;
+          color: #9ca3af; margin-bottom: 10px; padding-left: 4px;
+        }
+        .price-row {
+          display: flex; align-items: center; gap: 10px;
+          padding: 9px 12px; border-radius: 11px;
+          cursor: pointer; font-size: 13px; font-weight: 500;
+          color: #6b7280; transition: all 0.15s; margin-bottom: 4px;
+        }
+        .price-row:hover { background: #f9fafb; color: #111827; }
+        .price-row.active {
+          background: #fef9ec; color: #92700a; font-weight: 700;
+        }
+        .sb-divider { border: none; border-top: 1px solid #f1f3f8; margin: 18px 0 14px; }
+        .sort-option {
+          display: flex; align-items: center; gap: 10px;
+          padding: 8px 12px; border-radius: 10px;
+          cursor: pointer; font-size: 13px; color: #6b7280;
+          transition: background 0.15s; margin-bottom: 2px;
+        }
+        .sort-option:hover { background: #f9fafb; }
+        .sort-option.active { color: #c9970c; font-weight: 700; background: #fef9ec; }
+        .radio-circle {
+          width: 16px; height: 16px; border-radius: 50%;
+          border: 2px solid #d1d5db;
+          display: flex; align-items: center; justify-content: center;
+          flex-shrink: 0; transition: border-color 0.15s;
+        }
+        .sort-option.active .radio-circle { border-color: #d4af37; }
+        .inner {
+          width: 8px; height: 8px; border-radius: 50%;
+          background: transparent; transition: background 0.15s;
+        }
+        .sort-option.active .inner { background: #d4af37; }
+
+        .mobile-filter-toggle {
+          display: none; width: 100%; padding: 12px 20px;
+          background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
+          font-size: 14px; font-weight: 600; color: #1a1a1a;
+          cursor: pointer; font-family: inherit;
+          justify-content: space-between; align-items: center;
+          margin-bottom: 16px;
+        }
+        .sidebar-overlay {
+          display: none; position: fixed; inset: 0;
+          background: rgba(0,0,0,0.4); z-index: 999;
+        }
+        .sidebar-overlay.active { display: block; }
+
+        .services-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 24px;
+        }
+        .svc-card {
+          background: #fff;
+          border-radius: 22px;
+          overflow: hidden;
+          box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+          transition: transform 0.22s ease, box-shadow 0.22s ease;
+          display: flex;
+          flex-direction: column;
+        }
+        .svc-card:hover {
+          transform: translateY(-6px);
+          box-shadow: 0 16px 48px rgba(0,0,0,0.14);
+        }
+        .svc-img-wrap {
+          position: relative;
+          width: 100%;
+          aspect-ratio: 4 / 3;
+          overflow: hidden;
+          background: #f3f4f6;
+        }
+        .svc-img-wrap img {
+          width: 100%; height: 100%;
+          object-fit: cover;
+          display: block;
+          transition: transform 0.5s ease;
+        }
+        .svc-card:hover .svc-img-wrap img {
+          transform: scale(1.06);
+        }
+        .svc-badge {
+          position: absolute; top: 14px; left: 14px;
+          background: rgba(255,255,255,0.92);
+          backdrop-filter: blur(4px);
+          padding: 4px 12px;
+          border-radius: 999px;
+          font-size: 11px; font-weight: 700;
+          color: #1a1a1a;
+          letter-spacing: 0.4px;
+        }
+        .svc-cat-pill {
+          position: absolute; top: 14px; right: 14px;
+          background: rgba(212,175,55,0.92);
+          backdrop-filter: blur(4px);
+          padding: 4px 12px;
+          border-radius: 999px;
+          font-size: 11px; font-weight: 700;
+          color: #1a1a1a;
+        }
+        .svc-body {
+          display: flex; flex-direction: column;
+          padding: 18px 18px 20px;
+          gap: 6px; flex: 1;
+        }
+        .svc-provider {
+          font-size: 11px; font-weight: 700;
+          color: #c9970c; text-transform: uppercase;
+          letter-spacing: 0.8px;
+        }
+        .svc-title {
+          font-size: 17px; font-weight: 800;
+          color: #111827; margin: 0; line-height: 1.3;
+        }
+        .svc-desc {
+          font-size: 13px; color: #6b7280;
+          line-height: 1.6; margin: 0;
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        .svc-loc {
+          display: flex; align-items: center; gap: 5px;
+          font-size: 12px; color: #9ca3af;
+        }
+        .svc-tags {
+          display: flex; flex-wrap: wrap; gap: 6px;
+          margin-top: 2px;
+        }
+        .svc-tag {
+          display: flex; align-items: center; gap: 4px;
+          padding: 3px 10px;
+          background: #f3f4f6; border-radius: 999px;
+          font-size: 11px; color: #4b5563; font-weight: 500;
+        }
+        .svc-spacer { flex: 1; }
+        .svc-footer {
+          display: flex; align-items: center;
+          justify-content: space-between;
+          gap: 12px; margin-top: 14px;
+        }
+        .svc-price-pill {
+          display: flex; align-items: center;
+          background: #f3f4f6;
+          border-radius: 999px;
+          padding: 8px 16px;
+          font-size: 15px; font-weight: 800;
+          color: #111827;
+        }
+        .svc-book-btn {
+          display: inline-flex; align-items: center; gap: 7px;
+          background: #111827; color: #fff;
+          border: none; cursor: pointer;
+          padding: 10px 18px; border-radius: 999px;
+          font-size: 13px; font-weight: 700;
+          transition: all 0.2s ease;
+        }
+        .svc-book-btn:hover {
+          background: #1f2937;
+          transform: translateY(-1px);
+        }
+        .hp-status {
+          text-align: center; padding: 60px 24px;
+          color: #9ca3af; font-size: 15px;
+          grid-column: 1 / -1;
+        }
+        .hp-status.err { color: #b91c1c; }
+
+        .booking-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .booking-modal { background: #fff; border-radius: 20px; max-width: 480px; width: 100%; max-height: 90vh; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.2); position: relative; display: flex; flex-direction: column; }
+        .booking-modal-header { padding: 20px 24px; border-bottom: 1px solid #f1f3f5; display: flex; justify-content: space-between; align-items: center; }
+        .booking-modal-header h3 { margin: 0; font-size: 18px; color: #1a1a1a; font-weight: 700; }
+        .booking-modal-close { background: #f3f4f6; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #6b7280; }
+        .booking-modal-close:hover { background: #ef4444; color: #fff; }
+        .booking-modal-body { padding: 24px; overflow-y: auto; }
+
+        .step-indicator { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; position: relative; }
+        .step-indicator::before { content: ''; position: absolute; top: 12px; left: 0; right: 0; height: 2px; background: #e5e7eb; z-index: 0; }
+        .step-item { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; color: #9ca3af; position: relative; z-index: 1; width: 33%; }
+        .step-item.active { color: #d4af37; font-weight: 700; }
+        .step-num { width: 24px; height: 24px; border-radius: 50%; background: #fff; border: 2px solid #e5e7eb; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
+        .step-item.active .step-num { background: #d4af37; border-color: #d4af37; color: #fff; }
+
+        .avail-check-box { text-align: center; padding: 0 10px; }
+        .avail-check-box svg { color: #d4af37; margin-bottom: 12px; }
+        .avail-check-box h4 { margin: 0 0 8px; color: #1a1a1a; font-size: 20px; }
+        .avail-check-box p { color: #6b7280; font-size: 14px; margin-bottom: 24px; line-height: 1.6; }
+
+        .booking-form-stack { display: flex; flex-direction: column; gap: 16px; text-align: left; margin-bottom: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group label { font-size: 14px; font-weight: 700; color: #1a1a1a; }
+        .date-input-wrapper input[type="date"] { width: 100%; height: 48px; padding: 0 16px; border: 1px solid #e5e7eb; border-radius: 10px; background: #fff; font-family: inherit; font-size: 14px; outline: none; }
+        .btn-primary { width: 100%; height: 48px; background: #d4af37; color: #1a1a1a; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: all 0.3s ease; }
+        .btn-primary:hover { background: #c5a028; }
+
+        @media (max-width: 1100px) {
+          .services-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 860px) {
+          .hp-layout { grid-template-columns: 1fr; }
+          .services-grid { grid-template-columns: repeat(2, 1fr); }
+          .mobile-filter-toggle { display: flex; }
+          .sidebar { position: fixed; top: 0; right: -100%; width: 85%; max-width: 320px; height: 100vh; border-radius: 0; border: none; box-shadow: -4px 0 30px rgba(0,0,0,0.12); padding: 24px 20px; overflow-y: auto; z-index: 1000; transition: right 0.3s ease; }
+          .sidebar.open { right: 0; }
+        }
+        @media (max-width: 560px) {
+          .services-grid { grid-template-columns: 1fr; }
+        }
+      `}</style>
+
+      <div className="hp">
+        <div className="hp-inner">
+          <div className="hp-header">
+            <div className="lbl">✦ 24/7 Concierge</div>
+            <h1>Hotel Services</h1>
+            <p>Airport transfers, room service, laundry, concierge support, and personalized guest services.</p>
+          </div>
+
+          <button className="mobile-filter-toggle" onClick={() => setMobileMenuOpen(true)}>
+            <span><Filter size={16} /> Filters &amp; Sort</span>
+            <ChevronDown size={16} />
+          </button>
+
+          <div className={`sidebar-overlay ${mobileMenuOpen ? 'active' : ''}`} onClick={() => setMobileMenuOpen(false)} />
+
+          <div className="hp-layout">
+            <aside className={`sidebar ${mobileMenuOpen ? 'open' : ''}`}>
+              <div className="sb-head">
+                <div className="sb-head-title">
+                  <div className="sb-head-icon">
+                    <Filter size={15} color="#fff" />
+                  </div>
+                  Filters
+                </div>
+                <button className="sb-x-btn" onClick={() => setMobileMenuOpen(false)}>
+                  <X size={15} />
+                </button>
+              </div>
+
+              <div className="sb-section-title">Service Type</div>
+              {SERVICE_TYPES.map(({ key, label, Icon, color }) => {
+                const isActive = activeCategory === key;
+                return (
+                  <div
+                    key={key}
+                    className={`price-row${isActive ? ' active' : ''}`}
+                    onClick={() => { setActiveCategory(key); if (window.innerWidth <= 860) setMobileMenuOpen(false); }}
+                  >
+                    <Icon size={16} color={color} style={{ flexShrink: 0 }} />
+                    {label}
+                  </div>
+                );
+              })}
+
+              <hr className="sb-divider" />
+
+              <div className="sb-section-title">Price (ETB)</div>
+              {[
+                { label: 'All Prices',       range: 'All',     color: '#6b7280' },
+                { label: '100 – 300 ETB',    range: '100-300', color: '#22c55e' },
+                { label: '300 – 500 ETB',    range: '300-500', color: '#f59e0b' },
+                { label: '500 – 1,000 ETB',  range: '500-1000',color: '#ef4444' },
+              ].map(({ label, range, color }) => (
+                <div
+                  key={range}
+                  className={`price-row${activePrice === range ? ' active' : ''}`}
+                  onClick={() => { setActivePrice(range); if (window.innerWidth <= 860) setMobileMenuOpen(false); }}
+                >
+                  <Banknote size={16} color={color} style={{ flexShrink: 0 }} />
+                  {label}
+                </div>
+              ))}
+
+              <hr className="sb-divider" />
+
+              <div className="sb-section-title">Sort by</div>
+              {sortOptions.map((opt) => (
+                <div
+                  key={opt.id}
+                  className={`sort-option ${sortBy === opt.id ? 'active' : ''}`}
+                  onClick={() => { setSortBy(opt.id); if (window.innerWidth <= 860) setMobileMenuOpen(false); }}
+                >
+                  <div className="radio-circle"><div className="inner" /></div>
+                  {opt.label}
+                </div>
+              ))}
+            </aside>
+
+            <div className="services-grid">
+              {loading ? (
+                <div className="hp-status">Loading hotel services…</div>
+              ) : loadError ? (
+                <div className="hp-status err">{loadError}</div>
+              ) : sortedServices.length === 0 ? (
+                <div className="hp-status">No hotel services found for the selected filters.</div>
+              ) : (
+                sortedServices.map((service) => (
+                  <div key={service.id} className="svc-card">
+                    <div className="svc-img-wrap">
+                      <img src={service.image} alt={service.title} loading="lazy" />
+                      {service.popular && <div className="svc-badge">✦ Popular</div>}
+                      <div className="svc-cat-pill">{service.category}</div>
+                    </div>
+
+                    <div className="svc-body">
+                      {service.provider && <div className="svc-provider">{service.provider}</div>}
+                      <h3 className="svc-title">{service.title}</h3>
+                      <p className="svc-desc">{service.description}</p>
+                      {service.location && (
+                        <div className="svc-loc">
+                          <MapPin size={13} /> {service.location}
+                        </div>
+                      )}
+                      {service.amenities?.length > 0 && (
+                        <div className="svc-tags">
+                          {service.amenities.map((a, i) => (
+                            <span key={i} className="svc-tag"><Check size={11} /> {a}</span>
+                          ))}
+                        </div>
+                      )}
+                      <div className="svc-spacer" />
+                      <div className="svc-footer">
+                        <div className="svc-price-pill">
+                          {service.displayPrice || `From ${service.price.toLocaleString()} ETB`}
+                        </div>
+                        <button className="svc-book-btn" onClick={() => openBookingModal(service)}>
+                          Book Now <ArrowRight size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {selectedService && (
+        <div className="booking-modal-overlay" onClick={closeModal}>
+          <div className="booking-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="booking-modal-header">
+              <h3>Book: {selectedService.title}</h3>
+              <button className="booking-modal-close" onClick={closeModal}><X size={18} /></button>
+            </div>
+            <div className="booking-modal-body">
+              <div className="avail-check-box">
+                <Calendar size={48} />
+                <h4>Check Availability</h4>
+                <p>Select your dates for {selectedService.title}.</p>
+                <div className="booking-form-stack">
+                  <div className="form-group">
+                    <label>Check-In Date</label>
+                    <div className="date-input-wrapper">
+                      <input type="date" value={checkInDate} onChange={(e) => setCheckInDate(e.target.value)} />
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label>Check-Out Date</label>
+                    <div className="date-input-wrapper">
+                      <input type="date" value={checkOutDate} onChange={(e) => setCheckOutDate(e.target.value)} />
+                    </div>
+                  </div>
+                </div>
+                {availabilityStatus === 'available' && (
+                  <div className="status-msg available">{checkMessage}</div>
+                )}
+                {availabilityStatus === 'unavailable' && (
+                  <div className="status-msg unavailable">{checkMessage}</div>
+                )}
+                <button className="btn-primary" onClick={handleCheckAvailability} disabled={isChecking}>
+                  {isChecking ? 'Checking...' : 'Check Dates'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default HotelServicesPage;

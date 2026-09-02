@@ -23,8 +23,9 @@ const SECTION_DEFAULTS = [
     badge: '24/7 Concierge',
     description: 'From airport transfers and room service to laundry and concierge — we handle every detail of your stay.',
     image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&auto=format&fit=crop',
-    link: '/hospitality',
+    link: '/hotel-services',
     Icon: ConciergeBell,
+
     accentColor: '#0ea5e9',
   },
   {
