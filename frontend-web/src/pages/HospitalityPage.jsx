@@ -162,20 +162,223 @@ const HospitalityPage = () => {
         /* ===== HERO BANNER (LIGHT LUXURY) ===== */
         .hosp-hero-light {
           position: relative;
-          padding: 110px 24px 90px;
+          padding: 100px 24px 80px;
           background: radial-gradient(circle at 50% 30%, rgba(212, 175, 55, 0.08) 0%, transparent 65%),
                       linear-gradient(180deg, #ffffff 0%, #fdfbf7 100%);
           text-align: center;
           border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+          overflow: hidden;
         }
 
+        .hosp-hero-container {
+          max-width: 1380px;
+          margin: 0 auto;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 24px;
+          position: relative;
+        }
+
+        .hero-center-content {
+          flex: 1;
+          max-width: 700px;
+          margin: 0 auto;
+          z-index: 2;
+        }
+
+        /* ===== CREATIVE CONTINUOUS ANIMATED HERO FLOATING CARDS ===== */
+        .hero-floating-card {
+          width: 240px;
+          height: 320px;
+          border-radius: 30px;
+          overflow: hidden;
+          position: relative;
+          box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08), 0 0 25px rgba(212, 175, 55, 0.25), 0 0 0 1.5px rgba(212, 175, 55, 0.35);
+          transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s ease;
+          cursor: pointer;
+          flex-shrink: 0;
+          z-index: 1;
+        }
+
+        /* 1. Continuous 3D Orbital Floating Motion */
+        .hero-float-left {
+          animation: orbitLeft 8s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+        }
+
+        .hero-float-right {
+          animation: orbitRight 9s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+          animation-delay: 1s;
+        }
+
+        @keyframes orbitLeft {
+          0% {
+            transform: translateY(0px) rotate(-3.5deg) scale(1);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08), 0 0 20px rgba(212, 175, 55, 0.2);
+          }
+          33% {
+            transform: translateY(-16px) rotate(-1.5deg) scale(1.025);
+            box-shadow: 0 26px 55px rgba(184, 134, 11, 0.26), 0 0 32px rgba(212, 175, 55, 0.38);
+          }
+          66% {
+            transform: translateY(-8px) rotate(-4.5deg) scale(1.01);
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.12), 0 0 26px rgba(212, 175, 55, 0.25);
+          }
+          100% {
+            transform: translateY(0px) rotate(-3.5deg) scale(1);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08), 0 0 20px rgba(212, 175, 55, 0.2);
+          }
+        }
+
+        @keyframes orbitRight {
+          0% {
+            transform: translateY(0px) rotate(3.5deg) scale(1);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08), 0 0 20px rgba(212, 175, 55, 0.2);
+          }
+          33% {
+            transform: translateY(-18px) rotate(1.5deg) scale(1.025);
+            box-shadow: 0 26px 55px rgba(184, 134, 11, 0.26), 0 0 32px rgba(212, 175, 55, 0.38);
+          }
+          66% {
+            transform: translateY(-6px) rotate(4.5deg) scale(1.01);
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.12), 0 0 26px rgba(212, 175, 55, 0.25);
+          }
+          100% {
+            transform: translateY(0px) rotate(3.5deg) scale(1);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08), 0 0 20px rgba(212, 175, 55, 0.2);
+          }
+        }
+
+        /* 2. Continuous Cinema Ken-Burns Image Motion Inside */
+        .hero-float-left img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          animation: kenBurnsLeft 14s ease-in-out infinite alternate;
+        }
+
+        .hero-float-right img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          animation: kenBurnsRight 16s ease-in-out infinite alternate;
+        }
+
+        @keyframes kenBurnsLeft {
+          0% { transform: scale(1) translate(0, 0); }
+          50% { transform: scale(1.12) translate(-2.5%, -2.5%); }
+          100% { transform: scale(1.06) translate(2.5%, 1.5%); }
+        }
+
+        @keyframes kenBurnsRight {
+          0% { transform: scale(1.06) translate(2%, 2%); }
+          50% { transform: scale(1.15) translate(-2.5%, 0); }
+          100% { transform: scale(1) translate(0, 0); }
+        }
+
+        /* 3. Continuous Diagonal Metallic Shimmer Light Sweep Across Card */
+        .hero-floating-card::before {
+          content: '';
+          position: absolute;
+          top: -60%; left: -160%;
+          width: 120%; height: 220%;
+          background: linear-gradient(
+            115deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0) 40%,
+            rgba(255, 240, 190, 0.55) 50%,
+            rgba(255, 255, 255, 0) 60%,
+            transparent 100%
+          );
+          transform: rotate(25deg);
+          animation: cardLightSweep 5.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+          pointer-events: none;
+          z-index: 5;
+        }
+
+        .hero-float-right::before {
+          animation-delay: 2.5s;
+        }
+
+        @keyframes cardLightSweep {
+          0%, 35% { left: -160%; opacity: 0; }
+          50% { opacity: 1; }
+          75%, 100% { left: 220%; opacity: 0; }
+        }
+
+        /* 4. Interactive Hover Pop & Scale Override */
+        .hero-floating-card:hover {
+          transform: translateY(-16px) scale(1.1) rotate(0deg) !important;
+          box-shadow: 0 32px 75px rgba(184, 134, 11, 0.38), 0 0 35px rgba(212, 175, 55, 0.5), 0 0 0 3px #d4af37 !important;
+          z-index: 20;
+          animation-play-state: paused;
+        }
+
+        .hero-floating-card:hover img {
+          transform: scale(1.16) !important;
+          animation-play-state: paused;
+        }
+
+        /* 5. Animated Pulsing Badge */
+        .hero-float-badge {
+          position: absolute;
+          bottom: 18px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: rgba(255, 255, 255, 0.94);
+          backdrop-filter: blur(12px);
+          border: 1px solid rgba(212, 175, 55, 0.45);
+          padding: 7px 16px;
+          border-radius: 9999px;
+          color: #b8860b;
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: 1px;
+          white-space: nowrap;
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          gap: 7px;
+          z-index: 6;
+        }
+
+        .badge-pulse-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: #d4af37;
+          box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.8);
+          animation: badgePulse 2s infinite;
+        }
+
+        @keyframes badgePulse {
+          0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.8); }
+          70% { box-shadow: 0 0 0 8px rgba(212, 175, 55, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+        }
+
+        .hero-floating-card:hover .hero-float-badge {
+          background: #b8860b;
+          color: #ffffff;
+          border-color: #b8860b;
+          box-shadow: 0 8px 25px rgba(184, 134, 11, 0.45);
+        }
+
+        .hero-floating-card:hover .badge-pulse-dot {
+          background: #ffffff;
+          box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.8);
+        }
+
+
+        /* ===== CONTINUOUS & HOVER ANIMATED BADGE ===== */
         .hosp-badge-light {
           display: inline-flex;
           align-items: center;
           gap: 8px;
           padding: 8px 22px;
           background: #fef8eb;
-          border: 1px solid rgba(212, 175, 55, 0.4);
+          border: 1px solid rgba(212, 175, 55, 0.45);
           border-radius: 9999px;
           color: #b8860b;
           font-size: 12px;
@@ -183,82 +386,164 @@ const HospitalityPage = () => {
           letter-spacing: 2px;
           text-transform: uppercase;
           margin-bottom: 24px;
-          box-shadow: 0 4px 15px rgba(212, 175, 55, 0.08);
-          transition: transform 0.3s;
+          box-shadow: 0 4px 15px rgba(212, 175, 55, 0.12);
+          transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+          animation: badgeBreath 4s ease-in-out infinite alternate;
+          cursor: pointer;
+        }
+
+        @keyframes badgeBreath {
+          0% {
+            transform: translateY(0px) scale(1);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.12);
+          }
+          100% {
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.28);
+          }
         }
 
         .hosp-badge-light:hover {
-          transform: translateY(-2px);
+          transform: translateY(-6px) scale(1.06) !important;
+          background: #b8860b;
+          color: #ffffff;
+          border-color: #b8860b;
+          box-shadow: 0 12px 30px rgba(184, 134, 11, 0.45) !important;
         }
 
+        .hosp-badge-light svg {
+          animation: spinSparkle 6s linear infinite;
+        }
+
+        @keyframes spinSparkle {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+
+        /* ===== CONTINUOUS & HOVER ANIMATED HEADLINE ===== */
         .hosp-hero-title-light {
           font-family: 'Playfair Display', Georgia, serif;
-          font-size: 56px;
+          font-size: 54px;
           font-weight: 700;
           line-height: 1.15;
           color: #111827;
           max-width: 920px;
           margin: 0 auto 22px;
           letter-spacing: -0.5px;
+          transition: all 0.4s ease;
+          animation: titleFloatBreath 5s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleFloatBreath {
+          0% { transform: translateY(0px); }
+          100% { transform: translateY(-5px); }
         }
 
         .hosp-hero-title-light span {
           color: #b8860b;
-          background: linear-gradient(135deg, #c9970c 0%, #92700a 100%);
+          background: linear-gradient(120deg, #b8860b 0%, #d4af37 35%, #f5e6a3 50%, #d4af37 65%, #b8860b 100%);
+          background-size: 200% auto;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
+          animation: liquidGoldFlow 4s linear infinite;
+          display: inline-block;
+          transition: all 0.4s ease;
         }
 
+        @keyframes liquidGoldFlow {
+          0% { background-position: 0% center; }
+          100% { background-position: 200% center; }
+        }
+
+        .hosp-hero-title-light:hover {
+          letter-spacing: 0.2px;
+        }
+
+        .hosp-hero-title-light:hover span {
+          transform: scale(1.04);
+          filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.4));
+        }
+
+        /* ===== CONTINUOUS & HOVER ANIMATED SUBTITLE ===== */
         .hosp-hero-sub-light {
           font-size: 17.5px;
           color: #555e6d;
           max-width: 700px;
           margin: 0 auto 40px;
-          line-height: 1.7;
+          line-height: 1.75;
+          transition: all 0.35s ease;
+          animation: subTextWave 6s ease-in-out infinite alternate;
+        }
+
+        @keyframes subTextWave {
+          0% { transform: translateY(0px); opacity: 0.95; }
+          100% { transform: translateY(-3px); opacity: 1; }
+        }
+
+        .hosp-hero-sub-light:hover {
+          color: #111827;
+          transform: scale(1.02) translateY(-4px) !important;
         }
 
         .hosp-hero-btns {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 18px;
+          gap: 20px;
           flex-wrap: wrap;
         }
 
-        /* ===== BUTTON HOVER EFFECTS ===== */
+        @media (max-width: 1180px) {
+          .hero-floating-card {
+            width: 180px;
+            height: 250px;
+          }
+          .hosp-hero-title-light {
+            font-size: 44px;
+          }
+        }
+
+        @media (max-width: 920px) {
+          .hero-floating-card {
+            display: none;
+          }
+        }
+
+        /* ===== PERFECT HIGH-CONTRAST BUTTON STYLES ===== */
         .btn-gold-light {
           display: inline-flex;
           align-items: center;
           gap: 10px;
           padding: 16px 36px;
-          background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
-          color: #ffffff;
+          background: #d4af37;
+          color: #111827;
+          border: 2px solid #d4af37;
           border-radius: 9999px;
           font-weight: 700;
           font-size: 15px;
           text-decoration: none;
-          transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-          box-shadow: 0 8px 25px rgba(184, 134, 11, 0.3);
+          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: 0 8px 22px rgba(212, 175, 55, 0.35);
           position: relative;
           overflow: hidden;
         }
 
-        .btn-gold-light::before {
-          content: '';
-          position: absolute;
-          top: 0; left: -100%;
-          width: 100%; height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-          transition: left 0.6s ease;
-        }
-
-        .btn-gold-light:hover::before {
-          left: 100%;
-        }
-
         .btn-gold-light:hover {
-          transform: translateY(-3px) scale(1.02);
-          box-shadow: 0 14px 35px rgba(184, 134, 11, 0.45);
+          background: #111827;
+          color: #ffffff;
+          border-color: #111827;
+          transform: translateY(-4px);
+          box-shadow: 0 14px 35px rgba(17, 24, 39, 0.3);
+        }
+
+        .btn-gold-light svg {
+          transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s ease;
+          color: #111827;
+        }
+
+        .btn-gold-light:hover svg {
+          transform: translateX(6px);
+          color: #d4af37;
         }
 
         .btn-outline-dark {
@@ -267,22 +552,27 @@ const HospitalityPage = () => {
           gap: 10px;
           padding: 16px 36px;
           background: #ffffff;
-          border: 1.5px solid #111827;
+          border: 2px solid #111827;
           color: #111827;
           border-radius: 9999px;
           font-weight: 700;
           font-size: 15px;
           text-decoration: none;
-          transition: all 0.35s ease;
+          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
           box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
 
         .btn-outline-dark:hover {
           background: #111827;
           color: #ffffff;
-          transform: translateY(-3px);
-          box-shadow: 0 10px 30px rgba(17, 24, 39, 0.25);
+          border-color: #111827;
+          transform: translateY(-4px);
+          box-shadow: 0 14px 35px rgba(17, 24, 39, 0.3);
         }
+
+
+
+
 
         /* ===== METRICS COUNTER BAR (LIGHT MODE) ===== */
         .hosp-metrics-light {
@@ -740,26 +1030,65 @@ const HospitalityPage = () => {
       `}</style>
 
       <div className="hosp-page-light">
-        {/* ===== HERO BANNER ===== */}
+        {/* ===== HERO BANNER WITH FLOATING LEFT & RIGHT IMAGES ===== */}
         <section className="hosp-hero-light reveal-on-scroll">
-          <div className="hosp-badge-light">
-            <Sparkles size={14} /> VILLA ALPHA HOSPITALITY SHOWCASE
-          </div>
-          <h1 className="hosp-hero-title-light">
-            The Art of Unrivaled <span>Luxury &amp; Warmth</span>
-          </h1>
-          <p className="hosp-hero-sub-light">
-            From imperial royal suites and gourmet gastronomy to 24/7 VIP concierge care and holistic spa sanctuaries — experience true Ethiopian hospitality elevated to international perfection.
-          </p>
-          <div className="hosp-hero-btns">
-            <a href="#pillars" className="btn-gold-light">
-              Explore Our Hospitality <ArrowRight size={16} />
-            </a>
-            <Link to="/rooms" className="btn-outline-dark">
-              Book A Suite
-            </Link>
+          <div className="hosp-hero-container">
+
+            {/* Left Floating Image Card */}
+            <div className="hero-floating-card hero-float-left" title="Royal Suite Hospitality">
+              <img
+                src="/hospitality-hero-left.jpg"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&auto=format&fit=crop";
+                }}
+                alt="Royal Suite Hospitality"
+              />
+              <div className="hero-float-badge">
+                <span className="badge-pulse-dot" /> ✦ ROYAL SUITES
+              </div>
+            </div>
+
+            {/* Center Content */}
+            <div className="hero-center-content">
+              <div className="hosp-badge-light">
+                <Sparkles size={14} /> VILLA ALPHA HOSPITALITY SHOWCASE
+              </div>
+              <h1 className="hosp-hero-title-light">
+                The Art of Unrivaled <span>Luxury &amp; Warmth</span>
+              </h1>
+              <p className="hosp-hero-sub-light">
+                From imperial royal suites and gourmet gastronomy to 24/7 VIP concierge care and holistic spa sanctuaries — experience true Ethiopian hospitality elevated to international perfection.
+              </p>
+              <div className="hosp-hero-btns">
+                <a href="#pillars" className="btn-gold-light">
+                  Explore Our Hospitality <ArrowRight size={16} />
+                </a>
+                <Link to="/rooms" className="btn-outline-dark">
+                  Book A Suite
+                </Link>
+              </div>
+            </div>
+
+            {/* Right Floating Image Card */}
+            <div className="hero-floating-card hero-float-right" title="Fine Dining & Spa">
+              <img
+                src="/hospitality-hero-right.jpg"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=600&auto=format&fit=crop";
+                }}
+                alt="Fine Dining & Spa"
+              />
+              <div className="hero-float-badge">
+                <span className="badge-pulse-dot" /> ✦ FINE DINING &amp; SPA
+              </div>
+            </div>
+
+
           </div>
         </section>
+
 
         {/* ===== METRICS COUNTER BAR ===== */}
         <section className="hosp-metrics-light reveal-on-scroll">
