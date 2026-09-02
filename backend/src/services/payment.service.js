@@ -272,19 +272,85 @@ const getPaymentHistory = async (query, userId, role) => {
 };
 
 /**
- * Calculate total revenue strictly from succeeded payments for owner dashboard
+ * Calculate total revenue strictly from succeeded payments and fetch real customer transactions for owner dashboard
  */
 const getPaidRevenueStats = async () => {
-  const result = await Payment.aggregate([
+  // Aggregate total succeeded revenue & count
+  const paidResult = await Payment.aggregate([
     { $match: { status: 'succeeded' } },
     { $group: { _id: null, totalRevenue: { $sum: '$amount' }, paidCount: { $sum: 1 } } }
   ]);
 
+  const totalRevenue = paidResult.length > 0 ? paidResult[0].totalRevenue : 0;
+  const paidCount = paidResult.length > 0 ? paidResult[0].paidCount : 0;
+
+  // Pending count & pending total
+  const pendingResult = await Payment.aggregate([
+    { $match: { status: 'pending' } },
+    { $group: { _id: null, totalPending: { $sum: '$amount' }, pendingCount: { $sum: 1 } } }
+  ]);
+
+  const totalPendingAmount = pendingResult.length > 0 ? pendingResult[0].totalPending : 0;
+  const pendingCount = pendingResult.length > 0 ? pendingResult[0].pendingCount : 0;
+
+  // Fetch real customer transactions list from DB
+  const recentPayments = await Payment.find()
+    .sort({ createdAt: -1 })
+    .limit(15)
+    .populate({ path: 'user', select: 'firstName lastName email' })
+    .lean();
+
+  const transactions = recentPayments.map((p, idx) => {
+    const rawName = p.customerName || (p.user ? `${p.user.firstName || ''} ${p.user.lastName || ''}`.trim() : '') || p.customerEmail || 'Guest Customer';
+    return {
+      id: `TRX-${p._id.toString().slice(-6).toUpperCase()}`,
+      dbId: p._id,
+      activity: p.description || `${p.relatedType || 'Booking'} Payment`,
+      customerName: rawName,
+      customerEmail: p.customerEmail || p.user?.email || '',
+      amount: p.amount,
+      currency: p.currency || 'usd',
+      status: p.status === 'succeeded' ? 'Completed' : p.status === 'pending' ? 'Pending' : p.status === 'refunded' ? 'Refunded' : 'Failed',
+      rawStatus: p.status,
+      relatedType: p.relatedType || 'Booking',
+      paymentMethod: p.paymentMethod || 'card',
+      date: new Date(p.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+    };
+  });
+
+  // Monthly breakdown from database
+  const monthlyData = await Payment.aggregate([
+    { $match: { status: 'succeeded' } },
+    {
+      $group: {
+        _id: { $month: '$createdAt' },
+        revenue: { $sum: '$amount' },
+      }
+    },
+    { $sort: { '_id': 1 } }
+  ]);
+
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const chartData = monthNames.map((m, idx) => {
+    const found = monthlyData.find(item => item._id === idx + 1);
+    const rev = found ? found.revenue : 0;
+    return {
+      name: m,
+      profit: rev,
+      loss: 0,
+    };
+  });
+
   return {
-    totalRevenue: result.length > 0 ? result[0].totalRevenue : 0,
-    paidCount: result.length > 0 ? result[0].paidCount : 0,
+    totalRevenue,
+    paidCount,
+    pendingCount,
+    totalPendingAmount,
+    transactions,
+    chartData,
   };
 };
+
 
 /**
  * Get all payments for a specific logged-in user.

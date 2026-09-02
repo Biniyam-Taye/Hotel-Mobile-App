@@ -1,313 +1,294 @@
 import React, { useState, useEffect } from 'react';
 import './Dashboard.css';
-import { ArrowUpRight, ArrowDownRight, MoreHorizontal, Wallet, RefreshCcw, ArrowRightLeft, CreditCard, ChevronDown, CheckSquare, Square, Package, Settings, Plane, ShoppingCart, Image as ImageIcon, Search } from 'lucide-react';
+import {
+  ArrowUpRight, ArrowDownRight, MoreHorizontal, Wallet, RefreshCcw,
+  ArrowRightLeft, CreditCard, ChevronDown, CheckSquare, Square, Package,
+  Settings, Plane, ShoppingCart, Image as ImageIcon, Search, UserCheck, Clock
+} from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
-const chartData = [
-  { name: 'Jan', profit: 28, loss: 20 },
-  { name: 'Feb', profit: 35, loss: 25 },
-  { name: 'Mar', profit: 25, loss: 45 },
-  { name: 'Apr', profit: 42, loss: 30 },
-  { name: 'May', profit: 30, loss: 55 },
-  { name: 'Jun', profit: 65, loss: 35 },
-  { name: 'Jul', profit: 40, loss: 40 },
-  { name: 'Aug', profit: 35, loss: 30 },
-];
-
-const activities = [
-  { id: 'INV_000076', activity: 'Mobile App Purchase', price: '$25,500', status: 'Completed', date: '17 Apr, 2026 03:45 PM', icon: <Package size={16} className="text-blue-500" /> },
-  { id: 'INV_000075', activity: 'Hotel Booking', price: '$32,750', status: 'Pending', date: '15 Apr, 2026 11:30 AM', icon: <Settings size={16} className="text-gray-500" /> },
-  { id: 'INV_000074', activity: 'Flight Ticket Booking', price: '$40,200', status: 'Completed', date: '15 Apr, 2026 12:00 PM', icon: <Plane size={16} className="text-blue-400" /> },
-  { id: 'INV_000073', activity: 'Grocery Purchase', price: '$50,200', status: 'In Progress', date: '14 Apr, 2026 09:15 PM', icon: <ShoppingCart size={16} className="text-orange-400" /> },
-  { id: 'INV_000072', activity: 'Software License', price: '$15,900', status: 'Completed', date: '10 Apr, 2026 06:00 AM', icon: <ImageIcon size={16} className="text-red-500" /> },
-];
-
 const Dashboard = () => {
-  const [liveRevenue, setLiveRevenue] = useState(850);
-  const [paidCount, setPaidCount] = useState(0);
+  const [stats, setStats] = useState({
+    totalRevenue: 0,
+    paidCount: 0,
+    pendingCount: 0,
+    totalPendingAmount: 0,
+    transactions: [],
+    chartData: [],
+  });
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    // Fetch total revenue based strictly on successfully paid transactions
-    const fetchRevenue = async () => {
+    const fetchRevenueStats = async () => {
       try {
+        setLoading(true);
         const res = await fetch('http://localhost:5000/api/v1/payments/revenue-stats');
         const json = await res.json();
-        if (json.data && json.data.totalRevenue !== undefined) {
-          setLiveRevenue(json.data.totalRevenue);
-          setPaidCount(json.data.paidCount || 0);
+        if (json.data) {
+          setStats({
+            totalRevenue: json.data.totalRevenue || 0,
+            paidCount: json.data.paidCount || 0,
+            pendingCount: json.data.pendingCount || 0,
+            totalPendingAmount: json.data.totalPendingAmount || 0,
+            transactions: json.data.transactions || [],
+            chartData: json.data.chartData || [],
+          });
         }
       } catch (err) {
-        console.log('Revenue stats fetch:', err);
+        console.error('Revenue stats fetch error:', err);
+      } finally {
+        setLoading(false);
       }
     };
-    fetchRevenue();
+    fetchRevenueStats();
   }, []);
+
+  const formatCurrency = (val) => {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val || 0);
+  };
+
+  const filteredTransactions = stats.transactions.filter(t => {
+    if (!searchTerm) return true;
+    const term = searchTerm.toLowerCase();
+    return (
+      t.customerName?.toLowerCase().includes(term) ||
+      t.customerEmail?.toLowerCase().includes(term) ||
+      t.activity?.toLowerCase().includes(term) ||
+      t.id?.toLowerCase().includes(term)
+    );
+  });
 
   return (
     <div className="dashboard">
       <div className="dashboard-header">
-        <h1 className="greeting">Good morning, Sajibur</h1>
-        <p className="subtitle">Stay on top of your tasks, monitor progress, and track status.</p>
+        <h1 className="greeting">Good day, Hotel Owner</h1>
+        <p className="subtitle">Real-time overview of customer bookings, payments, and financial revenue.</p>
       </div>
 
       <div className="dashboard-grid">
-        {/* Total Balance Card */}
+        {/* Total Revenue Overview Card */}
         <div className="card total-balance-card">
           <div className="flex justify-between items-center mb-4">
-            <span className="text-light text-sm">Total Balance</span>
+            <span className="text-light text-sm">Total Revenue (Paid Only)</span>
             <div className="currency-selector">
               <img src="https://flagcdn.com/w20/us.png" alt="USD" width="16" />
               <span className="text-sm font-medium">USD</span>
-              <ChevronDown size={14} className="text-light" />
             </div>
           </div>
-          <h2 className="balance-amount">$689,372.00</h2>
+          <h2 className="balance-amount">{formatCurrency(stats.totalRevenue)}</h2>
           <div className="flex items-center gap-2 mb-6">
-            <span className="badge badge-green"><ArrowUpRight size={12} /> 5%</span>
-            <span className="text-sm text-light">than last month</span>
+            <span className="badge badge-green"><ArrowUpRight size={12} /> {stats.paidCount}</span>
+            <span className="text-sm text-light">successful transactions</span>
           </div>
-          
+
           <div className="flex gap-3 mb-6">
-            <button className="btn btn-primary flex-1"><RefreshCcw size={16} /> Transfer</button>
-            <button className="btn btn-secondary flex-1"><ArrowRightLeft size={16} /> Request</button>
+            <button className="btn btn-primary flex-1" onClick={() => window.location.reload()}>
+              <RefreshCcw size={16} /> Sync Database
+            </button>
           </div>
 
           <div className="wallets-section">
             <div className="flex justify-between items-center mb-3">
-              <span className="text-xs font-semibold text-dark">Wallets</span>
-              <span className="text-xs text-light">Total 6 wallets</span>
+              <span className="text-xs font-semibold text-dark">Revenue Summary</span>
+              <span className="text-xs text-light">Live DB</span>
             </div>
             <div className="wallet-list">
               <div className="wallet-item">
-                <img src="https://flagcdn.com/w20/us.png" alt="USD" width="20" className="rounded" />
-                <div>
-                  <div className="wallet-name">USD Wallet</div>
-                  <div className="wallet-status text-green">Active</div>
+                <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xs">
+                  ✓
                 </div>
-                <div className="wallet-balance">$22,678.00</div>
+                <div>
+                  <div className="wallet-name">Succeeded Payments</div>
+                  <div className="wallet-status text-green">{stats.paidCount} Completed</div>
+                </div>
+                <div className="wallet-balance">{formatCurrency(stats.totalRevenue)}</div>
               </div>
               <div className="wallet-item">
-                <img src="https://flagcdn.com/w20/eu.png" alt="EUR" width="20" className="rounded" />
-                <div>
-                  <div className="wallet-name">EUR Wallet</div>
-                  <div className="wallet-status text-green">Active</div>
+                <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-xs">
+                  ⌛
                 </div>
-                <div className="wallet-balance">€18,345.00</div>
-              </div>
-              <div className="wallet-item">
-                <img src="https://flagcdn.com/w20/gb.png" alt="GBP" width="20" className="rounded" />
                 <div>
-                  <div className="wallet-name">GBP Wallet</div>
-                  <div className="wallet-status text-gray">Inactive</div>
+                  <div className="wallet-name">Pending Payments</div>
+                  <div className="wallet-status text-amber-500">{stats.pendingCount} Awaiting</div>
                 </div>
-                <div className="wallet-balance">£15,000.00</div>
+                <div className="wallet-balance">{formatCurrency(stats.totalPendingAmount)}</div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Top Cards Section */}
+        {/* Top Stats Cards Grid */}
         <div className="stats-cards-grid">
           <div className="card stat-card total-earnings-card">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-medium">Total Earnings</span>
+              <span className="text-sm font-medium">Total Paid Revenue</span>
               <Wallet size={18} />
             </div>
-            <h2 className="stat-amount">$950</h2>
+            <h2 className="stat-amount">{formatCurrency(stats.totalRevenue)}</h2>
             <div className="flex items-center gap-2 mt-auto">
-              <span className="badge badge-light-orange"><ArrowUpRight size={10} /> 7%</span>
-              <span className="text-xs opacity-80">This month</span>
+              <span className="badge badge-light-orange"><ArrowUpRight size={10} /> Live</span>
+              <span className="text-xs opacity-80">Stripe Succeeded</span>
             </div>
           </div>
 
           <div className="card stat-card">
             <div className="flex justify-between items-center mb-4">
-              <span className="text-sm text-light">Total Spending</span>
-              <div className="icon-circle"><CreditCard size={14} /></div>
+              <span className="text-sm text-light">Paid Customers</span>
+              <div className="icon-circle"><UserCheck size={14} /></div>
             </div>
-            <h3 className="stat-amount text-dark">$700</h3>
+            <h3 className="stat-amount text-dark">{stats.paidCount}</h3>
             <div className="flex items-center gap-2 mt-auto">
-              <span className="badge badge-red"><ArrowDownRight size={10} /> 5%</span>
-              <span className="text-xs text-light">This month</span>
+              <span className="badge badge-green"><ArrowUpRight size={10} /> Confirmed</span>
+              <span className="text-xs text-light">Payments received</span>
             </div>
           </div>
 
           <div className="card stat-card">
             <div className="flex justify-between items-center mb-4">
-              <span className="text-sm text-light">Total Income</span>
-              <div className="icon-circle"><CreditCard size={14} /></div>
+              <span className="text-sm text-light">Pending Orders</span>
+              <div className="icon-circle"><Clock size={14} /></div>
             </div>
-            <h3 className="stat-amount text-dark">$1,050</h3>
+            <h3 className="stat-amount text-dark">{stats.pendingCount}</h3>
             <div className="flex items-center gap-2 mt-auto">
-              <span className="badge badge-green"><ArrowUpRight size={10} /> 8%</span>
-              <span className="text-xs text-light">This month</span>
+              <span className="badge badge-orange"><Clock size={10} /> Pending</span>
+              <span className="text-xs text-light">{formatCurrency(stats.totalPendingAmount)}</span>
             </div>
           </div>
 
-          <div className="card stat-card" style={{ borderColor: 'rgba(16, 185, 129, 0.3)' }}>
+          <div className="card stat-card" style={{ borderColor: 'rgba(16, 185, 129, 0.4)' }}>
             <div className="flex justify-between items-center mb-4">
-              <span className="text-sm text-light">Total Revenue (Paid Only)</span>
-              <div className="icon-circle" style={{ background: '#dcfce7', color: '#16a34a' }}><Package size={14} /></div>
+              <span className="text-sm text-light">Verified Transactions</span>
+              <div className="icon-circle" style={{ background: '#dcfce7', color: '#16a34a' }}>
+                <Package size={14} />
+              </div>
             </div>
-            <h3 className="stat-amount text-dark">${Number(liveRevenue).toLocaleString()}</h3>
+            <h3 className="stat-amount text-dark">{stats.paidCount + stats.pendingCount} Total</h3>
             <div className="flex items-center gap-2 mt-auto">
-              <span className="badge badge-green"><ArrowUpRight size={10} /> {paidCount} paid transactions</span>
-              <span className="text-xs text-light">Stripe Succeeded</span>
+              <span className="badge badge-green">100% Real DB</span>
+              <span className="text-xs text-light">Live Transactions</span>
             </div>
           </div>
         </div>
 
-        {/* Chart Card */}
+        {/* Monthly Revenue Chart Card */}
         <div className="card chart-card">
           <div className="flex justify-between items-start mb-6">
             <div>
-              <h3 className="font-semibold mb-1">Total Income</h3>
-              <p className="text-xs text-light">View your income in a certain period of time</p>
+              <h3 className="font-semibold mb-1">Monthly Revenue (Real Database)</h3>
+              <p className="text-xs text-light">Aggregated live earnings per month</p>
             </div>
             <MoreHorizontal size={20} className="text-light" />
           </div>
-          
+
           <div className="flex justify-between items-center mb-4">
-            <span className="text-xs font-semibold">Profit and Loss</span>
+            <span className="text-xs font-semibold">Revenue Trend</span>
             <div className="flex gap-4">
               <div className="flex items-center gap-1">
                 <span className="legend-dot bg-blue"></span>
-                <span className="text-xs text-light">Profit</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <span className="legend-dot bg-dark"></span>
-                <span className="text-xs text-light">Loss</span>
+                <span className="text-xs text-light">Succeeded Revenue ($)</span>
               </div>
             </div>
           </div>
 
           <div className="chart-container">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} margin={{ top: 0, right: 0, left: -25, bottom: 0 }}>
+              <BarChart data={stats.chartData} margin={{ top: 0, right: 0, left: -25, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#8b8b8b' }} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#8b8b8b' }} tickFormatter={(value) => `${value}k`} />
-                <Tooltip cursor={{fill: 'transparent'}} />
-                <Bar dataKey="profit" fill="#fb5a2f" radius={[4, 4, 0, 0]} stackId="a" barSize={20} />
-                <Bar dataKey="loss" fill="#121212" radius={[0, 0, 4, 4]} stackId="a" barSize={20} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#8b8b8b' }} tickFormatter={(val) => `$${val}`} />
+                <Tooltip cursor={{ fill: 'transparent' }} formatter={(value) => [`$${value}`, 'Revenue']} />
+                <Bar dataKey="profit" fill="#fb5a2f" radius={[4, 4, 0, 0]} barSize={24} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Bottom Row */}
-        <div className="bottom-grid">
-          <div className="card spending-card">
-            <h3 className="font-semibold text-sm mb-6">Monthly Spending Limit</h3>
-            <div className="progress-bar-container">
-              <div className="progress-bar" style={{ width: '25%' }}></div>
-            </div>
-            <div className="flex justify-between mt-2">
-              <span className="text-[10px]"><span className="font-semibold">$1,400.00</span> spent out of</span>
-              <span className="text-[10px] text-light">$5,500.00</span>
-            </div>
-
-            <div className="my-cards-header">
-              <div className="flex items-center gap-2">
-                <CreditCard size={18} />
-                <h3 className="font-semibold text-sm">My Cards</h3>
-              </div>
-              <button className="add-new-btn">+ Add new</button>
-            </div>
-            
-            <div className="modern-cards-list">
-              <div className="modern-cc modern-cc-dark">
-                <div className="cc-top">
-                  <div className="cc-badge bg-white-trans">Active</div>
-                  <div className="mc-circles">
-                    <span className="mc-red"></span>
-                    <span className="mc-orange"></span>
-                  </div>
-                </div>
-                <div className="cc-middle">
-                  <div className="cc-label">Card Number</div>
-                  <div className="cc-number">**** **** **** 6782</div>
-                </div>
-                <div className="cc-bottom">
-                  <div className="cc-info-block">
-                    <div className="cc-label">EXP</div>
-                    <div className="cc-val">09/29</div>
-                  </div>
-                  <div className="cc-info-block">
-                    <div className="cc-label">CVV</div>
-                    <div className="cc-val">611</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="modern-cc modern-cc-orange">
-                <div className="cc-top">
-                  <div className="cc-badge bg-white-trans">Active</div>
-                  <div className="mc-circles">
-                     <span className="mc-white-dim"></span>
-                     <span className="mc-white"></span>
-                  </div>
-                </div>
-                <div className="cc-middle mt-auto">
-                    <div className="cc-label">Card Number</div>
-                    <div className="cc-number-small">**** 4356</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
+        {/* Bottom Row - Real Customer Payments List */}
+        <div className="bottom-grid" style={{ gridTemplateColumns: '1fr' }}>
           <div className="card activities-card">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="font-semibold">Recent Activities</h3>
+              <div>
+                <h3 className="font-semibold text-lg">Customer Payments & Transactions</h3>
+                <p className="text-xs text-light mt-1">Live payments recorded in MongoDB from customers</p>
+              </div>
               <div className="flex gap-4">
                 <div className="search-box">
                   <Search size={14} className="text-light" />
-                  <input type="text" placeholder="Search" />
+                  <input
+                    type="text"
+                    placeholder="Search by customer or service..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
                 </div>
-                <button className="btn btn-outline text-xs py-1 px-3 flex items-center gap-1">
-                  Filter <ChevronDown size={14} />
-                </button>
               </div>
             </div>
 
-            <div className="table-responsive">
-              <table className="activities-table">
-                <thead>
-                  <tr>
-                    <th><Square size={14} className="text-light" /></th>
-                    <th>Order ID</th>
-                    <th>Activity</th>
-                    <th>Price</th>
-                    <th>Status</th>
-                    <th>Date</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {activities.map((item, index) => (
-                    <tr key={item.id} className={index === 3 ? 'active-row' : ''}>
-                      <td>
-                        {index === 3 ? <CheckSquare size={14} className="text-dark" /> : <Square size={14} className="text-light opacity-50" />}
-                      </td>
-                      <td className="text-light">{item.id}</td>
-                      <td>
-                        <div className="flex items-center gap-2">
-                          <div className="icon-box">{item.icon}</div>
-                          <span className="font-medium">{item.activity}</span>
-                        </div>
-                      </td>
-                      <td className="font-medium">{item.price}</td>
-                      <td>
-                        <span className={`status-dot ${item.status === 'Completed' ? 'bg-green' : item.status === 'Pending' ? 'bg-red' : 'bg-yellow'}`}></span>
-                        <span className="text-xs text-light ml-1">{item.status}</span>
-                      </td>
-                      <td className="text-light text-xs">{item.date}</td>
-                      <td><MoreHorizontal size={16} className="text-light" /></td>
+            {loading ? (
+              <div style={{ padding: '40px', textAlign: 'center', color: '#888' }}>
+                Loading customer transactions...
+              </div>
+            ) : filteredTransactions.length === 0 ? (
+              <div style={{ padding: '40px', textAlign: 'center', color: '#888' }}>
+                No customer transactions found in database.
+              </div>
+            ) : (
+              <div className="table-responsive">
+                <table className="activities-table">
+                  <thead>
+                    <tr>
+                      <th><Square size={14} className="text-light" /></th>
+                      <th>Ref ID</th>
+                      <th>Customer Name</th>
+                      <th>Service / Activity</th>
+                      <th>Amount</th>
+                      <th>Status</th>
+                      <th>Date</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {filteredTransactions.map((item, index) => (
+                      <tr key={item.id || index} className={item.rawStatus === 'succeeded' ? 'active-row' : ''}>
+                        <td>
+                          {item.rawStatus === 'succeeded' ? (
+                            <CheckSquare size={14} className="text-emerald-600" />
+                          ) : (
+                            <Square size={14} className="text-light opacity-50" />
+                          )}
+                        </td>
+                        <td className="text-light font-mono text-xs">{item.id}</td>
+                        <td>
+                          <div className="font-medium text-dark">{item.customerName}</div>
+                          {item.customerEmail && (
+                            <div className="text-xs text-light">{item.customerEmail}</div>
+                          )}
+                        </td>
+                        <td>
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-sm">{item.activity}</span>
+                          </div>
+                        </td>
+                        <td className="font-bold text-dark">{formatCurrency(item.amount)}</td>
+                        <td>
+                          <span
+                            className={`status-dot ${
+                              item.rawStatus === 'succeeded'
+                                ? 'bg-green'
+                                : item.rawStatus === 'pending'
+                                ? 'bg-yellow'
+                                : 'bg-red'
+                            }`}
+                          ></span>
+                          <span className="text-xs text-light ml-1 font-medium">{item.status}</span>
+                        </td>
+                        <td className="text-light text-xs">{item.date}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
       </div>
