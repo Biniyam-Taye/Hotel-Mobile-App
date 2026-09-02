@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Clock, Calendar, Users, Star, CheckCircle, XCircle, X, ArrowRight } from 'lucide-react';
 import { fetchOfferById } from '../services/offersApi';
+import { initiateStripeCheckout } from '../services/paymentApi';
 
 const OfferDetail = () => {
   const { id } = useParams();
@@ -62,16 +63,16 @@ const OfferDetail = () => {
   const handleConfirmBooking = (e) => {
     e.preventDefault();
     setBookingSuccess(true);
-    setTimeout(() => {
+
+    initiateStripeCheckout({
+      title: `Special Offer - ${offer?.title || 'Luxury Package'}`,
+      amount: offer?.price || 250,
+      relatedType: 'Offer',
+      customerEmail: email,
+      customerName: fullName,
+    }).catch(err => {
       setBookingSuccess(false);
-      setShowModal(false);
-      setAvailabilityStatus(null);
-      setCheckIn('');
-      setCheckOut('');
-      setFullName('');
-      setEmail('');
-      setPhone('');
-    }, 2500);
+    });
   };
 
   if (loading) {

@@ -1,5 +1,6 @@
 // src/App.jsx
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -28,6 +29,8 @@ import ScrollToTop from './components/ScrollToTop';
 import OffersPage from './pages/OffersPage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
+import BookingSuccessPage from './pages/BookingSuccessPage';
+import MyOrdersPage from './pages/MyOrdersPage';
 
 // Hospitality sections are independent pages:
 // /restaurant — Restaurant & Bar
@@ -35,28 +38,18 @@ import SignUpPage from './pages/SignUpPage';
 // /facilities-wellness — Facilities & Wellness
 // /events-conferences — Events & Conference
 
-// Create a Layout component to conditionally show Navbar/Footer
+// Routes where Navbar and Footer are hidden
+const HIDE_NAV_FOOTER = ['/login', '/signup'];
+
 const Layout = ({ children }) => {
   const location = useLocation();
-
-  // List of routes where we DO NOT want the Navbar and Footer to show
-  const hideNavAndFooter = ['/login', '/signup'];
-
-  // Check if current path is in the list
-  const shouldHide = hideNavAndFooter.includes(location.pathname);
+  const shouldHide = HIDE_NAV_FOOTER.includes(location.pathname);
 
   return (
     <div>
-      {/* Only render Navbar if we shouldn't hide it */}
       {!shouldHide && <Navbar />}
-
       <ScrollToTop />
-
-      <div>
-        {children}
-      </div>
-
-      {/* Only render Footer if we shouldn't hide it */}
+      <div>{children}</div>
       {!shouldHide && <Footer />}
     </div>
   );
@@ -65,54 +58,60 @@ const Layout = ({ children }) => {
 function App() {
   return (
     <BrowserRouter>
-      <Layout>
-        <Routes>
-          {/* ===== HOMEPAGE ===== */}
-          <Route path="/" element={
-            <>
-              <Hero />
-              <About />
-              <Home />
-              <Amenities />
-              <Testimonials />
-              <Offers />
-            </>
-          } />
+      <AuthProvider>
+        <Layout>
+          <Routes>
+            {/* ===== HOMEPAGE ===== */}
+            <Route path="/" element={
+              <>
+                <Hero />
+                <About />
+                <Home />
+                <Amenities />
+                <Testimonials />
+                <Offers />
+              </>
+            } />
 
-          {/* ===== MAIN PAGES ===== */}
-          <Route path="/rooms" element={<RoomsPage />} />
-          
-          <Route path="/hospitality" element={<HospitalityPage />} />
-          <Route path="/facilities-wellness" element={<FacilitiesWellnessPage />} />
-          <Route path="/events-conferences" element={<EventsConferencesPage />} />
-          
-          <Route path="/experience" element={<ExperiencePage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/offers" element={<OffersPage />} />
+            {/* ===== MAIN PAGES ===== */}
+            <Route path="/rooms" element={<RoomsPage />} />
+            <Route path="/hospitality" element={<HospitalityPage />} />
+            <Route path="/facilities-wellness" element={<FacilitiesWellnessPage />} />
+            <Route path="/events-conferences" element={<EventsConferencesPage />} />
+            <Route path="/experience" element={<ExperiencePage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/offers" element={<OffersPage />} />
 
-          {/* ===== AMENITY DETAIL PAGES ===== */}
-          <Route path="/restaurant" element={<RestaurantPage />} />
-          <Route path="/pool" element={<PoolPage />} />
-          <Route path="/spa" element={<SpaPage />} />
-          <Route path="/fitness" element={<FitnessPage />} />
+            {/* ===== AMENITY DETAIL PAGES ===== */}
+            <Route path="/restaurant" element={<RestaurantPage />} />
+            <Route path="/pool" element={<PoolPage />} />
+            <Route path="/spa" element={<SpaPage />} />
+            <Route path="/fitness" element={<FitnessPage />} />
 
-          {/* ===== ROOM DETAIL ===== */}
-          <Route path="/room/:id" element={<RoomDetail />} />
+            {/* ===== ROOM DETAIL ===== */}
+            <Route path="/room/:id" element={<RoomDetail />} />
 
-          {/* ===== OFFER DETAIL ===== */}
-          <Route path="/offers/:id" element={<OfferDetail />} />
+            {/* ===== OFFER DETAIL ===== */}
+            <Route path="/offers/:id" element={<OfferDetail />} />
 
-          {/* ===== LEGAL & SUPPORT PAGES ===== */}
-          <Route path="/faq" element={<FAQPage />} />
-          <Route path="/privacy" element={<PrivacyPage />} />
-          <Route path="/terms" element={<TermsPage />} />
-          <Route path="/contact" element={<ContactPage />} />
+            {/* ===== LEGAL & SUPPORT PAGES ===== */}
+            <Route path="/faq" element={<FAQPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/contact" element={<ContactPage />} />
 
-          {/* ===== AUTH PAGES (No Navbar/Footer) ===== */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignUpPage />} />
-        </Routes>
-      </Layout>
+            {/* ===== BOOKING SUCCESS (Stripe Redirect) ===== */}
+            <Route path="/booking-success" element={<BookingSuccessPage />} />
+
+            {/* ===== MY ORDERS (Protected) ===== */}
+            <Route path="/my-orders" element={<MyOrdersPage />} />
+
+            {/* ===== AUTH PAGES (No Navbar/Footer) ===== */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignUpPage />} />
+          </Routes>
+        </Layout>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

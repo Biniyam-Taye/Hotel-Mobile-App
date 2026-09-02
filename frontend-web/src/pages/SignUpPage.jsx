@@ -1,301 +1,489 @@
 // src/pages/SignUpPage.jsx
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, Mail, Lock } from 'lucide-react';
+import { User, Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const SignUpPage = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
+  const { register } = useAuth();
 
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
-
-    // Simple validation
+    setError('');
     if (password !== confirmPassword) {
-      alert('❌ Passwords do not match!');
+      setError('Passwords do not match.');
+      return;
+    }
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters.');
       return;
     }
     if (!agreeTerms) {
-      alert('❌ You must agree to the Terms & Conditions.');
+      setError('You must agree to the Terms & Conditions.');
       return;
     }
-
-    // Here you would add your actual API call to register the user
-    console.log('Signing up with:', { name, email, password });
-    alert('✅ Account created successfully! Please log in.');
-    navigate('/login'); // Redirect to login page after signup
+    setLoading(true);
+    try {
+      await register(name, email, password);
+      setSuccess(true);
+      setTimeout(() => navigate('/login'), 2000);
+    } catch (err) {
+      setError(err.message || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <>
       <style>{`
-        .signup-page {
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        .auth-page {
+          min-height: 100vh;
           display: flex;
-          flex-direction: column;
           align-items: center;
           justify-content: center;
-          min-height: 80vh;
-          background: #ffffff;
+          background: #0a0a0f;
           padding: 40px 24px;
+          position: relative;
+          overflow: hidden;
+          font-family: 'Poppins', sans-serif;
         }
 
-        .signup-card {
-          background: #ffffff;
-          padding: 48px 40px;
-          border-radius: 20px;
+        .auth-page::before {
+          content: '';
+          position: absolute;
+          top: -30%;
+          right: -10%;
+          width: 700px;
+          height: 700px;
+          background: radial-gradient(circle, rgba(212,175,55,0.07) 0%, transparent 70%);
+          pointer-events: none;
+        }
+
+        .auth-card {
+          background: rgba(255,255,255,0.03);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(212,175,55,0.15);
+          border-radius: 24px;
+          padding: 52px 48px;
           width: 100%;
-          max-width: 440px;
-          box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-          border: 1px solid #e5e7eb;
-          text-align: center;
+          max-width: 460px;
+          position: relative;
+          z-index: 1;
+          animation: fadeUp 0.5s ease both;
         }
 
-        .signup-card .signup-title {
-          font-family: 'Georgia', 'Times New Roman', serif;
-          font-size: 32px;
-          font-weight: 700;
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .auth-logo {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 36px;
+          justify-content: center;
+        }
+
+        .auth-logo-icon {
+          width: 38px;
+          height: 38px;
+          background: #d4af37;
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 800;
+          font-size: 16px;
           color: #1a1a1a;
-          margin: 0 0 4px 0;
         }
 
-        .signup-card .signup-subtitle {
+        .auth-logo-text {
+          font-size: 16px;
+          font-weight: 700;
+          color: #ffffff;
+          letter-spacing: 1px;
+        }
+
+        .auth-title {
+          font-size: 28px;
+          font-weight: 700;
+          color: #ffffff;
+          margin: 0 0 6px 0;
+          text-align: center;
+          letter-spacing: -0.5px;
+        }
+
+        .auth-subtitle {
           font-size: 14px;
-          color: #6b7280;
+          color: rgba(255,255,255,0.45);
+          text-align: center;
           margin: 0 0 32px 0;
         }
 
-        .form-group {
+        .auth-error {
+          background: rgba(239,68,68,0.1);
+          border: 1px solid rgba(239,68,68,0.3);
+          border-radius: 12px;
+          padding: 12px 16px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          color: #fca5a5;
+          font-size: 13px;
           margin-bottom: 20px;
-          text-align: left;
         }
 
-        .form-group label {
+        .auth-success {
+          background: rgba(16,185,129,0.1);
+          border: 1px solid rgba(16,185,129,0.3);
+          border-radius: 12px;
+          padding: 12px 16px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          color: #6ee7b7;
+          font-size: 13px;
+          margin-bottom: 20px;
+        }
+
+        .auth-form-group {
+          margin-bottom: 18px;
+        }
+
+        .auth-form-group label {
           display: block;
-          font-size: 14px;
+          font-size: 11px;
           font-weight: 600;
-          color: #374151;
-          margin-bottom: 6px;
+          color: rgba(255,255,255,0.5);
+          margin-bottom: 7px;
+          text-transform: uppercase;
+          letter-spacing: 0.8px;
         }
 
-        .input-wrapper {
+        .auth-input-wrapper {
           position: relative;
         }
 
-        .input-wrapper .icon {
+        .auth-input-icon {
           position: absolute;
-          left: 14px;
+          left: 16px;
           top: 50%;
           transform: translateY(-50%);
-          color: #9ca3af;
+          color: rgba(255,255,255,0.25);
+          pointer-events: none;
         }
 
-        .form-control {
+        .auth-input-toggle {
+          position: absolute;
+          right: 16px;
+          top: 50%;
+          transform: translateY(-50%);
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: rgba(255,255,255,0.3);
+          display: flex;
+          align-items: center;
+          transition: color 0.2s;
+          padding: 0;
+        }
+
+        .auth-input-toggle:hover {
+          color: #d4af37;
+        }
+
+        .auth-input {
           width: 100%;
-          padding: 12px 14px 12px 44px; /* Left padding for icon */
-          border: 1px solid #d1d5db;
-          border-radius: 12px;
+          padding: 13px 16px 13px 46px;
+          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 14px;
           font-size: 14px;
+          color: #ffffff;
           outline: none;
-          transition: border-color 0.2s;
+          transition: all 0.2s;
           box-sizing: border-box;
           font-family: 'Poppins', sans-serif;
         }
 
-        .form-control:focus {
-          border-color: #d4af37;
-          box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        .auth-input::placeholder {
+          color: rgba(255,255,255,0.2);
         }
 
-        .terms-group {
+        .auth-input:focus {
+          border-color: rgba(212,175,55,0.5);
+          background: rgba(212,175,55,0.04);
+          box-shadow: 0 0 0 3px rgba(212,175,55,0.08);
+        }
+
+        .auth-input.has-toggle {
+          padding-right: 46px;
+        }
+
+        .auth-terms {
           display: flex;
           align-items: flex-start;
           gap: 10px;
           font-size: 13px;
-          color: #4b5563;
-          margin: 8px 0 24px 0;
-          text-align: left;
-        }
-
-        .terms-group input[type="checkbox"] {
-          width: 18px;
-          height: 18px;
-          min-width: 18px;
-          accent-color: #d4af37;
+          color: rgba(255,255,255,0.35);
+          margin: 20px 0 24px 0;
           cursor: pointer;
-          margin-top: 2px;
         }
 
-        .terms-group a {
+        .auth-terms input[type="checkbox"] {
+          width: 17px;
+          height: 17px;
+          min-width: 17px;
+          accent-color: #d4af37;
+          margin-top: 1px;
+          cursor: pointer;
+        }
+
+        .auth-terms a {
           color: #d4af37;
           text-decoration: none;
-          font-weight: 600;
+          font-weight: 500;
         }
-        .terms-group a:hover {
+
+        .auth-terms a:hover {
           text-decoration: underline;
         }
 
-        .btn-signup {
+        .auth-btn {
           width: 100%;
-          padding: 16px;
-          background: #d4af37;
+          padding: 15px;
+          background: linear-gradient(135deg, #d4af37, #f0cc5a);
           color: #1a1a1a;
           border: none;
-          border-radius: 9999px;
+          border-radius: 14px;
           font-weight: 700;
-          font-size: 16px;
+          font-size: 15px;
           cursor: pointer;
           transition: all 0.3s ease;
           font-family: 'Poppins', sans-serif;
+          position: relative;
+          overflow: hidden;
         }
 
-        .btn-signup:hover {
-          background: #c5a028;
+        .auth-btn:hover:not(:disabled) {
           transform: translateY(-2px);
-          box-shadow: 0 4px 20px rgba(212, 175, 55, 0.4);
+          box-shadow: 0 8px 25px rgba(212,175,55,0.35);
         }
 
-        .login-prompt {
-          margin-top: 24px;
+        .auth-btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        .auth-divider {
+          text-align: center;
+          margin: 24px 0;
+          position: relative;
+          color: rgba(255,255,255,0.2);
+          font-size: 12px;
+        }
+
+        .auth-divider::before, .auth-divider::after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          width: 40%;
+          height: 1px;
+          background: rgba(255,255,255,0.08);
+        }
+        .auth-divider::before { left: 0; }
+        .auth-divider::after { right: 0; }
+
+        .auth-switch {
+          text-align: center;
           font-size: 14px;
-          color: #6b7280;
+          color: rgba(255,255,255,0.35);
         }
 
-        .login-prompt a {
+        .auth-switch a {
           color: #d4af37;
           font-weight: 600;
           text-decoration: none;
         }
 
-        .login-prompt a:hover {
-          text-decoration: underline;
+        .auth-switch a:hover {
+          color: #f0cc5a;
         }
 
-        .back-home {
+        .auth-back {
+          text-align: center;
           margin-top: 24px;
-          font-size: 14px;
         }
-        .back-home a {
-          color: #d4af37;
-          font-weight: 500;
+
+        .auth-back a {
+          color: rgba(255,255,255,0.25);
+          font-size: 13px;
           text-decoration: none;
           display: inline-flex;
           align-items: center;
           gap: 6px;
-          transition: all 0.3s ease;
-        }
-        .back-home a:hover {
-          color: #c5a028;
-          transform: translateX(-4px);
+          transition: color 0.2s;
         }
 
-        @media (max-width: 480px) {
-          .signup-card {
-            padding: 32px 20px;
+        .auth-back a:hover {
+          color: #d4af37;
+        }
+
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+
+        .auth-spinner {
+          width: 18px;
+          height: 18px;
+          border: 2px solid rgba(26,26,26,0.3);
+          border-top-color: #1a1a1a;
+          border-radius: 50%;
+          animation: spin 0.7s linear infinite;
+          display: inline-block;
+          margin-right: 8px;
+          vertical-align: middle;
+        }
+
+        @media (max-width: 520px) {
+          .auth-card {
+            padding: 36px 24px;
           }
-          .signup-card .signup-title {
-            font-size: 26px;
+          .auth-title {
+            font-size: 22px;
           }
         }
       `}</style>
 
-      <div className="signup-page">
-        <div className="signup-card">
-          <h1 className="signup-title">Create an <span style={{ color: '#d4af37' }}>Account</span></h1>
-          <p className="signup-subtitle">Join Villa Alpha and start booking your luxury stays.</p>
+      <div className="auth-page">
+        <div className="auth-card">
+          <div className="auth-logo">
+            <div className="auth-logo-icon">V</div>
+            <span className="auth-logo-text">VILLA ALPHA</span>
+          </div>
+
+          <h1 className="auth-title">Create Your Account</h1>
+          <p className="auth-subtitle">Join Villa Alpha for luxury stays & seamless bookings</p>
+
+          {error && (
+            <div className="auth-error">
+              <AlertCircle size={16} />
+              {error}
+            </div>
+          )}
+
+          {success && (
+            <div className="auth-success">
+              <CheckCircle size={16} />
+              Account created! Redirecting to login...
+            </div>
+          )}
 
           <form onSubmit={handleSignUp}>
-            {/* Full Name */}
-            <div className="form-group">
+            <div className="auth-form-group">
               <label>Full Name</label>
-              <div className="input-wrapper">
-                <User size={18} className="icon" />
-                <input 
-                  type="text" 
-                  className="form-control" 
-                  placeholder="John Doe" 
+              <div className="auth-input-wrapper">
+                <User size={17} className="auth-input-icon" />
+                <input
+                  type="text"
+                  className="auth-input"
+                  placeholder="John Doe"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  required 
+                  required
                 />
               </div>
             </div>
 
-            {/* Email */}
-            <div className="form-group">
+            <div className="auth-form-group">
               <label>Email Address</label>
-              <div className="input-wrapper">
-                <Mail size={18} className="icon" />
-                <input 
-                  type="email" 
-                  className="form-control" 
-                  placeholder="john@example.com" 
+              <div className="auth-input-wrapper">
+                <Mail size={17} className="auth-input-icon" />
+                <input
+                  type="email"
+                  className="auth-input"
+                  placeholder="john@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  required 
+                  required
                 />
               </div>
             </div>
 
-            {/* Password */}
-            <div className="form-group">
+            <div className="auth-form-group">
               <label>Password</label>
-              <div className="input-wrapper">
-                <Lock size={18} className="icon" />
-                <input 
-                  type="password" 
-                  className="form-control" 
-                  placeholder="Create a password" 
+              <div className="auth-input-wrapper">
+                <Lock size={17} className="auth-input-icon" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  className="auth-input has-toggle"
+                  placeholder="Min. 6 characters"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  required 
+                  required
                 />
+                <button type="button" className="auth-input-toggle" onClick={() => setShowPassword(!showPassword)}>
+                  {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                </button>
               </div>
             </div>
 
-            {/* Confirm Password */}
-            <div className="form-group">
+            <div className="auth-form-group">
               <label>Confirm Password</label>
-              <div className="input-wrapper">
-                <Lock size={18} className="icon" />
-                <input 
-                  type="password" 
-                  className="form-control" 
-                  placeholder="Confirm your password" 
+              <div className="auth-input-wrapper">
+                <Lock size={17} className="auth-input-icon" />
+                <input
+                  type={showConfirm ? 'text' : 'password'}
+                  className="auth-input has-toggle"
+                  placeholder="Repeat your password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  required 
+                  required
                 />
+                <button type="button" className="auth-input-toggle" onClick={() => setShowConfirm(!showConfirm)}>
+                  {showConfirm ? <EyeOff size={17} /> : <Eye size={17} />}
+                </button>
               </div>
             </div>
 
-            {/* Terms and Conditions */}
-            <div className="terms-group">
-              <input 
-                type="checkbox" 
-                id="terms" 
+            <label className="auth-terms">
+              <input
+                type="checkbox"
                 checked={agreeTerms}
                 onChange={(e) => setAgreeTerms(e.target.checked)}
-                required 
               />
-              <label htmlFor="terms">
-                I agree to the <Link to="/terms">Terms &amp; Conditions</Link> and <Link to="/privacy">Privacy Policy</Link>.
-              </label>
-            </div>
+              I agree to the <Link to="/terms">Terms & Conditions</Link> and <Link to="/privacy">Privacy Policy</Link>
+            </label>
 
-            <button type="submit" className="btn-signup">Sign Up</button>
+            <button type="submit" className="auth-btn" disabled={loading || success}>
+              {loading && <span className="auth-spinner" />}
+              {loading ? 'Creating Account...' : 'Create Account'}
+            </button>
           </form>
 
-          <div className="login-prompt">
-            Already have an account? <Link to="/login">Log In</Link>
+          <div className="auth-divider">or</div>
+
+          <div className="auth-switch">
+            Already have an account? <Link to="/login">Sign In</Link>
           </div>
         </div>
 
-        {/* Back to Home link */}
-        <div className="back-home">
+        <div className="auth-back">
           <Link to="/">← Back to Home</Link>
         </div>
       </div>

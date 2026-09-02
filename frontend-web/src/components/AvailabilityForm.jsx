@@ -1,6 +1,7 @@
 // src/components/AvailabilityForm.jsx
 import { useState } from 'react';
 import { Calendar, Users, ArrowRight, CheckCircle, XCircle, X } from 'lucide-react';
+import { initiateStripeCheckout } from '../services/paymentApi';
 
 const AvailabilityForm = ({ roomName, roomPrice }) => {
   const [checkIn, setCheckIn] = useState('');
@@ -38,17 +39,21 @@ const AvailabilityForm = ({ roomName, roomPrice }) => {
   const handleConfirmBooking = (e) => {
     e.preventDefault();
     setBookingSuccess(true);
-    setTimeout(() => {
+
+    const chargeAmount = totalPrice > 0 ? totalPrice : (roomPrice || 150);
+
+    initiateStripeCheckout({
+      title: `Room Booking - ${roomName || 'Luxury Suite'}`,
+      amount: chargeAmount,
+      currency: 'etb',          // Room prices are in ETB — paymentApi will convert to USD
+      relatedType: 'Booking',
+      customerEmail: email,
+      customerName: fullName,
+    }).catch(err => {
       setBookingSuccess(false);
-      setShowBookingModal(false);
-      setAvailabilityStatus(null);
-      setCheckIn('');
-      setCheckOut('');
-      setFullName('');
-      setEmail('');
-      setPhone('');
-    }, 2500);
+    });
   };
+
 
   // Calculate number of nights
   const calculateNights = () => {
@@ -63,6 +68,11 @@ const AvailabilityForm = ({ roomName, roomPrice }) => {
 
   const nights = calculateNights();
   const totalPrice = nights * (roomPrice || 0);
+
+  // ETB → USD conversion (1 USD ≈ 57 ETB)
+  const ETB_TO_USD = 57;
+  const totalUSD = totalPrice > 0 ? Math.max(0.5, parseFloat((totalPrice / ETB_TO_USD).toFixed(2))) : 0;
+
 
   // Get min date for check-out (day after check-in)
   const getMinCheckOut = () => {
@@ -385,6 +395,7 @@ const AvailabilityForm = ({ roomName, roomPrice }) => {
         {nights > 0 && totalPrice > 0 && availabilityStatus === 'available' && (
           <div style={{ textAlign: 'center', marginTop: '12px', fontSize: '14px', color: '#4b5563' }}>
             <span style={{ fontWeight: 600 }}>{nights} nights</span> · Total: <span style={{ fontWeight: 700, color: '#10b981' }}>ETB {totalPrice.toLocaleString()}</span>
+            <span style={{ marginLeft: '6px', fontSize: '12px', color: '#9ca3af' }}>(≈ ${totalUSD.toLocaleString()} USD charged on Stripe)</span>
           </div>
         )}
 
@@ -448,8 +459,13 @@ const AvailabilityForm = ({ roomName, roomPrice }) => {
                   <div><strong>Check-In:</strong> {checkIn}</div>
                   <div><strong>Check-Out:</strong> {checkOut} ({nights} nights)</div>
                   <div><strong>Guests:</strong> {guests}</div>
-                  <div style={{ marginTop: '6px', fontSize: '15px', color: '#10b981', fontWeight: 700 }}>
-                    Total: ETB {totalPrice.toLocaleString()}
+                  <div style={{ marginTop: '8px', borderTop: '1px solid #f3f4f6', paddingTop: '8px' }}>
+                    <div style={{ fontSize: '15px', color: '#10b981', fontWeight: 700 }}>
+                      Total: ETB {totalPrice.toLocaleString()}
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '3px' }}>
+                      ≈ ${totalUSD.toLocaleString()} USD — amount charged on Stripe
+                    </div>
                   </div>
                 </div>
 

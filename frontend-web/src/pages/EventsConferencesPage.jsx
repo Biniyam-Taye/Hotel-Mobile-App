@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Users, Loader2, MapPin, Check, Star, Calendar, CheckCircle, XCircle, X, ArrowRight } from 'lucide-react';
 import { fetchEventSpaces } from '../services/hospitalityApi';
+import { initiateStripeCheckout } from '../services/paymentApi';
 
 export default function EventsConferencesPage() {
   const [spaces, setSpaces] = useState([]);
@@ -77,9 +78,16 @@ export default function EventsConferencesPage() {
   const handleConfirmBooking = (e) => {
     e.preventDefault();
     setBookingSuccess(true);
-    setTimeout(() => {
-      closeModal();
-    }, 2500);
+
+    initiateStripeCheckout({
+      title: `Event Venue - ${selectedSpace?.title || 'Conference Hall'}`,
+      amount: selectedSpace?.price || 500,
+      relatedType: 'Event',
+      customerEmail: email,
+      customerName: fullName,
+    }).catch(err => {
+      setBookingSuccess(false);
+    });
   };
 
   return (

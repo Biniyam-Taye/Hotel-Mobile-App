@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Clock, Loader2, Calendar, CheckCircle, XCircle, X, ArrowRight, Users } from 'lucide-react';
 import { fetchFacilities } from '../services/hospitalityApi';
+import { initiateStripeCheckout } from '../services/paymentApi';
 
 export default function FacilitiesWellnessPage() {
   const [facilities, setFacilities] = useState([]);
@@ -75,9 +76,16 @@ export default function FacilitiesWellnessPage() {
   const handleConfirmBooking = (e) => {
     e.preventDefault();
     setBookingSuccess(true);
-    setTimeout(() => {
-      closeModal();
-    }, 2500);
+
+    initiateStripeCheckout({
+      title: `Wellness Facility - ${selectedFacility?.title || 'Spa Service'}`,
+      amount: selectedFacility?.price || 120,
+      relatedType: 'Facility',
+      customerEmail: email,
+      customerName: fullName,
+    }).catch(err => {
+      setBookingSuccess(false);
+    });
   };
 
   return (

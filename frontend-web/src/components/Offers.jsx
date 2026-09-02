@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, Users, ArrowRight, Clock, Star, X } from 'lucide-react';
 import { fetchPublicOffers } from '../services/offersApi';
+import { initiateStripeCheckout } from '../services/paymentApi';
 
 const Offers = () => {
   const [offers, setOffers] = useState([]);
@@ -691,7 +692,19 @@ const Offers = () => {
           <div className="modal-divider" />
 
           <h4 style={{ margin: '0 0 16px 0', color: '#1a1a1a' }}>Book This Package</h4>
-          <form onSubmit={(e) => { e.preventDefault(); alert('Booking Confirmed!'); closeBookingModal(); }}>
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            const emailInput = e.target.email?.value || '';
+            const nameInput = e.target.fullName?.value || '';
+            closeBookingModal();
+            initiateStripeCheckout({
+              title: `Offer Package - ${selectedOffer?.title || 'Special Deal'}`,
+              amount: selectedOffer?.price || 200,
+              relatedType: 'Offer',
+              customerEmail: emailInput,
+              customerName: nameInput,
+            });
+          }}>
             <div className="form-row-2">
               <div className="form-group">
                 <label>Check-in Date</label>

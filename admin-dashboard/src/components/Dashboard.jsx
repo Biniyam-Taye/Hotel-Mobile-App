@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './Dashboard.css';
 import { ArrowUpRight, ArrowDownRight, MoreHorizontal, Wallet, RefreshCcw, ArrowRightLeft, CreditCard, ChevronDown, CheckSquare, Square, Package, Settings, Plane, ShoppingCart, Image as ImageIcon, Search } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
@@ -23,6 +23,26 @@ const activities = [
 ];
 
 const Dashboard = () => {
+  const [liveRevenue, setLiveRevenue] = useState(850);
+  const [paidCount, setPaidCount] = useState(0);
+
+  useEffect(() => {
+    // Fetch total revenue based strictly on successfully paid transactions
+    const fetchRevenue = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/v1/payments/revenue-stats');
+        const json = await res.json();
+        if (json.data && json.data.totalRevenue !== undefined) {
+          setLiveRevenue(json.data.totalRevenue);
+          setPaidCount(json.data.paidCount || 0);
+        }
+      } catch (err) {
+        console.log('Revenue stats fetch:', err);
+      }
+    };
+    fetchRevenue();
+  }, []);
+
   return (
     <div className="dashboard">
       <div className="dashboard-header">
@@ -44,76 +64,58 @@ const Dashboard = () => {
           <h2 className="balance-amount">$689,372.00</h2>
           <div className="flex items-center gap-2 mb-6">
             <span className="badge badge-green"><ArrowUpRight size={12} /> 5%</span>
-            <span className="text-xs text-light">than last month</span>
+            <span className="text-sm text-light">than last month</span>
           </div>
           
-          <div className="action-buttons">
-            <button className="btn btn-dark">
-              <ArrowRightLeft size={16} /> Transfer
-            </button>
-            <button className="btn btn-light">
-              <RefreshCcw size={16} /> Request
-            </button>
+          <div className="flex gap-3 mb-6">
+            <button className="btn btn-primary flex-1"><RefreshCcw size={16} /> Transfer</button>
+            <button className="btn btn-secondary flex-1"><ArrowRightLeft size={16} /> Request</button>
           </div>
 
           <div className="wallets-section">
             <div className="flex justify-between items-center mb-3">
-              <span className="text-sm font-medium">Wallets</span>
+              <span className="text-xs font-semibold text-dark">Wallets</span>
               <span className="text-xs text-light">Total 6 wallets</span>
             </div>
-            <div className="wallets-list-modern">
-              <div className="wallet-row">
-                <div className="flex items-center gap-3">
-                  <div className="flag-icon-wrapper">
-                    <img src="https://flagcdn.com/w20/us.png" alt="USD" width="16" />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-sm text-dark">USD Wallet</div>
-                    <div className="text-[11px] text-green">Active</div>
-                  </div>
+            <div className="wallet-list">
+              <div className="wallet-item">
+                <img src="https://flagcdn.com/w20/us.png" alt="USD" width="20" className="rounded" />
+                <div>
+                  <div className="wallet-name">USD Wallet</div>
+                  <div className="wallet-status text-green">Active</div>
                 </div>
-                <div className="font-bold text-sm">$22,678.00</div>
+                <div className="wallet-balance">$22,678.00</div>
               </div>
-
-              <div className="wallet-row">
-                <div className="flex items-center gap-3">
-                  <div className="flag-icon-wrapper">
-                    <img src="https://flagcdn.com/w20/eu.png" alt="EUR" width="16" />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-sm text-dark">EUR Wallet</div>
-                    <div className="text-[11px] text-green">Active</div>
-                  </div>
+              <div className="wallet-item">
+                <img src="https://flagcdn.com/w20/eu.png" alt="EUR" width="20" className="rounded" />
+                <div>
+                  <div className="wallet-name">EUR Wallet</div>
+                  <div className="wallet-status text-green">Active</div>
                 </div>
-                <div className="font-bold text-sm">€18,345.00</div>
+                <div className="wallet-balance">€18,345.00</div>
               </div>
-
-              <div className="wallet-row">
-                <div className="flex items-center gap-3">
-                  <div className="flag-icon-wrapper opacity-50">
-                    <img src="https://flagcdn.com/w20/gb.png" alt="GBP" width="16" />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-sm text-dark opacity-50">GBP Wallet</div>
-                    <div className="text-[11px] text-red">Inactive</div>
-                  </div>
+              <div className="wallet-item">
+                <img src="https://flagcdn.com/w20/gb.png" alt="GBP" width="20" className="rounded" />
+                <div>
+                  <div className="wallet-name">GBP Wallet</div>
+                  <div className="wallet-status text-gray">Inactive</div>
                 </div>
-                <div className="font-bold text-sm opacity-50">£15,000.00</div>
+                <div className="wallet-balance">£15,000.00</div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Stats Grid */}
-        <div className="stats-grid">
-          <div className="card stat-card stat-card-orange">
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-sm">Total Earnings</span>
-              <Wallet size={16} />
+        {/* Top Cards Section */}
+        <div className="stats-cards-grid">
+          <div className="card stat-card total-earnings-card">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-medium">Total Earnings</span>
+              <Wallet size={18} />
             </div>
-            <h3 className="stat-amount">$950</h3>
+            <h2 className="stat-amount">$950</h2>
             <div className="flex items-center gap-2 mt-auto">
-              <span className="badge badge-white-trans"><ArrowUpRight size={10} /> 7%</span>
+              <span className="badge badge-light-orange"><ArrowUpRight size={10} /> 7%</span>
               <span className="text-xs opacity-80">This month</span>
             </div>
           </div>
@@ -121,7 +123,7 @@ const Dashboard = () => {
           <div className="card stat-card">
             <div className="flex justify-between items-center mb-4">
               <span className="text-sm text-light">Total Spending</span>
-              <div className="icon-circle"><Wallet size={14} /></div>
+              <div className="icon-circle"><CreditCard size={14} /></div>
             </div>
             <h3 className="stat-amount text-dark">$700</h3>
             <div className="flex items-center gap-2 mt-auto">
@@ -142,15 +144,15 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="card stat-card">
+          <div className="card stat-card" style={{ borderColor: 'rgba(16, 185, 129, 0.3)' }}>
             <div className="flex justify-between items-center mb-4">
-              <span className="text-sm text-light">Total Revenue</span>
-              <div className="icon-circle"><Package size={14} /></div>
+              <span className="text-sm text-light">Total Revenue (Paid Only)</span>
+              <div className="icon-circle" style={{ background: '#dcfce7', color: '#16a34a' }}><Package size={14} /></div>
             </div>
-            <h3 className="stat-amount text-dark">$850</h3>
+            <h3 className="stat-amount text-dark">${Number(liveRevenue).toLocaleString()}</h3>
             <div className="flex items-center gap-2 mt-auto">
-              <span className="badge badge-green"><ArrowUpRight size={10} /> 4%</span>
-              <span className="text-xs text-light">This month</span>
+              <span className="badge badge-green"><ArrowUpRight size={10} /> {paidCount} paid transactions</span>
+              <span className="text-xs text-light">Stripe Succeeded</span>
             </div>
           </div>
         </div>
