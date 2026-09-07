@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail, Send } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { ScrollReveal, StaggerContainer, StaggerItem } from './common/ScrollReveal';
+import Logo from './common/Logo';
 
 const Footer = () => {
   return (
@@ -256,17 +257,10 @@ const Footer = () => {
             {/* Brand */}
             <StaggerItem variant="fade-up">
               <div className="footer-brand">
-                <div className="footer-brand-logo">
-                  <motion.div 
-                    whileHover={{ rotate: 10, scale: 1.1 }}
-                    className="footer-brand-icon"
-                  >
-                    V
-                  </motion.div>
-                  <div>
-                    <h3 className="footer-brand-title">VILLA ALPHA</h3>
-                    <p className="footer-brand-subtitle">INTERNATIONAL HOTEL</p>
-                  </div>
+                <div className="footer-brand-logo" style={{ marginBottom: '16px' }}>
+                  <Link to="/" style={{ textDecoration: 'none' }}>
+                    <Logo size="large" />
+                  </Link>
                 </div>
                 <p className="footer-brand-description">
                   Experience unparalleled luxury and world-class hospitality at Villa Alpha.

@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X, ShoppingBag, LogOut, User, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
+import Logo from './common/Logo';
 import { ScrollProgressBar } from './common/ScrollReveal';
 
 const Navbar = () => {
@@ -418,18 +419,8 @@ const Navbar = () => {
         id="navbar"
       >
         <div className="navbar-container">
-          <Link to="/" className="logo">
-            <motion.div
-              whileHover={{ rotate: 10, scale: 1.1 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 10 }}
-              className="logo-icon"
-            >
-              V
-            </motion.div>
-            <div className="logo-text">
-              <h1 className="logo-title">VILLA ALPHA</h1>
-              <p className="logo-subtitle">INTERNATIONAL HOTEL</p>
-            </div>
+          <Link to="/" style={{ textDecoration: 'none' }}>
+            <Logo size="medium" />
           </Link>
 
           <div className="nav-links">
