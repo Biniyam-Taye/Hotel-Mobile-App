@@ -209,13 +209,13 @@ export default function VoiceNavigator() {
   const navigate = useNavigate();
   const [state, setState] = useState('idle');    // idle | listening | success | error
   const [toast, setToast] = useState('');
-  const recRef   = useRef(null);
+  const recRef = useRef(null);
   const timerRef = useRef(null);
 
   function stopRec() {
     clearTimeout(timerRef.current);
     if (recRef.current) {
-      try { recRef.current.stop(); } catch (_) {}
+      try { recRef.current.stop(); } catch (_) { }
       recRef.current = null;
     }
   }
@@ -249,9 +249,9 @@ export default function VoiceNavigator() {
 
     const rec = new SR();
     // continuous + interimResults avoids the "no-speech" timeout error
-    rec.lang            = 'en-US';
-    rec.continuous      = true;   // keeps mic open
-    rec.interimResults  = true;   // get partial results fast
+    rec.lang = 'en-US';
+    rec.continuous = true;   // keeps mic open
+    rec.interimResults = true;   // get partial results fast
     rec.maxAlternatives = 1;
     recRef.current = rec;
 
