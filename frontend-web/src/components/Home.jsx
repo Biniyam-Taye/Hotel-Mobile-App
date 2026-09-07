@@ -1,10 +1,12 @@
 // src/components/Home.jsx
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowRight, Star, Calendar,
 } from 'lucide-react';
 import { fetchPublishedRooms, formatPrice } from '../services/roomApi';
+import { ScrollReveal, StaggerContainer, StaggerItem } from './common/ScrollReveal';
 
 const Home = () => {
   const [rooms, setRooms] = useState([]);
@@ -49,8 +51,9 @@ const Home = () => {
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Poppins:wght@300;400;500;600&display=swap');
 
         .rooms-section {
-          padding: 80px 24px;
+          padding: 96px 24px;
           background: #f8f9fa;
+          overflow: hidden;
         }
 
         .rooms-container {
@@ -60,7 +63,7 @@ const Home = () => {
 
         .rooms-header {
           text-align: center;
-          margin-bottom: 48px;
+          margin-bottom: 56px;
         }
 
         /* ── Label Hover: Letter spacing expand & sparkle spin ── */
@@ -162,45 +165,6 @@ const Home = () => {
           transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), color 0.4s ease;
         }
 
-        /* Gold bracket accents */
-        .rooms-header p::before,
-        .rooms-header p::after {
-          content: '';
-          position: absolute;
-          top: 15%;
-          width: 3px;
-          height: 70%;
-          background: linear-gradient(180deg, #d4af37, #f5d879);
-          border-radius: 99px;
-          opacity: 0;
-          transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        .rooms-header p::before {
-          left: 0;
-          transform: translateX(12px);
-        }
-
-        .rooms-header p::after {
-          right: 0;
-          transform: translateX(-12px);
-        }
-
-        .rooms-header p:hover {
-          transform: translateY(-3px);
-          color: #1f2937;
-        }
-
-        .rooms-header p:hover::before {
-          opacity: 1;
-          transform: translateX(-4px);
-        }
-
-        .rooms-header p:hover::after {
-          opacity: 1;
-          transform: translateX(4px);
-        }
-
         /* ====== ROOMS GRID — 4 columns ====== */
         .rooms-grid {
           display: grid;
@@ -222,6 +186,7 @@ const Home = () => {
           display: flex;
           flex-direction: column;
           position: relative;
+          height: 100%;
         }
 
         .room-card:hover {
@@ -259,12 +224,10 @@ const Home = () => {
           display: block;
         }
 
-        /* Image Zoom + Rotate Hover */
         .room-card:hover .room-image img {
           transform: scale(1.08) rotate(1deg);
         }
 
-        /* Gradient overlay default */
         .room-card .room-image::before {
           content: '';
           position: absolute; inset: 0;
@@ -278,7 +241,6 @@ const Home = () => {
           pointer-events: none;
         }
 
-        /* Gold vignette overlay on hover */
         .room-card .room-image .hover-vignette {
           position: absolute;
           inset: 0;
@@ -292,7 +254,6 @@ const Home = () => {
           opacity: 1;
         }
 
-        /* ── Price pill — top right ─────────────────────── */
         .room-card .room-image .price-badge {
           position: absolute;
           top: 10px; right: 10px;
@@ -326,7 +287,6 @@ const Home = () => {
           color: #8a8f98;
         }
 
-        /* ── Popular pill — top left ────────────────────── */
         .room-card .room-image .popular-badge {
           position: absolute;
           top: 10px; left: 10px;
@@ -347,11 +307,7 @@ const Home = () => {
           white-space: nowrap;
           transition: transform 0.4s ease;
         }
-        .room-card:hover .room-image .popular-badge {
-          transform: scale(1.05);
-        }
 
-        /* ====== ROOM DETAILS ====== */
         .room-card .room-details {
           padding: 14px 16px 16px;
           display: flex;
@@ -359,7 +315,6 @@ const Home = () => {
           flex: 1;
         }
 
-        /* Name + rating row */
         .room-card .room-details .room-header {
           display: flex;
           justify-content: space-between;
@@ -368,7 +323,6 @@ const Home = () => {
           margin-bottom: 6px;
         }
 
-        /* Room Title Animation on Hover */
         .room-card .room-details .room-header h3 {
           font-family: 'Montserrat', sans-serif;
           font-size: 13.5px;
@@ -390,7 +344,6 @@ const Home = () => {
           color: #d4af37;
         }
 
-        /* Rating chip */
         .rating-badge {
           display: inline-flex;
           align-items: center;
@@ -405,25 +358,14 @@ const Home = () => {
           font-family: 'Montserrat', sans-serif;
           white-space: nowrap;
           flex-shrink: 0;
-          transition: transform 0.4s ease;
-        }
-        .room-card:hover .rating-badge {
-          transform: scale(1.05);
-        }
-        .rating-badge .star svg {
-          fill: #f59e0b;
-          color: #f59e0b;
-          vertical-align: middle;
         }
 
-        /* Thin divider */
         .room-card .room-details .card-divider {
           height: 1px;
           background: linear-gradient(90deg, #ececec, transparent);
           margin: 8px 0;
         }
 
-        /* Description transition */
         .room-card .room-details .short-description {
           font-family: 'Poppins', sans-serif;
           color: #6b7280;
@@ -435,13 +377,8 @@ const Home = () => {
           -webkit-box-orient: vertical;
           overflow: hidden;
           flex: 1;
-          transition: color 0.4s ease;
-        }
-        .room-card:hover .room-details .short-description {
-          color: #374151;
         }
 
-        /* ====== ACTION BUTTONS — side by side 2-col ====== */
         .room-card .room-details .action-buttons {
           display: grid;
           grid-template-columns: 1fr 1fr;
@@ -464,30 +401,14 @@ const Home = () => {
           text-decoration: none;
           white-space: nowrap;
           box-sizing: border-box;
-          letter-spacing: 0.1px;
         }
 
-        /* View Details — clean outline pill */
         .room-card .room-details .action-buttons .btn-view {
           background: transparent;
           color: #4b5563;
           border: 1.5px solid #d1d5db;
         }
-        .room-card .room-details .action-buttons .btn-view svg {
-          transition: transform 0.3s ease;
-        }
-        .room-card .room-details .action-buttons .btn-view:hover {
-          background: #fafafa;
-          border-color: #d4af37;
-          color: #1a1a1a;
-          box-shadow: 0 3px 10px rgba(0,0,0,0.07);
-          transform: translateY(-1px);
-        }
-        .room-card .room-details .action-buttons .btn-view:hover svg {
-          transform: translateX(3px);
-        }
 
-        /* Book Now — gold pill */
         .room-card .room-details .action-buttons .btn-book {
           background: linear-gradient(135deg, #c9a227 0%, #e8c848 55%, #c9a227 100%);
           background-size: 200% auto;
@@ -495,18 +416,6 @@ const Home = () => {
           border: none;
           font-weight: 700;
           box-shadow: 0 3px 12px rgba(212,175,55,0.32);
-          transition: background-position 0.4s ease, transform 0.25s ease, box-shadow 0.25s ease;
-        }
-        .room-card .room-details .action-buttons .btn-book svg {
-          transition: transform 0.3s ease;
-        }
-        .room-card .room-details .action-buttons .btn-book:hover {
-          background-position: right center;
-          transform: translateY(-2px) scale(1.02);
-          box-shadow: 0 7px 20px rgba(212,175,55,0.45);
-        }
-        .room-card .room-details .action-buttons .btn-book:hover svg {
-          transform: scale(1.15) rotate(-8deg);
         }
 
         /* ====== EXPLORE BUTTON ====== */
@@ -532,10 +441,8 @@ const Home = () => {
           font-family: 'Montserrat', sans-serif;
           overflow: hidden;
           z-index: 1;
-          transition: border-color 0.4s ease, box-shadow 0.4s ease, transform 0.4s ease;
         }
 
-        /* Slide-in background overlay */
         .explore-all-btn::before {
           content: '';
           position: absolute;
@@ -566,15 +473,7 @@ const Home = () => {
           border: 2px solid #d4af37;
           background: transparent;
           color: #d4af37;
-          transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-                      background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease;
-        }
-
-        /* Hover states */
-        .explore-all-btn:hover {
-          border-color: transparent;
-          transform: translateY(-4px);
-          box-shadow: 0 12px 30px rgba(212, 175, 55, 0.4);
+          transition: all 0.4s ease;
         }
 
         .explore-all-btn:hover::before {
@@ -587,30 +486,18 @@ const Home = () => {
         }
 
         .explore-all-btn:hover .arrow-circle {
-          transform: translateX(5px);
           background-color: #1a1a1a;
           border-color: #1a1a1a;
           color: #d4af37;
         }
 
-        /* ====== RESPONSIVE ====== */
         @media (max-width: 1199px) {
           .rooms-grid { grid-template-columns: repeat(2, 1fr); gap: 18px; }
-          .room-card .room-image { height: 240px; }
-        }
-        @media (min-width: 1200px) {
-          .rooms-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; }
         }
         @media (max-width: 640px) {
           .rooms-section { padding: 60px 16px; }
           .rooms-grid { grid-template-columns: 1fr; gap: 16px; }
           .rooms-header h2 { font-size: 28px; }
-          .room-card .room-image { height: 220px; }
-          .room-card .room-details { padding: 14px 16px 16px; }
-          .room-card .room-details .action-buttons .btn { font-size: 11.5px; padding: 8px 10px; }
-        }
-        @media (max-width: 380px) {
-          .explore-all-btn { font-size: 15px; padding: 14px 24px; }
         }
 
         /* ====== MODAL STYLES ====== */
@@ -624,7 +511,6 @@ const Home = () => {
           align-items: center;
           justify-content: center;
           padding: 24px;
-          animation: fadeIn 0.3s ease;
         }
 
         .modal-content {
@@ -633,9 +519,9 @@ const Home = () => {
           max-width: 520px;
           width: 100%;
           padding: 32px;
-          animation: slideUp 0.4s ease;
           max-height: 90vh;
           overflow-y: auto;
+          box-shadow: 0 24px 48px rgba(0,0,0,0.25);
         }
 
         .modal-content .modal-close {
@@ -645,11 +531,6 @@ const Home = () => {
           font-size: 24px;
           color: #6b7280;
           cursor: pointer;
-          transition: color 0.3s;
-        }
-
-        .modal-content .modal-close:hover {
-          color: #1a1a1a;
         }
 
         .modal-content h3 {
@@ -695,16 +576,8 @@ const Home = () => {
           border: 1px solid #d1d5db;
           border-radius: 8px;
           font-size: 14px;
-          transition: border-color 0.3s;
           box-sizing: border-box;
           font-family: 'Poppins', sans-serif;
-        }
-
-        .modal-content .form-group input:focus,
-        .modal-content .form-group select:focus {
-          outline: none;
-          border-color: #d4af37;
-          box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
         }
 
         .modal-content .btn-confirm {
@@ -717,15 +590,8 @@ const Home = () => {
           font-weight: 600;
           font-size: 16px;
           cursor: pointer;
-          transition: all 0.3s ease;
           margin-top: 8px;
           font-family: 'Poppins', sans-serif;
-        }
-
-        .modal-content .btn-confirm:hover {
-          background: #c5a028;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
         }
 
         .modal-content .form-row {
@@ -733,158 +599,181 @@ const Home = () => {
           grid-template-columns: 1fr 1fr;
           gap: 16px;
         }
-
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-
-        @keyframes slideUp {
-          from { transform: translateY(30px); opacity: 0; }
-          to { transform: translateY(0); opacity: 1; }
-        }
-
-
       `}</style>
 
       <section className="rooms-section" id="rooms">
         <div className="rooms-container">
-          <div className="rooms-header">
-            <div className="label"><span className="sparkle">✦</span> ACCOMMODATIONS</div>
-            <h2>Luxury <span className="gold-title">Rooms & Suites</span></h2>
-            <p>
-              Experience comfort and elegance in our beautifully designed rooms,
-              each crafted to provide the perfect stay.
-            </p>
-          </div>
+          <ScrollReveal variant="fade-up">
+            <div className="rooms-header">
+              <div className="label"><span className="sparkle">✦</span> ACCOMMODATIONS</div>
+              <h2>Luxury <span className="gold-title">Rooms & Suites</span></h2>
+              <p>
+                Experience comfort and elegance in our beautifully designed rooms,
+                each crafted to provide the perfect stay.
+              </p>
+            </div>
+          </ScrollReveal>
 
-          <div className="rooms-grid">
-            {loading && (
-              <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#6b7280' }}>Loading rooms...</p>
-            )}
-            {error && (
-              <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#b91c1c' }}>{error}</p>
-            )}
-            {!loading && !error && rooms.length === 0 && (
-              <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#6b7280' }}>No rooms available at the moment.</p>
-            )}
-            {!loading && rooms.slice(0, 4).map((room) => (
-              <div key={room.id} className="room-card">
-                {/* Image + Overlays */}
-                <div className="room-image">
-                  <img src={room.image} alt={room.name} />
-                  <div className="hover-vignette" />
+          {loading && (
+            <p style={{ textAlign: 'center', color: '#6b7280' }}>Loading rooms...</p>
+          )}
+          {error && (
+            <p style={{ textAlign: 'center', color: '#b91c1c' }}>{error}</p>
+          )}
+          {!loading && !error && rooms.length === 0 && (
+            <p style={{ textAlign: 'center', color: '#6b7280' }}>No rooms available at the moment.</p>
+          )}
 
-                  {/* Price pill — top right */}
-                  <div className="price-badge">
-                    <span className="price-amount">ETB {formatPrice(room.priceETB)}</span>
-                    <span className="price-label">/ night</span>
-                  </div>
+          {!loading && (
+            <StaggerContainer staggerChildren={0.12} className="rooms-grid">
+              {rooms.slice(0, 4).map((room) => (
+                <StaggerItem key={room.id} variant="rotate-up">
+                  <div className="room-card">
+                    {/* Image + Overlays */}
+                    <div className="room-image">
+                      <img src={room.image} alt={room.name} />
+                      <div className="hover-vignette" />
 
-                  {/* Popular — bottom left (no overlap with price) */}
-                  {room.popular && (
-                    <div className="popular-badge">
-                      ✦ Popular
+                      {/* Price pill */}
+                      <div className="price-badge">
+                        <span className="price-amount">ETB {formatPrice(room.priceETB)}</span>
+                        <span className="price-label">/ night</span>
+                      </div>
+
+                      {/* Popular */}
+                      {room.popular && (
+                        <div className="popular-badge">
+                          ✦ Popular
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
 
-                {/* Card body */}
-                <div className="room-details">
-                  <div className="room-header">
-                    <h3 title={room.name}>{room.name}</h3>
-                    <div className="rating-badge">
-                      <span className="star"><Star size={11} fill="#f59e0b" /></span>
-                      {room.rating}
+                    {/* Card body */}
+                    <div className="room-details">
+                      <div className="room-header">
+                        <h3 title={room.name}>{room.name}</h3>
+                        <div className="rating-badge">
+                          <span className="star"><Star size={11} fill="#f59e0b" /></span>
+                          {room.rating}
+                        </div>
+                      </div>
+
+                      <div className="card-divider" />
+
+                      <p className="short-description">{room.shortDescription}</p>
+
+                      <div className="action-buttons">
+                        <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                          <Link to={`/room/${room.id}`} className="btn btn-view">
+                            <ArrowRight size={13} /> Details
+                          </Link>
+                        </motion.div>
+                        <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                          <button
+                            className="btn btn-book"
+                            onClick={(e) => openBooking(room, e)}
+                          >
+                            <Calendar size={13} /> Book Now
+                          </button>
+                        </motion.div>
+                      </div>
                     </div>
                   </div>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          )}
 
-                  <div className="card-divider" />
-
-                  <p className="short-description">{room.shortDescription}</p>
-
-                  <div className="action-buttons">
-                    <Link to={`/room/${room.id}`} className="btn btn-view">
-                      <ArrowRight size={13} /> View Details
-                    </Link>
-                    <button
-                      className="btn btn-book"
-                      onClick={(e) => openBooking(room, e)}
-                    >
-                      <Calendar size={13} /> Book Now
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="explore-all-wrapper">
-            <Link to="/rooms" className="explore-all-btn">
-              <span className="btn-text">Explore All Rooms</span>
-              <span className="arrow-circle">
-                <ArrowRight size={18} />
-              </span>
-            </Link>
-          </div>
+          <ScrollReveal variant="zoom-in" delay={0.2}>
+            <div className="explore-all-wrapper">
+              <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
+                <Link to="/rooms" className="explore-all-btn">
+                  <span className="btn-text">Explore All Rooms</span>
+                  <span className="arrow-circle">
+                    <ArrowRight size={18} />
+                  </span>
+                </Link>
+              </motion.div>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 
-      {/* ---- Booking Modal ---- */}
-      {showBooking && selectedRoom && (
-        <div className="modal-overlay" onClick={() => setShowBooking(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setShowBooking(false)}>✕</button>
-            <h3>{selectedRoom.name}</h3>
-            <div className="modal-price">
-              ETB {formatPrice(selectedRoom.priceETB)} <span>/ night</span>
-            </div>
-
-            <form onSubmit={handleBooking}>
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Check-in Date</label>
-                  <input type="date" required />
-                </div>
-                <div className="form-group">
-                  <label>Check-out Date</label>
-                  <input type="date" required />
-                </div>
+      {/* ---- Booking Modal with AnimatePresence ---- */}
+      <AnimatePresence>
+        {showBooking && selectedRoom && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="modal-overlay" 
+            onClick={() => setShowBooking(false)}
+          >
+            <motion.div 
+              initial={{ scale: 0.9, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.9, y: 20, opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="modal-content" 
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button className="modal-close" onClick={() => setShowBooking(false)}>✕</button>
+              <h3>{selectedRoom.name}</h3>
+              <div className="modal-price">
+                ETB {formatPrice(selectedRoom.priceETB)} <span>/ night</span>
               </div>
 
-              <div className="form-group">
-                <label>Full Name</label>
-                <input type="text" placeholder="John Doe" required />
-              </div>
-
-              <div className="form-group">
-                <label>Email Address</label>
-                <input type="email" placeholder="john@example.com" required />
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Phone Number</label>
-                  <input type="tel" placeholder="+1 234 567 890" required />
+              <form onSubmit={handleBooking}>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Check-in Date</label>
+                    <input type="date" required />
+                  </div>
+                  <div className="form-group">
+                    <label>Check-out Date</label>
+                    <input type="date" required />
+                  </div>
                 </div>
-                <div className="form-group">
-                  <label>Number of Guests</label>
-                  <select required>
-                    <option value="1">1 Guest</option>
-                    <option value="2" selected>2 Guests</option>
-                    <option value="3">3 Guests</option>
-                    <option value="4">4+ Guests</option>
-                  </select>
-                </div>
-              </div>
 
-              <button type="submit" className="btn-confirm">
-                Confirm Booking
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
+                <div className="form-group">
+                  <label>Full Name</label>
+                  <input type="text" placeholder="John Doe" required />
+                </div>
+
+                <div className="form-group">
+                  <label>Email Address</label>
+                  <input type="email" placeholder="john@example.com" required />
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" placeholder="+1 234 567 890" required />
+                  </div>
+                  <div className="form-group">
+                    <label>Number of Guests</label>
+                    <select required defaultValue="2">
+                      <option value="1">1 Guest</option>
+                      <option value="2">2 Guests</option>
+                      <option value="3">3 Guests</option>
+                      <option value="4">4+ Guests</option>
+                    </select>
+                  </div>
+                </div>
+
+                <motion.button 
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  type="submit" 
+                  className="btn-confirm"
+                >
+                  Confirm Booking
+                </motion.button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };

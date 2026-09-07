@@ -1,6 +1,8 @@
 // src/components/Footer.jsx
 import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail, Send } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ScrollReveal, StaggerContainer, StaggerItem } from './common/ScrollReveal';
 
 const Footer = () => {
   return (
@@ -8,10 +10,11 @@ const Footer = () => {
       <style>{`
         /* ===== FOOTER BASE STYLES ===== */
         .footer {
-          background: #1a1a1a;
+          background: #121216;
           color: #ffffff;
-          padding: 60px 24px 0;
+          padding: 72px 24px 0;
           margin-top: 40px;
+          overflow: hidden;
         }
 
         .footer-container {
@@ -23,8 +26,8 @@ const Footer = () => {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
           gap: 40px;
-          padding-bottom: 40px;
-          border-bottom: 1px solid rgba(255,255,255,0.06);
+          padding-bottom: 48px;
+          border-bottom: 1px solid rgba(255,255,255,0.08);
         }
 
         /* ===== BRAND ===== */
@@ -43,7 +46,7 @@ const Footer = () => {
         .footer-brand-icon {
           width: 44px;
           height: 44px;
-          background: #d4af37;
+          background: linear-gradient(135deg, #d4af37, #f0cc5a);
           border-radius: 10px;
           display: flex;
           align-items: center;
@@ -51,6 +54,7 @@ const Footer = () => {
           font-weight: 800;
           font-size: 20px;
           color: #1a1a1a;
+          box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
         }
 
         .footer-brand-title {
@@ -62,13 +66,13 @@ const Footer = () => {
 
         .footer-brand-subtitle {
           font-size: 9px;
-          color: rgba(255,255,255,0.4);
+          color: rgba(255,255,255,0.5);
           letter-spacing: 3px;
           margin: 0;
         }
 
         .footer-brand-description {
-          color: rgba(255,255,255,0.5);
+          color: rgba(255,255,255,0.55);
           font-size: 14px;
           line-height: 1.7;
           max-width: 320px;
@@ -79,8 +83,8 @@ const Footer = () => {
           font-size: 14px;
           font-weight: 700;
           text-transform: uppercase;
-          letter-spacing: 1px;
-          margin-bottom: 16px;
+          letter-spacing: 1.5px;
+          margin-bottom: 18px;
           color: #ffffff;
         }
 
@@ -96,7 +100,7 @@ const Footer = () => {
 
         /* ===== HOVER EFFECTS ===== */
         .footer-link {
-          color: rgba(255,255,255,0.4);
+          color: rgba(255,255,255,0.55);
           text-decoration: none;
           transition: all 0.3s ease;
           display: inline-flex;
@@ -111,9 +115,9 @@ const Footer = () => {
         }
 
         .footer-legal-link {
-          color: rgba(255,255,255,0.2);
+          color: rgba(255,255,255,0.3);
           text-decoration: none;
-          font-size: 12px;
+          font-size: 12.5px;
           transition: color 0.3s ease;
         }
 
@@ -135,13 +139,13 @@ const Footer = () => {
         }
 
         .contact-text {
-          color: rgba(255,255,255,0.4);
+          color: rgba(255,255,255,0.55);
           font-size: 14px;
           line-height: 1.6;
         }
 
         .contact-text strong {
-          color: rgba(255,255,255,0.7);
+          color: rgba(255,255,255,0.85);
           font-weight: 500;
         }
 
@@ -149,51 +153,46 @@ const Footer = () => {
         .newsletter-form {
           display: flex;
           gap: 8px;
-          margin-top: 8px;
+          margin-top: 10px;
         }
 
         .newsletter-input {
           flex: 1;
           padding: 10px 16px;
-          border: 1px solid rgba(255,255,255,0.1);
+          border: 1px solid rgba(255,255,255,0.15);
           border-radius: 9999px;
-          background: rgba(255,255,255,0.05);
+          background: rgba(255,255,255,0.06);
           color: #ffffff;
-          font-size: 14px;
+          font-size: 13.5px;
           outline: none;
           transition: all 0.3s ease;
           font-family: 'Poppins', sans-serif;
         }
 
         .newsletter-input::placeholder {
-          color: rgba(255,255,255,0.2);
+          color: rgba(255,255,255,0.3);
         }
 
         .newsletter-input:focus {
           border-color: #d4af37;
-          background: rgba(255,255,255,0.08);
+          background: rgba(255,255,255,0.1);
+          box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
         }
 
         .newsletter-btn {
-          padding: 10px 20px;
-          background: #d4af37;
+          padding: 10px 22px;
+          background: linear-gradient(135deg, #d4af37 0%, #f5d879 100%);
           color: #1a1a1a;
           border: none;
           border-radius: 9999px;
-          font-weight: 600;
+          font-weight: 700;
           cursor: pointer;
           display: flex;
           align-items: center;
           gap: 6px;
-          transition: all 0.3s ease;
           font-family: 'Poppins', sans-serif;
           white-space: nowrap;
-        }
-
-        .newsletter-btn:hover {
-          background: #c5a028;
-          transform: translateY(-2px);
-          box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+          box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
         }
 
         /* ===== BOTTOM BAR ===== */
@@ -201,13 +200,13 @@ const Footer = () => {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 24px 0;
+          padding: 28px 0;
           flex-wrap: wrap;
           gap: 12px;
         }
 
         .footer-bottom p {
-          color: rgba(255,255,255,0.2);
+          color: rgba(255,255,255,0.35);
           font-size: 13px;
           margin: 0;
         }
@@ -217,44 +216,34 @@ const Footer = () => {
           gap: 20px;
         }
 
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
           .footer-grid {
             grid-template-columns: 1fr 1fr;
           }
-
           .newsletter-form {
             flex-direction: column;
           }
-
           .newsletter-btn {
             width: 100%;
             justify-content: center;
           }
-
           .footer-bottom {
             flex-direction: column;
             text-align: center;
           }
-
           .footer-bottom-links {
             flex-wrap: wrap;
             justify-content: center;
-          }
-
-          .footer-brand-description {
-            max-width: 100%;
           }
         }
 
         @media (max-width: 480px) {
           .footer {
-            padding: 40px 16px 0;
+            padding: 48px 16px 0;
           }
-
           .footer-grid {
             grid-template-columns: 1fr;
-            gap: 24px;
+            gap: 28px;
           }
         }
       `}</style>
@@ -262,105 +251,125 @@ const Footer = () => {
       {/* ===== FOOTER HTML ===== */}
       <footer className="footer">
         <div className="footer-container">
-          {/* Main Grid */}
-          <div className="footer-grid">
+          {/* Main Grid with Staggered Scroll Reveal */}
+          <StaggerContainer staggerChildren={0.12} className="footer-grid">
             {/* Brand */}
-            <div className="footer-brand">
-              <div className="footer-brand-logo">
-                <div className="footer-brand-icon">V</div>
-                <div>
-                  <h3 className="footer-brand-title">VILLA ALPHA</h3>
-                  <p className="footer-brand-subtitle">INTERNATIONAL HOTEL</p>
+            <StaggerItem variant="fade-up">
+              <div className="footer-brand">
+                <div className="footer-brand-logo">
+                  <motion.div 
+                    whileHover={{ rotate: 10, scale: 1.1 }}
+                    className="footer-brand-icon"
+                  >
+                    V
+                  </motion.div>
+                  <div>
+                    <h3 className="footer-brand-title">VILLA ALPHA</h3>
+                    <p className="footer-brand-subtitle">INTERNATIONAL HOTEL</p>
+                  </div>
                 </div>
+                <p className="footer-brand-description">
+                  Experience unparalleled luxury and world-class hospitality at Villa Alpha.
+                </p>
               </div>
-              <p className="footer-brand-description">
-                Experience unparalleled luxury and world-class hospitality at Villa Alpha.
-              </p>
-            </div>
+            </StaggerItem>
 
             {/* Quick Links */}
-            <div>
-              <h4 className="footer-heading">Quick Links</h4>
-              <ul className="footer-list">
-                <li><Link to="/rooms" className="footer-link">Rooms & Suites</Link></li>
-                <li><Link to="/hospitality" className="footer-link">Hospitality</Link></li>
-                <li><Link to="/experience" className="footer-link">Experience</Link></li>
-                <li><Link to="/about" className="footer-link">About Us</Link></li>
-              </ul>
-            </div>
+            <StaggerItem variant="fade-up">
+              <div>
+                <h4 className="footer-heading">Quick Links</h4>
+                <ul className="footer-list">
+                  <li><Link to="/rooms" className="footer-link">Rooms & Suites</Link></li>
+                  <li><Link to="/hospitality" className="footer-link">Hospitality</Link></li>
+                  <li><Link to="/experience" className="footer-link">Experience</Link></li>
+                  <li><Link to="/about" className="footer-link">About Us</Link></li>
+                </ul>
+              </div>
+            </StaggerItem>
 
-            {/* Support - THIS IS THE CODE YOU ASKED FOR */}
-            <div>
-              <h4 className="footer-heading">Support</h4>
-              <ul className="footer-list">
-                <li><Link to="/faq" className="footer-link">FAQ</Link></li>
-                <li><Link to="/privacy" className="footer-link">Privacy Policy</Link></li>
-                <li><Link to="/terms" className="footer-link">Terms of Service</Link></li>
-                <li><Link to="/contact" className="footer-link">Contact Us</Link></li>
-              </ul>
-            </div>
+            {/* Support */}
+            <StaggerItem variant="fade-up">
+              <div>
+                <h4 className="footer-heading">Support</h4>
+                <ul className="footer-list">
+                  <li><Link to="/faq" className="footer-link">FAQ</Link></li>
+                  <li><Link to="/privacy" className="footer-link">Privacy Policy</Link></li>
+                  <li><Link to="/terms" className="footer-link">Terms of Service</Link></li>
+                  <li><Link to="/contact" className="footer-link">Contact Us</Link></li>
+                </ul>
+              </div>
+            </StaggerItem>
 
             {/* Contact & Newsletter */}
-            <div>
-              <h4 className="footer-heading">Get in Touch</h4>
+            <StaggerItem variant="fade-up">
+              <div>
+                <h4 className="footer-heading">Get in Touch</h4>
 
-              <div className="contact-item">
-                <MapPin size={18} />
-                <div className="contact-text">
-                  <strong>Address</strong><br />
-                  Main Road, Adama, Ethiopia
+                <div className="contact-item">
+                  <MapPin size={18} />
+                  <div className="contact-text">
+                    <strong>Address</strong><br />
+                    Main Road, Adama, Ethiopia
+                  </div>
                 </div>
-              </div>
 
-              <div className="contact-item">
-                <Phone size={18} />
-                <div className="contact-text">
-                  <strong>Phone</strong><br />
-                  +251 123 456 789
+                <div className="contact-item">
+                  <Phone size={18} />
+                  <div className="contact-text">
+                    <strong>Phone</strong><br />
+                    +251 123 456 789
+                  </div>
                 </div>
-              </div>
 
-              <div className="contact-item">
-                <Mail size={18} />
-                <div className="contact-text">
-                  <strong>Email</strong><br />
-                  info@villalpha.com
+                <div className="contact-item">
+                  <Mail size={18} />
+                  <div className="contact-text">
+                    <strong>Email</strong><br />
+                    info@villalpha.com
+                  </div>
                 </div>
+
+                <h4 className="footer-heading" style={{ marginTop: '20px' }}>Newsletter</h4>
+                <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', margin: '0 0 8px' }}>
+                  Subscribe for exclusive offers & updates
+                </p>
+
+                <form className="newsletter-form" onSubmit={(e) => {
+                  e.preventDefault();
+                  alert('🎉 Thank you for subscribing!');
+                }}>
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    required
+                    className="newsletter-input"
+                  />
+                  <motion.button 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    type="submit" 
+                    className="newsletter-btn"
+                  >
+                    <Send size={15} /> Subscribe
+                  </motion.button>
+                </form>
               </div>
-
-              <h4 className="footer-heading" style={{ marginTop: '20px' }}>Newsletter</h4>
-              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '13px', margin: '0 0 8px' }}>
-                Subscribe for exclusive offers & updates
-              </p>
-
-              <form className="newsletter-form" onSubmit={(e) => {
-                e.preventDefault();
-                alert('🎉 Thank you for subscribing!');
-              }}>
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  required
-                  className="newsletter-input"
-                />
-                <button type="submit" className="newsletter-btn">
-                  <Send size={16} /> Subscribe
-                </button>
-              </form>
-            </div>
-          </div>
+            </StaggerItem>
+          </StaggerContainer>
 
           {/* Bottom Bar */}
-          <div className="footer-bottom">
-            <p>
-              © {new Date().getFullYear()} VILLA ALPHA INTERNATIONAL HOTEL. All rights reserved.
-            </p>
-            <div className="footer-bottom-links">
-              <Link to="/privacy" className="footer-legal-link">Privacy Policy</Link>
-              <Link to="/terms" className="footer-legal-link">Terms of Service</Link>
-              <Link to="/contact" className="footer-legal-link">Contact</Link>
+          <ScrollReveal variant="fade-up" delay={0.2}>
+            <div className="footer-bottom">
+              <p>
+                © {new Date().getFullYear()} VILLA ALPHA INTERNATIONAL HOTEL. All rights reserved.
+              </p>
+              <div className="footer-bottom-links">
+                <Link to="/privacy" className="footer-legal-link">Privacy Policy</Link>
+                <Link to="/terms" className="footer-legal-link">Terms of Service</Link>
+                <Link to="/contact" className="footer-legal-link">Contact</Link>
+              </div>
             </div>
-          </div>
+          </ScrollReveal>
         </div>
       </footer>
     </>

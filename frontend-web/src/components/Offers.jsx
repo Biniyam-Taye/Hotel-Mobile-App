@@ -2,8 +2,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, Users, ArrowRight, Clock, Star, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { fetchPublicOffers } from '../services/offersApi';
 import { initiateStripeCheckout } from '../services/paymentApi';
+import { ScrollReveal, StaggerContainer, StaggerItem } from './common/ScrollReveal';
 
 const Offers = () => {
   const [offers, setOffers] = useState([]);
@@ -46,8 +48,9 @@ const Offers = () => {
       <style>{`
         /* --- MAIN OFFERS CSS --- */
         .offers-section {
-          padding: 80px 24px;
+          padding: 96px 24px;
           background: #ffffff;
+          overflow: hidden;
         }
 
         .offers-container {
@@ -57,43 +60,36 @@ const Offers = () => {
 
         .offers-header {
           text-align: center;
-          margin-bottom: 48px;
+          margin-bottom: 56px;
         }
 
         .offers-header .label {
           display: inline-block;
           color: #d4af37;
           font-size: 13px;
-          font-weight: 600;
-          letter-spacing: 2px;
+          font-weight: 700;
+          letter-spacing: 2.5px;
           text-transform: uppercase;
-          margin-bottom: 8px;
+          margin-bottom: 10px;
+          background: rgba(212, 175, 55, 0.08);
+          padding: 6px 18px;
+          border-radius: 9999px;
         }
 
         .offers-header h2 {
           font-family: 'Georgia', 'Times New Roman', serif;
-          font-size: 40px;
+          font-size: 42px;
           font-weight: 700;
           color: #1a1a1a;
-          margin-bottom: 12px;
-          display: inline-block;
-          padding: 0 8px;
-          border-radius: 4px;
-          transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-          cursor: default;
-        }
-
-        .offers-header h2:hover {
-          background: rgba(212, 175, 55, 0.08);
-          transform: scale(1.02);
+          margin-bottom: 14px;
         }
 
         .offers-header p {
           color: #6b7280;
-          font-size: 16px;
-          max-width: 600px;
+          font-size: 16.5px;
+          max-width: 620px;
           margin: 0 auto;
-          line-height: 1.6;
+          line-height: 1.7;
         }
 
         .offers-grid {
@@ -115,6 +111,7 @@ const Offers = () => {
           position: relative;
           text-decoration: none;
           color: inherit;
+          height: 100%;
         }
 
         .offer-card:hover {
@@ -158,20 +155,6 @@ const Offers = () => {
 
         .offer-card:hover .offer-image img {
           transform: scale(1.08) rotate(1deg);
-        }
-
-        .offer-card .offer-image::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(
-            to bottom,
-            rgba(0,0,0,0.25) 0%,
-            transparent 50%,
-            rgba(0,0,0,0.15) 100%
-          );
-          z-index: 1;
-          pointer-events: none;
         }
 
         .offer-card .offer-image .hover-vignette {
@@ -265,10 +248,6 @@ const Offers = () => {
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
-          transition: color 0.4s ease;
-        }
-        .offer-card:hover .offer-details .offer-description {
-          color: #374151;
         }
 
         .offer-card .offer-details .offer-footer {
@@ -316,14 +295,6 @@ const Offers = () => {
           box-sizing: border-box;
         }
 
-        .btn-view-details:hover {
-          background: #fafafa;
-          border-color: #d4af37;
-          color: #1a1a1a !important;
-          box-shadow: 0 3px 10px rgba(0,0,0,0.07);
-          transform: translateY(-1px);
-        }
-
         .btn-book-offer {
           display: flex;
           align-items: center;
@@ -338,18 +309,10 @@ const Offers = () => {
           font-weight: 700;
           font-size: 11.5px;
           cursor: pointer;
-          transition: background-position 0.4s ease, transform 0.25s ease, box-shadow 0.25s ease;
           font-family: 'Poppins', sans-serif;
           white-space: nowrap;
           box-sizing: border-box;
           box-shadow: 0 3px 12px rgba(212,175,55,0.32);
-        }
-
-        .btn-book-offer:hover {
-          background-position: right center;
-          color: #1a1a1a !important;
-          transform: translateY(-2px) scale(1.02);
-          box-shadow: 0 7px 20px rgba(212,175,55,0.45);
         }
 
         .explore-all-wrapper {
@@ -377,7 +340,6 @@ const Offers = () => {
         .explore-all-btn:hover {
           background: #d4af37;
           color: #1a1a1a;
-          transform: translateY(-3px);
           box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
         }
 
@@ -398,14 +360,10 @@ const Offers = () => {
           color: #d4af37;
         }
 
-        /* ── Responsive Grid ── */
         @media (max-width: 1199px) {
           .offers-grid {
             grid-template-columns: repeat(2, 1fr);
             gap: 18px;
-          }
-          .offer-card .offer-image {
-            height: 220px;
           }
         }
 
@@ -420,48 +378,30 @@ const Offers = () => {
           .offers-header h2 {
             font-size: 28px;
           }
-          .offer-card .offer-image {
-            height: 200px;
-          }
-          .offer-card .offer-details {
-            padding: 14px 16px 16px;
-          }
         }
 
         /* --- MODAL POP-UP CSS --- */
         .booking-modal-overlay {
           position: fixed;
           top: 0; left: 0; right: 0; bottom: 0;
-          background: rgba(0, 0, 0, 0.5);
-          backdrop-filter: blur(4px);
+          background: rgba(0, 0, 0, 0.6);
+          backdrop-filter: blur(8px);
           display: flex;
           align-items: center;
           justify-content: center;
           z-index: 1000;
           padding: 20px;
-          opacity: 0;
-          pointer-events: none;
-          transition: all 0.3s ease;
-        }
-        .booking-modal-overlay.active {
-          opacity: 1;
-          pointer-events: auto;
         }
         .booking-modal {
           background: #ffffff;
-          border-radius: 16px;
+          border-radius: 20px;
           width: 100%;
           max-width: 560px;
           max-height: 90vh;
           overflow-y: auto;
           padding: 32px;
           position: relative;
-          box-shadow: 0 24px 48px rgba(0,0,0,0.2);
-          transform: scale(0.9) translateY(20px);
-          transition: all 0.3s ease;
-        }
-        .booking-modal-overlay.active .booking-modal {
-          transform: scale(1) translateY(0);
+          box-shadow: 0 24px 48px rgba(0,0,0,0.25);
         }
         .modal-close-btn {
           position: absolute;
@@ -472,10 +412,6 @@ const Offers = () => {
           cursor: pointer;
           color: #6b7280;
           padding: 4px;
-          transition: color 0.2s;
-        }
-        .modal-close-btn:hover {
-          color: #1a1a1a;
         }
         .modal-title {
           font-family: 'Georgia', 'Times New Roman', serif;
@@ -540,11 +476,6 @@ const Offers = () => {
           color: #1a1a1a;
           background: #ffffff;
           outline: none;
-          transition: border-color 0.2s;
-        }
-        .form-control:focus {
-          border-color: #d4af37;
-          box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
         }
         .form-row-2 {
           display: grid;
@@ -562,192 +493,210 @@ const Offers = () => {
           font-weight: 700;
           font-size: 16px;
           cursor: pointer;
-          transition: all 0.3s ease;
-        }
-        .btn-confirm-booking:hover {
-          background: #c5a028;
-          box-shadow: 0 4px 20px rgba(212, 175, 55, 0.4);
-        }
-        @media (max-width: 480px) {
-          .booking-modal {
-            padding: 24px 16px;
-          }
-          .modal-title {
-            font-size: 22px;
-          }
-          .form-row-2 {
-            grid-template-columns: 1fr;
-          }
         }
       `}</style>
 
       <section className="offers-section" id="offers">
         <div className="offers-container">
-          <div className="offers-header">
-            <div className="label">✦ Special Offers</div>
-            <h2>Exclusive <span style={{ color: '#d4af37' }}>Deals &amp; Packages</span></h2>
-            <p>
-              Make your stay even more memorable with our handpicked offers.
-              Book now to enjoy these limited-time benefits.
-            </p>
-          </div>
+          <ScrollReveal variant="fade-up">
+            <div className="offers-header">
+              <div className="label">✦ Special Offers</div>
+              <h2>Exclusive <span style={{ color: '#d4af37' }}>Deals &amp; Packages</span></h2>
+              <p>
+                Make your stay even more memorable with our handpicked offers.
+                Book now to enjoy these limited-time benefits.
+              </p>
+            </div>
+          </ScrollReveal>
 
           {/* ── Content States ── */}
           {loading ? (
-            <div className="offers-status">Loading offers…</div>
+            <div className="offers-status" style={{ textAlign: 'center', color: '#6b7280' }}>Loading offers…</div>
           ) : loadError ? (
-            <div className="offers-status err">{loadError}</div>
+            <div className="offers-status err" style={{ textAlign: 'center', color: '#b91c1c' }}>{loadError}</div>
           ) : offers.length === 0 ? (
-            <div className="offers-status">No special offers available at the moment. Check back soon!</div>
+            <div className="offers-status" style={{ textAlign: 'center', color: '#6b7280' }}>No special offers available at the moment. Check back soon!</div>
           ) : (
             <>
-              <div className="offers-grid">
+              <StaggerContainer staggerChildren={0.12} className="offers-grid">
                 {offers.map((offer) => (
-                  <div
-                    key={offer.id}
-                    className="offer-card"
-                    style={{ '--card-line-color': '#d4af37' }}
-                  >
-                    <div className="offer-image">
-                      <img src={offer.image} alt={offer.title} loading="lazy" />
-                      <div className="hover-vignette" />
-                      {offer.discount && (
-                        <div className="discount-badge">{offer.discount}</div>
-                      )}
-                      {offer.popular && (
-                        <div className="popular-badge">✦ Popular</div>
-                      )}
-                    </div>
-
-                    <div className="offer-details">
-                      <div className="offer-icon">
-                        <Calendar size={18} />
-                      </div>
-                      <h3 className="offer-title">{offer.title}</h3>
-                      {offer.subtitle && (
-                        <div className="offer-subtitle">{offer.subtitle}</div>
-                      )}
-                      <p className="offer-description">{offer.description}</p>
-
-                      <div className="offer-footer">
-                        {offer.validUntil && (
-                          <span className="valid">
-                            <Clock size={12} /> Valid until {offer.validUntil}
-                          </span>
-                        )}
-                        <div className="offer-actions">
-                          <Link to={`/offers/${offer.id}`} className="btn-view-details">
-                            View Details <ArrowRight size={14} />
-                          </Link>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              openBookingModal(offer);
-                            }}
-                            className="btn-book-offer"
+                  <StaggerItem key={offer.id} variant="fade-up">
+                    <div className="offer-card">
+                      <div className="offer-image">
+                        <img src={offer.image} alt={offer.title} loading="lazy" />
+                        <div className="hover-vignette" />
+                        {offer.discount && (
+                          <motion.div 
+                            initial={{ scale: 0.8 }}
+                            animate={{ scale: [1, 1.06, 1] }}
+                            transition={{ repeat: Infinity, duration: 2.5 }}
+                            className="discount-badge"
                           >
-                            Book Now <ArrowRight size={14} />
-                          </button>
+                            {offer.discount}
+                          </motion.div>
+                        )}
+                        {offer.popular && (
+                          <div className="popular-badge">✦ Popular</div>
+                        )}
+                      </div>
+
+                      <div className="offer-details">
+                        <h3 className="offer-title">{offer.title}</h3>
+                        {offer.subtitle && (
+                          <div className="offer-subtitle">{offer.subtitle}</div>
+                        )}
+                        <p className="offer-description">{offer.description}</p>
+
+                        <div className="offer-footer">
+                          {offer.validUntil && (
+                            <span className="valid">
+                              <Clock size={12} /> Valid until {offer.validUntil}
+                            </span>
+                          )}
+                          <div className="offer-actions">
+                            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                              <Link to={`/offers/${offer.id}`} className="btn-view-details">
+                                Details <ArrowRight size={13} />
+                              </Link>
+                            </motion.div>
+                            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openBookingModal(offer);
+                                }}
+                                className="btn-book-offer"
+                              >
+                                Book <ArrowRight size={13} />
+                              </button>
+                            </motion.div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </StaggerItem>
                 ))}
-              </div>
+              </StaggerContainer>
 
-              <div className="explore-all-wrapper">
-                <Link to="/offers" className="explore-all-btn">
-                  Explore All Offers
-                  <span className="arrow-circle">
-                    <ArrowRight size={18} />
-                  </span>
-                </Link>
-              </div>
+              <ScrollReveal variant="zoom-in" delay={0.2}>
+                <div className="explore-all-wrapper">
+                  <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
+                    <Link to="/offers" className="explore-all-btn">
+                      Explore All Offers
+                      <span className="arrow-circle">
+                        <ArrowRight size={18} />
+                      </span>
+                    </Link>
+                  </motion.div>
+                </div>
+              </ScrollReveal>
             </>
           )}
         </div>
       </section>
 
-      {/* --- BOOKING MODAL POPUP --- */}
-      <div className={`booking-modal-overlay ${isModalOpen ? 'active' : ''}`}>
-        <div className="booking-modal">
-          <button className="modal-close-btn" onClick={closeBookingModal}>
-            <X size={24} />
-          </button>
+      {/* --- BOOKING MODAL POPUP with AnimatePresence --- */}
+      <AnimatePresence>
+        {isModalOpen && selectedOffer && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="booking-modal-overlay" 
+            onClick={closeBookingModal}
+          >
+            <motion.div 
+              initial={{ scale: 0.9, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.9, y: 20, opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="booking-modal" 
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button className="modal-close-btn" onClick={closeBookingModal}>
+                <X size={24} />
+              </button>
 
-          <h2 className="modal-title">{selectedOffer?.title}</h2>
-          {selectedOffer?.packagePricing && (
-            <div className="modal-price">
-              {selectedOffer.packagePricing} <span>/ package</span>
-            </div>
-          )}
+              <h2 className="modal-title">{selectedOffer?.title}</h2>
+              {selectedOffer?.packagePricing && (
+                <div className="modal-price">
+                  {selectedOffer.packagePricing} <span>/ package</span>
+                </div>
+              )}
 
-          <div className="modal-package-details">
-            {selectedOffer?.subtitle && (
-              <div className="modal-subtitle">{selectedOffer.subtitle}</div>
-            )}
-            <p className="modal-desc">{selectedOffer?.description}</p>
-          </div>
-
-          <div className="modal-divider" />
-
-          <h4 style={{ margin: '0 0 16px 0', color: '#1a1a1a' }}>Book This Package</h4>
-          <form onSubmit={(e) => {
-            e.preventDefault();
-            const emailInput = e.target.email?.value || '';
-            const nameInput = e.target.fullName?.value || '';
-            closeBookingModal();
-            initiateStripeCheckout({
-              title: `Offer Package - ${selectedOffer?.title || 'Special Deal'}`,
-              amount: selectedOffer?.price || 200,
-              relatedType: 'Offer',
-              customerEmail: emailInput,
-              customerName: nameInput,
-            });
-          }}>
-            <div className="form-row-2">
-              <div className="form-group">
-                <label>Check-in Date</label>
-                <input type="date" className="form-control" required />
+              <div className="modal-package-details">
+                {selectedOffer?.subtitle && (
+                  <div className="modal-subtitle">{selectedOffer.subtitle}</div>
+                )}
+                <p className="modal-desc">{selectedOffer?.description}</p>
               </div>
-              <div className="form-group">
-                <label>Check-out Date</label>
-                <input type="date" className="form-control" required />
-              </div>
-            </div>
 
-            <div className="form-group">
-              <label>Full Name</label>
-              <input type="text" className="form-control" placeholder="John Doe" required />
-            </div>
+              <div className="modal-divider" />
 
-            <div className="form-group">
-              <label>Email Address</label>
-              <input type="email" className="form-control" placeholder="john@example.com" required />
-            </div>
+              <h4 style={{ margin: '0 0 16px 0', color: '#1a1a1a' }}>Book This Package</h4>
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                const emailInput = e.target.email?.value || '';
+                const nameInput = e.target.fullName?.value || '';
+                closeBookingModal();
+                initiateStripeCheckout({
+                  title: `Offer Package - ${selectedOffer?.title || 'Special Deal'}`,
+                  amount: selectedOffer?.price || 200,
+                  relatedType: 'Offer',
+                  customerEmail: emailInput,
+                  customerName: nameInput,
+                });
+              }}>
+                <div className="form-row-2">
+                  <div className="form-group">
+                    <label>Check-in Date</label>
+                    <input type="date" className="form-control" required />
+                  </div>
+                  <div className="form-group">
+                    <label>Check-out Date</label>
+                    <input type="date" className="form-control" required />
+                  </div>
+                </div>
 
-            <div className="form-row-2">
-              <div className="form-group">
-                <label>Phone Number</label>
-                <input type="tel" className="form-control" placeholder="+251 911 000 000" required />
-              </div>
-              <div className="form-group">
-                <label>Number of Guests</label>
-                <select className="form-control">
-                  <option>1 Guest</option>
-                  <option>2 Guests</option>
-                  <option>3 Guests</option>
-                  <option>4 Guests</option>
-                </select>
-              </div>
-            </div>
+                <div className="form-group">
+                  <label>Full Name</label>
+                  <input type="text" name="fullName" className="form-control" placeholder="John Doe" required />
+                </div>
 
-            <button type="submit" className="btn-confirm-booking">
-              Confirm Booking
-            </button>
-          </form>
-        </div>
-      </div>
+                <div className="form-group">
+                  <label>Email Address</label>
+                  <input type="email" name="email" className="form-control" placeholder="john@example.com" required />
+                </div>
+
+                <div className="form-row-2">
+                  <div className="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" className="form-control" placeholder="+251 911 000 000" required />
+                  </div>
+                  <div className="form-group">
+                    <label>Number of Guests</label>
+                    <select className="form-control">
+                      <option>1 Guest</option>
+                      <option>2 Guests</option>
+                      <option>3 Guests</option>
+                      <option>4 Guests</option>
+                    </select>
+                  </div>
+                </div>
+
+                <motion.button 
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  type="submit" 
+                  className="btn-confirm-booking"
+                >
+                  Confirm Booking
+                </motion.button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };

@@ -1,13 +1,21 @@
 // src/components/Hero.jsx
 import { ArrowRight } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 
 const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const slideInterval = useRef(null);
+  const containerRef = useRef(null);
 
-  // Array of high-quality hotel images (3rd image fixed)
+  // Parallax scroll effects
+  const { scrollY } = useScroll();
+  const opacity = useTransform(scrollY, [0, 400], [1, 0]);
+  const yText = useTransform(scrollY, [0, 400], [0, 80]);
+  const scaleImage = useTransform(scrollY, [0, 500], [1, 1.08]);
+
+  // Array of high-quality hotel images
   const slides = [
     'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
     'https://images.unsplash.com/photo-1611892440504-42a792e24d32?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
@@ -32,7 +40,7 @@ const Hero = () => {
     if (isPlaying) {
       slideInterval.current = setInterval(() => {
         setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
-      }, 3000); // Slide changes every 3 seconds
+      }, 3500);
     } else {
       clearInterval(slideInterval.current);
     }
@@ -74,36 +82,36 @@ const Hero = () => {
           display: flex;
           width: 100%;
           height: 100%;
-          transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth slide motion */
+          transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .hero-slide {
-          flex: 0 0 100%; /* Each slide takes full screen width */
+          flex: 0 0 100%;
           height: 100%;
           background-size: cover;
           background-position: center;
           background-repeat: no-repeat;
           transform: scale(1);
-          transition: transform 8s cubic-bezier(0.4, 0, 0.2, 1); /* Slow cinematic zoom */
+          transition: transform 8s cubic-bezier(0.4, 0, 0.2, 1);
           will-change: transform;
         }
 
         .hero-slide.active {
-          transform: scale(1.15); /* Slowly zooms in while visible */
+          transform: scale(1.15);
         }
 
         /* DARK OVERLAY */
         .overlay {
           position: absolute;
           inset: 0;
-          background: linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%);
+          background: linear-gradient(to right, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.1) 100%);
           z-index: 1;
         }
 
         .hero-content {
           position: relative;
           z-index: 2;
-          max-width: 650px;
+          max-width: 680px;
           padding: 20px;
         }
 
@@ -114,7 +122,7 @@ const Hero = () => {
           font-weight: 700;
           line-height: 1.2;
           margin-bottom: 0.5rem;
-          text-shadow: 0 4px 20px rgba(0,0,0,0.4);
+          text-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
 
         .hero-title .gold {
@@ -134,32 +142,25 @@ const Hero = () => {
           font-weight: 400;
           margin: 1.5rem 0 2.5rem;
           line-height: 1.8;
-          color: rgba(255,255,255,0.9);
-          text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+          color: rgba(255,255,255,0.92);
+          text-shadow: 0 2px 10px rgba(0,0,0,0.4);
         }
 
         .hero-btn {
           display: inline-flex;
           align-items: center;
-          gap: 10px;
-          padding: 16px 40px;
-          background: #d4af37;
+          gap: 12px;
+          padding: 16px 42px;
+          background: linear-gradient(135deg, #d4af37 0%, #f5d879 100%);
           color: #1a1a1a;
           font-family: 'Poppins', sans-serif;
-          font-weight: 600;
+          font-weight: 700;
           font-size: 1.1rem;
           border: none;
           border-radius: 9999px;
           cursor: pointer;
           text-decoration: none;
-          transition: all 0.3s ease;
           box-shadow: 0 4px 20px rgba(212, 175, 55, 0.4);
-        }
-
-        .hero-btn:hover {
-          background: #c5a028;
-          transform: translateY(-3px);
-          box-shadow: 0 8px 30px rgba(212, 175, 55, 0.6);
         }
 
         /* SLIDER CONTROLS (Arrows) */
@@ -169,29 +170,22 @@ const Hero = () => {
           transform: translateY(-50%);
           z-index: 3;
           background: rgba(255, 255, 255, 0.15);
-          backdrop-filter: blur(4px);
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          backdrop-filter: blur(8px);
+          border: 1px solid rgba(255, 255, 255, 0.25);
           border-radius: 50%;
           color: white;
           width: 54px;
           height: 54px;
           cursor: pointer;
-          transition: all 0.3s ease;
           display: flex;
           align-items: center;
           justify-content: center;
           font-size: 24px;
-          opacity: 0.8;
+          opacity: 0.85;
         }
 
-        .slider-btn:hover {
-          background: rgba(255, 255, 255, 0.3);
-          transform: translateY(-50%) scale(1.1);
-          opacity: 1;
-        }
-
-        .slider-btn.prev { left: 24px; }
-        .slider-btn.next { right: 24px; }
+        .slider-btn.prev { left: 28px; }
+        .slider-btn.next { right: 28px; }
 
         /* PAGINATION DOTS */
         .slider-dots {
@@ -218,17 +212,13 @@ const Hero = () => {
         .slider-dot.active {
           background: #d4af37;
           border-color: #d4af37;
-          transform: scale(1.2);
-        }
-
-        .slider-dot:hover {
-          background: rgba(255, 255, 255, 0.4);
+          transform: scale(1.3);
         }
 
         /* Scroll indicator */
         .scroll-indicator {
           position: absolute;
-          bottom: 40px;
+          bottom: 35px;
           left: 50%;
           transform: translateX(-50%);
           z-index: 2;
@@ -237,12 +227,9 @@ const Hero = () => {
           align-items: center;
           gap: 6px;
           cursor: pointer;
-          color: rgba(255,255,255,0.7);
+          color: rgba(255,255,255,0.75);
           transition: color 0.3s;
-          animation: bounce 2s infinite;
         }
-
-        .scroll-indicator:hover { color: #ffffff; }
 
         .scroll-indicator .mouse {
           width: 24px;
@@ -265,20 +252,15 @@ const Hero = () => {
         }
 
         .scroll-indicator span {
-          font-size: 12px;
-          letter-spacing: 1px;
+          font-size: 11px;
+          letter-spacing: 2px;
           text-transform: uppercase;
+          font-weight: 500;
         }
 
         @keyframes scrollWheel {
           0% { transform: translateY(0); opacity: 1; }
           100% { transform: translateY(12px); opacity: 0; }
-        }
-
-        @keyframes bounce {
-          0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
-          40% { transform: translateX(-50%) translateY(-8px); }
-          60% { transform: translateX(-50%) translateY(-4px); }
         }
 
         /* RESPONSIVE BREAKPOINTS */
@@ -299,7 +281,7 @@ const Hero = () => {
           .hero-sub { font-size: 1.1rem; line-height: 1.7; }
           .hero-btn { padding: 14px 32px; font-size: 1rem; }
           
-          .slider-btn { width: 40px; height: 40px; font-size: 18px; }
+          .slider-btn { width: 42px; height: 42px; font-size: 18px; }
           .slider-btn.prev { left: 12px; }
           .slider-btn.next { right: 12px; }
           
@@ -320,25 +302,25 @@ const Hero = () => {
           .hero-sub { font-size: 1rem; line-height: 1.6; }
           .hero-btn { padding: 12px 24px; font-size: 0.9rem; }
           
-          .slider-btn { display: none; } /* Hide side arrows on small screens */
-          
+          .slider-btn { display: none; }
           .slider-dots { bottom: 70px; gap: 6px; }
           .slider-dot { width: 8px; height: 8px; }
-          .scroll-indicator .mouse { width: 20px; height: 32px; }
-          .scroll-indicator .mouse .wheel { height: 6px; }
         }
       `}</style>
 
-      {/* Hovering stops the auto-play so users can read at their own pace */}
       <section 
+        ref={containerRef}
         className="hero" 
         onMouseEnter={() => setIsPlaying(false)} 
         onMouseLeave={() => setIsPlaying(true)}
       >
-        {/* 1. SLIDER TRACK (Physical slide) */}
-        <div 
+        {/* SLIDER TRACK with parallax scale */}
+        <motion.div 
           className="hero-slider" 
-          style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+          style={{ 
+            transform: `translateX(-${currentSlide * 100}%)`,
+            scale: scaleImage,
+          }}
         >
           {slides.map((slide, index) => (
             <div
@@ -347,39 +329,78 @@ const Hero = () => {
               style={{ backgroundImage: `url(${slide})` }}
             />
           ))}
-        </div>
+        </motion.div>
         
-        {/* 2. DARK OVERLAY */}
+        {/* DARK OVERLAY */}
         <div className="overlay"></div>
 
-        {/* 3. CONTENT */}
-        <div className="hero-content">
-          <h1 className="hero-title">
+        {/* HERO CONTENT with parallax scroll & staggered entrance */}
+        <motion.div 
+          className="hero-content"
+          style={{ opacity, y: yText }}
+        >
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="hero-title"
+          >
             VILLA ALPHA<br />
             <span className="gold">INTERNATIONAL HOTEL</span>
-          </h1>
-          <p className="hero-sub">
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="hero-sub"
+          >
             Where elegance meets comfort — experience world-class hospitality
             in the heart of the city.
-          </p>
-          <a href="#rooms" className="hero-btn">
-            Explore Rooms <ArrowRight size={20} />
-          </a>
-        </div>
+          </motion.p>
 
-        {/* 4. SLIDER CONTROLS */}
-        <button className="slider-btn prev" onClick={prevSlide} aria-label="Previous Slide">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+          >
+            <motion.a 
+              href="#rooms" 
+              className="hero-btn"
+              whileHover={{ scale: 1.05, boxShadow: '0 8px 30px rgba(212, 175, 55, 0.6)' }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Explore Rooms <ArrowRight size={20} />
+            </motion.a>
+          </motion.div>
+        </motion.div>
+
+        {/* SLIDER CONTROLS */}
+        <motion.button 
+          whileHover={{ scale: 1.15, backgroundColor: 'rgba(255, 255, 255, 0.3)' }}
+          whileTap={{ scale: 0.9 }}
+          className="slider-btn prev" 
+          onClick={prevSlide} 
+          aria-label="Previous Slide"
+        >
           ‹
-        </button>
-        <button className="slider-btn next" onClick={nextSlide} aria-label="Next Slide">
+        </motion.button>
+        <motion.button 
+          whileHover={{ scale: 1.15, backgroundColor: 'rgba(255, 255, 255, 0.3)' }}
+          whileTap={{ scale: 0.9 }}
+          className="slider-btn next" 
+          onClick={nextSlide} 
+          aria-label="Next Slide"
+        >
           ›
-        </button>
+        </motion.button>
 
-        {/* 5. PAGINATION DOTS */}
+        {/* PAGINATION DOTS */}
         <div className="slider-dots">
           {slides.map((_, index) => (
-            <button
+            <motion.button
               key={index}
+              whileHover={{ scale: 1.3 }}
               className={`slider-dot ${index === currentSlide ? 'active' : ''}`}
               onClick={() => goToSlide(index)}
               aria-label={`Go to slide ${index + 1}`}
@@ -387,13 +408,19 @@ const Hero = () => {
           ))}
         </div>
 
-        {/* 6. SCROLL INDICATOR */}
-        <div className="scroll-indicator" onClick={scrollToNextSection}>
+        {/* SCROLL INDICATOR */}
+        <motion.div 
+          className="scroll-indicator" 
+          onClick={scrollToNextSection}
+          animate={{ y: [0, 8, 0] }}
+          transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
+          whileHover={{ scale: 1.1 }}
+        >
           <div className="mouse">
             <div className="wheel"></div>
           </div>
           <span>Scroll</span>
-        </div>
+        </motion.div>
       </section>
     </>
   );

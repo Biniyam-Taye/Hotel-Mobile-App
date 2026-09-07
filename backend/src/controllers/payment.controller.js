@@ -47,6 +47,12 @@ const deleteOrder = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, null, 'Order deleted successfully'));
 });
 
+const getCheckoutSessionDetails = asyncHandler(async (req, res) => {
+  const { sessionId } = req.params;
+  const result = await payService.getCheckoutSessionDetails(sessionId);
+  res.status(200).json(new ApiResponse(200, result, 'Session details retrieved'));
+});
+
 module.exports = {
   createCheckoutSession,
   createPaymentIntent,
@@ -55,6 +61,7 @@ module.exports = {
   getMyOrders,
   getPaidRevenueStats,
   deleteOrder,
+  getCheckoutSessionDetails,
 };
 
 

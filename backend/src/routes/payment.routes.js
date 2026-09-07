@@ -16,6 +16,9 @@ router.post(
   ctrl.createCheckoutSession
 );
 
+// Get Checkout Session details by sessionId (Public lookup for success page)
+router.get('/session/:sessionId', ctrl.getCheckoutSessionDetails);
+
 // Get Paid Revenue Statistics (For Owner / Admin Dashboard)
 router.get('/revenue-stats', ctrl.getPaidRevenueStats);
 

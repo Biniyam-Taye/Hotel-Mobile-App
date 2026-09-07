@@ -2,10 +2,12 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, UtensilsCrossed, ConciergeBell, Waves, CalendarDays } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ScrollReveal, StaggerContainer, StaggerItem } from './common/ScrollReveal';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
-// ── Static card data — titles & descriptions NEVER come from the API ──
+// ── Static card data ──
 const SECTION_DEFAULTS = [
   {
     id: 1,
@@ -25,7 +27,6 @@ const SECTION_DEFAULTS = [
     image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&auto=format&fit=crop',
     link: '/hotel-services',
     Icon: ConciergeBell,
-
     accentColor: '#0ea5e9',
   },
   {
@@ -54,7 +55,6 @@ const Amenities = () => {
   const [cards, setCards] = useState(SECTION_DEFAULTS);
 
   useEffect(() => {
-    // Only update images from API — titles & descriptions stay static
     const updateImages = async () => {
       const fetchers = [
         async () => {
@@ -112,6 +112,7 @@ const Amenities = () => {
           padding: 96px 24px 104px;
           background: linear-gradient(160deg, #f8f9fb 0%, #eff1f5 100%);
           font-family: 'Inter', sans-serif;
+          overflow: hidden;
         }
         .am-container { max-width: 1240px; margin: 0 auto; }
 
@@ -152,18 +153,18 @@ const Amenities = () => {
           border: 1px solid #e8ebf0;
           box-shadow: 0 2px 16px rgba(0,0,0,0.04);
           display: flex; flex-direction: column;
-          transition: transform 0.32s cubic-bezier(.22,.68,0,1.2),
-                      box-shadow 0.32s ease,
-                      border-color 0.32s ease;
+          height: 100%;
+          transition: transform 0.35s cubic-bezier(.22,.68,0,1.2),
+                      box-shadow 0.35s ease,
+                      border-color 0.35s ease;
           position: relative;
         }
         .am-card:hover {
           transform: translateY(-10px);
-          box-shadow: 0 24px 60px rgba(0,0,0,0.10);
-          border-color: rgba(201,151,12,0.25);
+          box-shadow: 0 24px 60px rgba(0,0,0,0.12);
+          border-color: rgba(201,151,12,0.3);
         }
 
-        /* ── Image area ── */
         .am-img-wrap {
           height: 210px;
           overflow: hidden;
@@ -173,11 +174,10 @@ const Amenities = () => {
         .am-img-wrap img {
           width: 100%; height: 100%;
           object-fit: cover; display: block;
-          transition: transform 0.55s cubic-bezier(.22,.68,0,1.2);
+          transition: transform 0.6s cubic-bezier(.22,.68,0,1.2);
         }
         .am-card:hover .am-img-wrap img { transform: scale(1.08); }
 
-        /* dark gradient overlay on hover */
         .am-img-wrap::after {
           content: '';
           position: absolute; inset: 0;
@@ -187,41 +187,36 @@ const Amenities = () => {
         }
         .am-card:hover .am-img-wrap::after { opacity: 1; }
 
-        /* badge */
         .am-badge {
           position: absolute; top: 16px; left: 16px; z-index: 2;
-          background: rgba(0,0,0,0.55);
+          background: rgba(0,0,0,0.6);
           backdrop-filter: blur(6px);
           color: #fff;
           font-size: 10px; font-weight: 700;
           letter-spacing: 1.5px; text-transform: uppercase;
           padding: 5px 14px; border-radius: 999px;
-          border: 1px solid rgba(255,255,255,0.18);
+          border: 1px solid rgba(255,255,255,0.2);
           transition: background 0.3s ease;
         }
-        .am-card:hover .am-badge { background: rgba(201,151,12,0.88); }
+        .am-card:hover .am-badge { background: rgba(201,151,12,0.9); }
 
-        /* icon chip — revealed on hover */
         .am-icon-chip {
           position: absolute; bottom: 14px; right: 14px; z-index: 2;
-          width: 40px; height: 40px; border-radius: 50%;
+          width: 42px; height: 42px; border-radius: 50%;
           background: rgba(255,255,255,0.96);
           display: flex; align-items: center; justify-content: center;
-          box-shadow: 0 2px 12px rgba(0,0,0,0.18);
-          transform: scale(0.6) translateY(8px);
+          box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+          transform: scale(0.7) translateY(8px);
           opacity: 0;
-          transition: transform 0.32s cubic-bezier(.22,.68,0,1.2),
-                      opacity 0.32s ease;
+          transition: transform 0.35s cubic-bezier(.22,.68,0,1.2), opacity 0.35s ease;
         }
         .am-card:hover .am-icon-chip { transform: scale(1) translateY(0); opacity: 1; }
 
-        /* ── Card body ── */
         .am-body {
           padding: 22px 22px 26px;
           display: flex; flex-direction: column; flex: 1;
         }
 
-        /* title */
         .am-title {
           font-family: 'Playfair Display', Georgia, serif;
           font-size: 20px; font-weight: 700;
@@ -230,15 +225,11 @@ const Amenities = () => {
         }
         .am-card:hover .am-title { color: #c9970c; }
 
-        /* description */
         .am-desc {
           font-size: 13.5px; color: #6b7280;
           line-height: 1.65; margin: 0 0 20px; flex: 1;
-          transition: color 0.25s ease;
         }
-        .am-card:hover .am-desc { color: #374151; }
 
-        /* explore link */
         .am-link {
           display: inline-flex; align-items: center; gap: 7px;
           font-size: 13px; font-weight: 700;
@@ -249,15 +240,14 @@ const Amenities = () => {
           align-self: flex-start;
           transition: all 0.25s ease;
         }
-        .am-link svg { transition: transform 0.25s ease; flex-shrink: 0; }
+        .am-link svg { transition: transform 0.25s ease; }
         .am-card:hover .am-link {
           background: #c9970c; color: #fff;
           border-color: #c9970c;
-          box-shadow: 0 4px 18px rgba(201,151,12,0.32);
+          box-shadow: 0 4px 18px rgba(201,151,12,0.35);
         }
         .am-card:hover .am-link svg { transform: translateX(4px); }
 
-        /* ── Explore all ── */
         .am-all-wrap { display: flex; justify-content: center; }
         .am-all-btn {
           display: inline-flex; align-items: center; gap: 12px;
@@ -268,17 +258,9 @@ const Amenities = () => {
           text-decoration: none;
           border: 2px solid #111827;
           transition: all 0.28s ease;
-          letter-spacing: 0.3px;
         }
         .am-all-btn svg { transition: transform 0.28s ease; }
-        .am-all-btn:hover {
-          background: transparent; color: #111827;
-          transform: translateY(-3px);
-          box-shadow: 0 12px 32px rgba(0,0,0,0.10);
-        }
-        .am-all-btn:hover svg { transform: translateX(6px); }
 
-        /* ── Responsive ── */
         @media (max-width: 1100px) {
           .am-grid { grid-template-columns: repeat(2, 1fr); }
         }
@@ -286,51 +268,56 @@ const Amenities = () => {
           .am-section { padding: 64px 16px 72px; }
           .am-header h2 { font-size: 32px; }
           .am-grid { grid-template-columns: 1fr; gap: 18px; }
-          .am-img-wrap { height: 190px; }
         }
       `}</style>
 
       <div className="am-container">
-
         {/* Header */}
-        <div className="am-header">
-          <div className="am-lbl">✦ Curated Experiences ✦</div>
-          <h2>Hotel <span>Hospitality</span></h2>
-          <p>
-            Discover dining, spa, massage, tours, and premium services —
-            crafted for your most unforgettable stays.
-          </p>
-        </div>
+        <ScrollReveal variant="fade-up">
+          <div className="am-header">
+            <div className="am-lbl">✦ Curated Experiences ✦</div>
+            <h2>Hotel <span>Hospitality</span></h2>
+            <p>
+              Discover dining, spa, massage, tours, and premium services —
+              crafted for your most unforgettable stays.
+            </p>
+          </div>
+        </ScrollReveal>
 
         {/* Cards */}
-        <div className="am-grid">
+        <StaggerContainer staggerChildren={0.12} className="am-grid">
           {cards.map(({ id, title, badge, description, image, link, Icon, accentColor }) => (
-            <div key={id} className="am-card">
-              <div className="am-img-wrap">
-                <img src={image} alt={title} loading="lazy" />
-                <div className="am-badge">{badge}</div>
-                <div className="am-icon-chip">
-                  <Icon size={18} color={accentColor} />
+            <StaggerItem key={id} variant="fade-up">
+              <div className="am-card">
+                <div className="am-img-wrap">
+                  <img src={image} alt={title} loading="lazy" />
+                  <div className="am-badge">{badge}</div>
+                  <div className="am-icon-chip">
+                    <Icon size={18} color={accentColor} />
+                  </div>
+                </div>
+                <div className="am-body">
+                  <h3 className="am-title">{title}</h3>
+                  <p className="am-desc">{description}</p>
+                  <Link to={link} className="am-link">
+                    Explore <ArrowRight size={14} />
+                  </Link>
                 </div>
               </div>
-              <div className="am-body">
-                <h3 className="am-title">{title}</h3>
-                <p className="am-desc">{description}</p>
-                <Link to={link} className="am-link">
-                  Explore <ArrowRight size={14} />
-                </Link>
-              </div>
-            </div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
 
         {/* CTA */}
-        <div className="am-all-wrap">
-          <Link to="/hospitality" className="am-all-btn">
-            Explore All Hospitality <ArrowRight size={18} />
-          </Link>
-        </div>
-
+        <ScrollReveal variant="zoom-in" delay={0.2}>
+          <div className="am-all-wrap">
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Link to="/hospitality" className="am-all-btn">
+                Explore All Hospitality <ArrowRight size={18} />
+              </Link>
+            </motion.div>
+          </div>
+        </ScrollReveal>
       </div>
     </section>
   );
