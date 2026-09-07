@@ -28,6 +28,7 @@ import Testimonials from './components/Testimonials';
 import Offers from './components/Offers';
 import OfferDetail from './components/OfferDetail';
 import ScrollToTop from './components/ScrollToTop';
+import VoiceNavigator from './components/VoiceNavigator';
 import OffersPage from './pages/OffersPage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
@@ -52,6 +53,7 @@ const Layout = ({ children }) => {
       {!shouldHide && <Navbar />}
       <ScrollToTop />
       <div>{children}</div>
+      <VoiceNavigator />
       {!shouldHide && <Footer />}
     </div>
   );

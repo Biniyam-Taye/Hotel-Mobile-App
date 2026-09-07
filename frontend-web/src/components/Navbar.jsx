@@ -4,7 +4,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X, ShoppingBag, LogOut, User, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
-import VoiceNavigator from './VoiceNavigator';
 import { ScrollProgressBar } from './common/ScrollReveal';
 
 const Navbar = () => {
@@ -446,9 +445,6 @@ const Navbar = () => {
               </Link>
             ))}
           </div>
-
-          {/* Voice Navigator Mic Button */}
-          <VoiceNavigator />
 
           {/* Desktop auth area */}
           <div className="auth-area">

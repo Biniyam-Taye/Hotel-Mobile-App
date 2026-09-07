@@ -8,6 +8,11 @@ export const mapRoomForCustomer = (room) => {
     room.discountedPrice != null && room.discountedPrice < room.price;
   const priceETB = hasDiscount ? room.discountedPrice : room.price;
 
+  let rawLocation = room.location || 'Adama · Villa Alpha International Hotel';
+  const cleanLocation = rawLocation
+    .replace(/Bekele Mola Hotels/gi, 'Villa Alpha International Hotel')
+    .replace(/Bekele Mola/gi, 'Villa Alpha International Hotel');
+
   return {
     id: room._id,
     name: room.name,
@@ -18,7 +23,7 @@ export const mapRoomForCustomer = (room) => {
     size: room.roomSize ? `${room.roomSize} m²` : '',
     rating: room.rating ?? 4.5,
     reviews: room.reviewCount ?? 0,
-    location: room.location || 'Adama',
+    location: cleanLocation,
     shortDescription: room.description || '',
     longDescription: room.description || '',
     features: room.amenities || [],

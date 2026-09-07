@@ -3,7 +3,7 @@ export const services = [
   // ===== DINING (4 items) =====
   {
     id: 1,
-    provider: 'Bekele Mola Hotels',
+    provider: 'Villa Alpha International Hotel',
     title: 'Afternoon Tea & Pastries',
     description: 'Elegant afternoon tea service with a selection of premium teas, fresh pastries, finger sandwiches, and scones.',
     
@@ -16,7 +16,7 @@ export const services = [
   },
   {
     id: 2,
-    provider: 'Bekele Mola Hotels',
+    provider: 'Villa Alpha International Hotel',
     title: 'Cultural City Tour',
     description: 'Guided half-day tour exploring local landmarks, markets, and hidden gems with an experienced local guide.',
     
@@ -81,7 +81,7 @@ export const services = [
   },
   {
     id: 11,
-    provider: 'Bekele Mola Hotels',
+    provider: 'Villa Alpha International Hotel',
     title: 'Gourmet Dinner Experience',
     description: 'A 5‑course gourmet dinner with wine pairing, featuring seasonal ingredients and signature dishes.',
     
