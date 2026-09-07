@@ -1,7 +1,7 @@
 // src/components/Hero.jsx
 import { ArrowRight } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -35,7 +35,7 @@ const Hero = () => {
     setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
   };
 
-  // Auto-play logic - Fast 3-second sliding interval
+  // Auto-play logic - Fast 3.5-second sliding interval
   useEffect(() => {
     if (isPlaying) {
       slideInterval.current = setInterval(() => {
@@ -146,21 +146,40 @@ const Hero = () => {
           text-shadow: 0 2px 10px rgba(0,0,0,0.4);
         }
 
+        /* ── HERO BUTTON DESIGN ── */
         .hero-btn {
           display: inline-flex;
           align-items: center;
           gap: 12px;
-          padding: 16px 42px;
-          background: linear-gradient(135deg, #d4af37 0%, #f5d879 100%);
-          color: #1a1a1a;
+          padding: 16px 44px;
+          background: linear-gradient(135deg, #d4af37 0%, #f5d879 50%, #c9a227 100%);
+          color: #1a1a1a !important;
           font-family: 'Poppins', sans-serif;
           font-weight: 700;
           font-size: 1.1rem;
-          border: none;
+          border: 1.5px solid rgba(255, 255, 255, 0.4);
           border-radius: 9999px;
           cursor: pointer;
           text-decoration: none;
-          box-shadow: 0 4px 20px rgba(212, 175, 55, 0.4);
+          box-shadow: 0 6px 25px rgba(212, 175, 55, 0.45);
+          transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .hero-btn svg {
+          transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), color 0.35s ease;
+          color: #1a1a1a !important;
+        }
+
+        .hero-btn:hover {
+          background: linear-gradient(135deg, #f5d879 0%, #d4af37 50%, #b8911c 100%);
+          color: #1a1a1a !important;
+          box-shadow: 0 12px 35px rgba(212, 175, 55, 0.7), 0 0 0 3px rgba(255, 255, 255, 0.25);
+          transform: translateY(-3px) scale(1.04);
+        }
+
+        .hero-btn:hover svg {
+          transform: translateX(6px);
+          color: #1a1a1a !important;
         }
 
         /* SLIDER CONTROLS (Arrows) */
@@ -364,14 +383,9 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
           >
-            <motion.a 
-              href="#rooms" 
-              className="hero-btn"
-              whileHover={{ scale: 1.05, boxShadow: '0 8px 30px rgba(212, 175, 55, 0.6)' }}
-              whileTap={{ scale: 0.95 }}
-            >
+            <a href="#rooms" className="hero-btn">
               Explore Rooms <ArrowRight size={20} />
-            </motion.a>
+            </a>
           </motion.div>
         </motion.div>
 

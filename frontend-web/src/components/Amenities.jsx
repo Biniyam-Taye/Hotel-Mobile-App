@@ -230,36 +230,71 @@ const Amenities = () => {
           line-height: 1.65; margin: 0 0 20px; flex: 1;
         }
 
+        /* ── EXPLORE BUTTON DESIGN FIX ── */
         .am-link {
-          display: inline-flex; align-items: center; gap: 7px;
-          font-size: 13px; font-weight: 700;
-          color: #c9970c; text-decoration: none;
-          padding: 9px 20px;
-          border: 1.5px solid #e6c65a;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 13px;
+          font-weight: 700;
+          color: #a16207;
+          text-decoration: none;
+          padding: 9px 22px;
+          border: 1.5px solid #d4af37;
           border-radius: 999px;
+          background: rgba(212, 175, 55, 0.08);
           align-self: flex-start;
-          transition: all 0.25s ease;
+          transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          box-shadow: 0 2px 8px rgba(212, 175, 55, 0.1);
         }
-        .am-link svg { transition: transform 0.25s ease; }
-        .am-card:hover .am-link {
-          background: #c9970c; color: #fff;
-          border-color: #c9970c;
-          box-shadow: 0 4px 18px rgba(201,151,12,0.35);
+
+        .am-link svg {
+          transition: transform 0.3s ease, color 0.3s ease;
+          color: #a16207;
         }
-        .am-card:hover .am-link svg { transform: translateX(4px); }
+
+        /* Card Hover & Button Direct Hover State */
+        .am-card:hover .am-link,
+        .am-link:hover {
+          background: linear-gradient(135deg, #d4af37 0%, #f5d879 50%, #c9a227 100%) !important;
+          color: #1a1a1a !important;
+          border-color: transparent !important;
+          box-shadow: 0 6px 20px rgba(212, 175, 55, 0.45) !important;
+          transform: translateY(-2px);
+        }
+
+        .am-card:hover .am-link svg,
+        .am-link:hover svg {
+          transform: translateX(5px);
+          color: #1a1a1a !important;
+        }
 
         .am-all-wrap { display: flex; justify-content: center; }
         .am-all-btn {
           display: inline-flex; align-items: center; gap: 12px;
-          padding: 15px 44px;
+          padding: 16px 44px;
           background: #111827; color: #fff;
           border-radius: 999px;
           font-size: 15px; font-weight: 700;
           text-decoration: none;
           border: 2px solid #111827;
           transition: all 0.28s ease;
+          box-shadow: 0 4px 18px rgba(0,0,0,0.12);
         }
-        .am-all-btn svg { transition: transform 0.28s ease; }
+        .am-all-btn svg { transition: transform 0.28s ease; color: #fff; }
+
+        .am-all-btn:hover {
+          background: linear-gradient(135deg, #d4af37 0%, #f5d879 50%, #c9a227 100%);
+          color: #1a1a1a !important;
+          border-color: transparent;
+          box-shadow: 0 8px 30px rgba(212, 175, 55, 0.5);
+          transform: translateY(-3px);
+        }
+
+        .am-all-btn:hover svg {
+          transform: translateX(6px);
+          color: #1a1a1a !important;
+        }
 
         @media (max-width: 1100px) {
           .am-grid { grid-template-columns: repeat(2, 1fr); }

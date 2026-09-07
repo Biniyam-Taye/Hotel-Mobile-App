@@ -315,6 +315,7 @@ const Offers = () => {
           box-shadow: 0 3px 12px rgba(212,175,55,0.32);
         }
 
+        /* ── EXPLORE ALL OFFERS BUTTON DESIGN ── */
         .explore-all-wrapper {
           display: flex;
           justify-content: center;
@@ -325,22 +326,25 @@ const Offers = () => {
           display: inline-flex;
           align-items: center;
           gap: 14px;
-          padding: 16px 36px;
+          padding: 16px 38px;
           border: 2px solid #d4af37;
           border-radius: 9999px;
-          color: #d4af37;
-          background: transparent;
+          color: #a16207;
+          background: rgba(212, 175, 55, 0.08);
           font-weight: 700;
-          font-size: 18px;
+          font-size: 17px;
           text-decoration: none;
-          transition: all 0.3s ease;
+          transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
           font-family: 'Poppins', sans-serif;
+          box-shadow: 0 4px 15px rgba(212, 175, 55, 0.12);
         }
 
         .explore-all-btn:hover {
-          background: #d4af37;
-          color: #1a1a1a;
-          box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+          background: linear-gradient(135deg, #d4af37 0%, #f5d879 50%, #c9a227 100%) !important;
+          color: #1a1a1a !important;
+          border-color: transparent !important;
+          box-shadow: 0 8px 30px rgba(212, 175, 55, 0.5) !important;
+          transform: translateY(-3px);
         }
 
         .explore-all-btn .arrow-circle {
@@ -350,14 +354,16 @@ const Offers = () => {
           width: 36px;
           height: 36px;
           border-radius: 50%;
+          background: rgba(212, 175, 55, 0.15);
           border: 2px solid #d4af37;
-          transition: all 0.3s ease;
+          color: #a16207;
+          transition: all 0.35s ease;
         }
 
         .explore-all-btn:hover .arrow-circle {
-          background: #1a1a1a;
-          border-color: #1a1a1a;
-          color: #d4af37;
+          background: #1a1a1a !important;
+          border-color: #1a1a1a !important;
+          color: #d4af37 !important;
         }
 
         @media (max-width: 1199px) {
