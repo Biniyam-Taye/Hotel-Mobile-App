@@ -69,29 +69,30 @@ const Navbar = () => {
         /* ===== TRANSPARENT CURVED NAVBAR ===== */
         .navbar {
           position: fixed;
-          top: 20px;
+          top: 18px;
           left: 50%;
           z-index: 1000;
-          background: rgba(0, 0, 0, 0.35);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          padding: 12px 28px;
-          border-radius: 50px;
-          width: 90%;
-          max-width: 1200px;
-          box-shadow: 0 4px 30px rgba(0,0,0,0.2);
-          border: 1px solid rgba(255,255,255,0.08);
+          background: rgba(10, 15, 26, 0.75);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          padding: 10px 32px;
+          border-radius: 9999px;
+          width: 92%;
+          max-width: 1240px;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), 0 0 20px rgba(212, 175, 55, 0.08);
+          border: 1px solid rgba(212, 175, 55, 0.22);
           box-sizing: border-box;
-          transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease, padding 0.3s ease;
+          transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         .navbar.scrolled {
-          background: rgba(10, 10, 15, 0.85);
-          backdrop-filter: blur(18px);
-          -webkit-backdrop-filter: blur(18px);
-          border-color: rgba(212, 175, 55, 0.25);
-          box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-          padding: 10px 24px;
+          top: 12px;
+          background: rgba(10, 15, 26, 0.92);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border-color: rgba(212, 175, 55, 0.35);
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), 0 0 25px rgba(212, 175, 55, 0.15);
+          padding: 8px 28px;
         }
 
         .navbar-container {
@@ -101,100 +102,79 @@ const Navbar = () => {
           justify-content: space-between;
         }
 
-        .logo {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          text-decoration: none;
-          flex-shrink: 0;
-        }
-
-        .logo-icon {
-          width: 36px;
-          height: 36px;
-          background: linear-gradient(135deg, #d4af37, #f0cc5a);
-          border-radius: 8px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #1a1a1a;
-          font-weight: 800;
-          font-size: 15px;
-          box-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
-        }
-
-        .logo-text { line-height: 1.2; }
-
-        .logo-title {
-          font-size: 15px;
-          font-weight: 700;
-          color: #ffffff;
-          margin: 0;
-          line-height: 1.2;
-          letter-spacing: 0.5px;
-        }
-
-        .logo-subtitle {
-          font-size: 7px;
-          color: rgba(255,255,255,0.6);
-          letter-spacing: 3px;
-          margin: 0;
-          text-transform: uppercase;
-        }
-
         .nav-links {
           display: flex;
           align-items: center;
-          gap: 28px;
+          gap: 32px;
         }
 
         .nav-link-item {
           position: relative;
-          color: rgba(255,255,255,0.85);
+          color: rgba(255,255,255,0.9);
           text-decoration: none;
-          font-size: 12px;
-          font-weight: 500;
-          transition: color 0.3s;
-          letter-spacing: 0.5px;
+          font-size: 12.5px;
+          font-weight: 600;
+          transition: color 0.3s ease;
+          letter-spacing: 0.8px;
           text-transform: uppercase;
           white-space: nowrap;
-          padding: 4px 0;
+          padding: 6px 0;
+        }
+
+        .nav-link-item::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          width: 0;
+          height: 2px;
+          background: linear-gradient(90deg, #d4af37, #f5d879);
+          transition: all 0.3s ease;
+          transform: translateX(-50%);
+          border-radius: 2px;
         }
 
         .nav-link-item:hover { color: #d4af37; }
+        .nav-link-item:hover::after { width: 80%; }
 
         /* ---- Auth area ---- */
         .auth-area {
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 12px;
           flex-shrink: 0;
         }
 
         .auth-area a {
           text-decoration: none;
-          font-size: 12px;
-          font-weight: 500;
+          font-size: 12.5px;
+          font-weight: 600;
           transition: all 0.3s;
           text-transform: uppercase;
-          letter-spacing: 0.5px;
+          letter-spacing: 0.8px;
           white-space: nowrap;
         }
 
         .btn-nav-login {
-          padding: 6px 14px;
+          padding: 7px 16px;
           color: rgba(255,255,255,0.85);
         }
 
         .btn-nav-login:hover { color: #d4af37; }
 
         .btn-nav-signup {
-          padding: 7px 22px;
+          padding: 9px 24px;
           background: linear-gradient(135deg, #d4af37 0%, #f5d879 100%);
           color: #1a1a1a !important;
           border-radius: 9999px;
           font-weight: 700 !important;
-          box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+          box-shadow: 0 4px 16px rgba(212, 175, 55, 0.35);
+          transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .btn-nav-signup:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 6px 20px rgba(212, 175, 55, 0.55);
         }
 
         /* ---- User dropdown ---- */
