@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+// Rely on system DNS resolution for MongoDB SRV records
 
 const connectDB = async () => {
   const uri = process.env.MONGODB_URI;
@@ -19,3 +20,4 @@ const connectDB = async () => {
 };
 
 module.exports = connectDB;
+

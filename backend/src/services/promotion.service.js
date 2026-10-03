@@ -82,11 +82,9 @@ const getOffers = async (query) =>
   queryBuilder(Offer, query, ['title', 'subtitle', 'description', 'discountTag', 'typeTag']);
 
 const getPublicOffers = async () => {
-  const now = new Date();
   return Offer.find({
     status: 'Active',
     isActive: true,
-    validUntil: { $gte: now },
   })
     .select('-imagePublicId -detailImages.publicId')
     .sort('-isPopular -createdAt');

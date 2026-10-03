@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import './Dashboard.css';
 import {
-  ArrowUpRight, ArrowDownRight, MoreHorizontal, Wallet, RefreshCcw,
-  ArrowRightLeft, CreditCard, ChevronDown, CheckSquare, Square, Package,
-  Settings, Plane, ShoppingCart, Image as ImageIcon, Search, UserCheck, Clock
+  ArrowUpRight, MoreHorizontal, Wallet, RefreshCcw,
+  CheckSquare, Square, Package,
+  Search, UserCheck, Clock, CheckCircle2, Hourglass,
+  TrendingUp, DollarSign, BarChart2, Activity
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
@@ -69,48 +70,57 @@ const Dashboard = () => {
       <div className="dashboard-grid">
         {/* Total Revenue Overview Card */}
         <div className="card total-balance-card">
-          <div className="flex justify-between items-center mb-4">
-            <span className="text-light text-sm">Total Revenue (Paid Only)</span>
+          <div className="rev-card-header">
+            <div className="rev-card-header-left">
+              <div className="rev-icon-wrapper">
+                <DollarSign size={18} />
+              </div>
+              <div>
+                <span className="rev-card-label">Total Revenue</span>
+                <span className="rev-card-sublabel">Paid Transactions Only</span>
+              </div>
+            </div>
             <div className="currency-selector">
               <img src="https://flagcdn.com/w20/us.png" alt="USD" width="16" />
               <span className="text-sm font-medium">USD</span>
             </div>
           </div>
+
           <h2 className="balance-amount">{formatCurrency(stats.totalRevenue)}</h2>
-          <div className="flex items-center gap-2 mb-6">
-            <span className="badge badge-green"><ArrowUpRight size={12} /> {stats.paidCount}</span>
-            <span className="text-sm text-light">successful transactions</span>
+
+          <div className="rev-success-badge">
+            <span className="badge badge-green"><ArrowUpRight size={12} /> {stats.paidCount} Successful</span>
+            <span className="rev-live-dot"><span className="live-pulse"></span> Live</span>
           </div>
 
-          <div className="flex gap-3 mb-6">
-            <button className="btn btn-primary flex-1" onClick={() => window.location.reload()}>
-              <RefreshCcw size={16} /> Sync Database
-            </button>
-          </div>
+          <button className="btn-sync" onClick={() => window.location.reload()}>
+            <RefreshCcw size={15} />
+            <span>Sync Database</span>
+          </button>
 
-          <div className="wallets-section">
-            <div className="flex justify-between items-center mb-3">
-              <span className="text-xs font-semibold text-dark">Revenue Summary</span>
-              <span className="text-xs text-light">Live DB</span>
+          <div className="revenue-summary-section">
+            <div className="rev-summary-header">
+              <span>Revenue Summary</span>
+              <span className="rev-live-badge">Live DB</span>
             </div>
             <div className="wallet-list">
               <div className="wallet-item">
-                <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xs">
-                  ✓
+                <div className="wallet-icon-wrap wallet-icon-green">
+                  <CheckCircle2 size={15} />
                 </div>
-                <div>
+                <div className="wallet-info">
                   <div className="wallet-name">Succeeded Payments</div>
                   <div className="wallet-status text-green">{stats.paidCount} Completed</div>
                 </div>
                 <div className="wallet-balance">{formatCurrency(stats.totalRevenue)}</div>
               </div>
               <div className="wallet-item">
-                <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-xs">
-                  ⌛
+                <div className="wallet-icon-wrap wallet-icon-amber">
+                  <Hourglass size={15} />
                 </div>
-                <div>
+                <div className="wallet-info">
                   <div className="wallet-name">Pending Payments</div>
-                  <div className="wallet-status text-amber-500">{stats.pendingCount} Awaiting</div>
+                  <div className="wallet-status wallet-status-amber">{stats.pendingCount} Awaiting</div>
                 </div>
                 <div className="wallet-balance">{formatCurrency(stats.totalPendingAmount)}</div>
               </div>
@@ -120,74 +130,92 @@ const Dashboard = () => {
 
         {/* Top Stats Cards Grid */}
         <div className="stats-cards-grid">
-          <div className="card stat-card total-earnings-card">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-medium">Total Paid Revenue</span>
-              <Wallet size={18} />
-            </div>
-            <h2 className="stat-amount">{formatCurrency(stats.totalRevenue)}</h2>
-            <div className="flex items-center gap-2 mt-auto">
-              <span className="badge badge-light-orange"><ArrowUpRight size={10} /> Live</span>
-              <span className="text-xs opacity-80">Stripe Succeeded</span>
-            </div>
-          </div>
-
-          <div className="card stat-card">
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-sm text-light">Paid Customers</span>
-              <div className="icon-circle"><UserCheck size={14} /></div>
-            </div>
-            <h3 className="stat-amount text-dark">{stats.paidCount}</h3>
-            <div className="flex items-center gap-2 mt-auto">
-              <span className="badge badge-green"><ArrowUpRight size={10} /> Confirmed</span>
-              <span className="text-xs text-light">Payments received</span>
-            </div>
-          </div>
-
-          <div className="card stat-card">
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-sm text-light">Pending Orders</span>
-              <div className="icon-circle"><Clock size={14} /></div>
-            </div>
-            <h3 className="stat-amount text-dark">{stats.pendingCount}</h3>
-            <div className="flex items-center gap-2 mt-auto">
-              <span className="badge badge-orange"><Clock size={10} /> Pending</span>
-              <span className="text-xs text-light">{formatCurrency(stats.totalPendingAmount)}</span>
-            </div>
-          </div>
-
-          <div className="card stat-card" style={{ borderColor: 'rgba(16, 185, 129, 0.4)' }}>
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-sm text-light">Verified Transactions</span>
-              <div className="icon-circle" style={{ background: '#dcfce7', color: '#16a34a' }}>
-                <Package size={14} />
+          {/* Total Paid Revenue - accent card */}
+          <div className="card stat-card stat-card--accent">
+            <div className="stat-card-top">
+              <div className="stat-card-label">Total Paid Revenue</div>
+              <div className="stat-icon-box stat-icon-box--white">
+                <Wallet size={15} />
               </div>
             </div>
-            <h3 className="stat-amount text-dark">{stats.paidCount + stats.pendingCount} Total</h3>
-            <div className="flex items-center gap-2 mt-auto">
-              <span className="badge badge-green">100% Real DB</span>
-              <span className="text-xs text-light">Live Transactions</span>
+            <h2 className="stat-amount">{formatCurrency(stats.totalRevenue)}</h2>
+            <div className="stat-card-footer">
+              <span className="badge badge-white-trans"><ArrowUpRight size={10} /> Live</span>
+              <span className="stat-footer-text">Stripe Succeeded</span>
+            </div>
+          </div>
+
+          {/* Paid Customers */}
+          <div className="card stat-card">
+            <div className="stat-card-top">
+              <div className="stat-card-label text-light">Paid Customers</div>
+              <div className="stat-icon-box">
+                <UserCheck size={15} />
+              </div>
+            </div>
+            <h3 className="stat-amount text-dark">{stats.paidCount}</h3>
+            <div className="stat-card-footer">
+              <span className="badge badge-green"><ArrowUpRight size={10} /> Confirmed</span>
+              <span className="stat-footer-text text-light">Payments received</span>
+            </div>
+          </div>
+
+          {/* Pending Orders */}
+          <div className="card stat-card">
+            <div className="stat-card-top">
+              <div className="stat-card-label text-light">Pending Orders</div>
+              <div className="stat-icon-box stat-icon-box--amber">
+                <Clock size={15} />
+              </div>
+            </div>
+            <h3 className="stat-amount text-dark">{stats.pendingCount}</h3>
+            <div className="stat-card-footer">
+              <span className="badge badge-orange"><Clock size={10} /> Awaiting</span>
+              <span className="stat-footer-text text-light">{formatCurrency(stats.totalPendingAmount)}</span>
+            </div>
+          </div>
+
+          {/* Verified Transactions */}
+          <div className="card stat-card stat-card--green-border">
+            <div className="stat-card-top">
+              <div className="stat-card-label text-light">Verified Transactions</div>
+              <div className="stat-icon-box stat-icon-box--green">
+                <Package size={15} />
+              </div>
+            </div>
+            <h3 className="stat-amount text-dark">{stats.paidCount + stats.pendingCount} <span className="stat-total-label">Total</span></h3>
+            <div className="stat-card-footer">
+              <span className="badge badge-green"><Activity size={10} /> Real DB</span>
+              <span className="stat-footer-text text-light">Live Transactions</span>
             </div>
           </div>
         </div>
 
         {/* Monthly Revenue Chart Card */}
         <div className="card chart-card">
-          <div className="flex justify-between items-start mb-6">
-            <div>
-              <h3 className="font-semibold mb-1">Monthly Revenue (Real Database)</h3>
-              <p className="text-xs text-light">Aggregated live earnings per month</p>
+          <div className="chart-card-header">
+            <div className="chart-card-title-group">
+              <div className="chart-title-icon">
+                <BarChart2 size={16} />
+              </div>
+              <div>
+                <h3 className="chart-card-title">Monthly Revenue</h3>
+                <p className="chart-card-subtitle">Aggregated live earnings per month</p>
+              </div>
             </div>
-            <MoreHorizontal size={20} className="text-light" />
+            <button className="chart-more-btn">
+              <MoreHorizontal size={16} />
+            </button>
           </div>
 
-          <div className="flex justify-between items-center mb-4">
-            <span className="text-xs font-semibold">Revenue Trend</span>
-            <div className="flex gap-4">
-              <div className="flex items-center gap-1">
-                <span className="legend-dot bg-blue"></span>
-                <span className="text-xs text-light">Succeeded Revenue ($)</span>
-              </div>
+          <div className="chart-legend-row">
+            <div className="chart-legend-label">
+              <TrendingUp size={12} />
+              <span>Revenue Trend</span>
+            </div>
+            <div className="chart-legend-item">
+              <span className="legend-dot bg-blue"></span>
+              <span>Succeeded ($)</span>
             </div>
           </div>
 
@@ -197,8 +225,8 @@ const Dashboard = () => {
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#8b8b8b' }} dy={10} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#8b8b8b' }} tickFormatter={(val) => `$${val}`} />
-                <Tooltip cursor={{ fill: 'transparent' }} formatter={(value) => [`$${value}`, 'Revenue']} />
-                <Bar dataKey="profit" fill="#fb5a2f" radius={[4, 4, 0, 0]} barSize={24} />
+                <Tooltip cursor={{ fill: 'rgba(251,90,47,0.06)' }} formatter={(value) => [`$${value.toLocaleString()}`, 'Revenue']} />
+                <Bar dataKey="profit" fill="#fb5a2f" radius={[5, 5, 0, 0]} barSize={22} />
               </BarChart>
             </ResponsiveContainer>
           </div>

@@ -3,9 +3,10 @@ import { useState, useEffect, useMemo } from 'react';
 import {
   Utensils, Coffee, Wine, Cake, Loader2,
   ShoppingCart, SlidersHorizontal, X, ChevronDown, ChevronUp,
-  MapPin, ArrowRight,
+  MapPin, ArrowRight, Plus, Minus, CreditCard, ShieldCheck, CheckCircle2
 } from 'lucide-react';
 import { fetchPublicMenu, formatPrice } from '../services/restaurantApi';
+import { initiateStripeCheckout } from '../services/paymentApi';
 
 /* ─── helpers ─────────────────────────────────── */
 const categoryIcons = {
@@ -40,7 +41,7 @@ const StockBadge = ({ stock }) => {
 };
 
 /* ─── Food Card  (matches reference image exactly) ── */
-const FoodCard = ({ item, categoryName }) => {
+const FoodCard = ({ item, categoryName, onOrderClick }) => {
   const hasImage = item.image && item.image !== 'default-food.jpg';
 
   return (
@@ -77,7 +78,11 @@ const FoodCard = ({ item, categoryName }) => {
             <span className="food-price-label">Price</span>
             <span className="food-price-value">ETB {formatPrice(item.price)}</span>
           </div>
-          <button className="food-order-btn" aria-label={`Order ${item.name}`}>
+          <button
+            className="food-order-btn"
+            aria-label={`Order ${item.name}`}
+            onClick={() => onOrderClick(item, categoryName)}
+          >
             Order Now <ArrowRight size={16} />
           </button>
         </div>
@@ -109,6 +114,14 @@ const RestaurantPage = () => {
   const [activeCategories, setActiveCategories] = useState(new Set());
   const [activePrices, setActivePrices]         = useState(new Set());
 
+  /* ─── Order Modal state ─── */
+  const [selectedFood, setSelectedFood]     = useState(null);
+  const [selectedCatName, setSelectedCatName] = useState('');
+  const [quantity, setQuantity]             = useState(1);
+  const [tableNumber, setTableNumber]       = useState('');
+  const [specialNotes, setSpecialNotes]     = useState('');
+  const [isRedirecting, setIsRedirecting]   = useState(false);
+
   useEffect(() => {
     (async () => {
       try {
@@ -127,6 +140,42 @@ const RestaurantPage = () => {
   const toggleCat   = (k) => setActiveCategories(p => { const n = new Set(p); n.has(k) ? n.delete(k) : n.add(k); return n; });
   const togglePrice = (l) => setActivePrices(p => { const n = new Set(p); n.has(l) ? n.delete(l) : n.add(l); return n; });
   const clearAll    = () => { setActiveCategories(new Set()); setActivePrices(new Set()); };
+
+  const handleOpenOrder = (item, catName) => {
+    setSelectedFood(item);
+    setSelectedCatName(catName || '');
+    setQuantity(1);
+    setTableNumber('');
+    setSpecialNotes('');
+    setIsRedirecting(false);
+  };
+
+  const handleCloseOrder = () => {
+    if (isRedirecting) return;
+    setSelectedFood(null);
+  };
+
+  const handleProceedStripe = async () => {
+    if (!selectedFood) return;
+    try {
+      setIsRedirecting(true);
+      const unitPrice = Number(selectedFood.price) || 0;
+      const totalAmount = unitPrice * quantity;
+      const locationText = tableNumber.trim() ? ` [${tableNumber.trim()}]` : '';
+
+      await initiateStripeCheckout({
+        title: `Food Order: ${selectedFood.name} (x${quantity})${locationText}`,
+        amount: totalAmount,
+        currency: 'etb',
+        relatedType: 'FoodOrder',
+        relatedId: selectedFood._id || '',
+        cancelUrl: window.location.href,
+      });
+    } catch (err) {
+      console.error('Stripe redirect failed:', err);
+      setIsRedirecting(false);
+    }
+  };
 
   const hasFilters = activeCategories.size > 0 || activePrices.size > 0;
 
@@ -446,6 +495,116 @@ const RestaurantPage = () => {
         .spin { animation: spin 1s linear infinite; }
         .no-results { text-align: center; padding: 48px 24px; color: #9ca3af; font-size: 15px; }
 
+        /* ══ ORDER MODAL STYLING (SMALL & SIMPLE) ══ */
+        .om-backdrop {
+          position: fixed; inset: 0; z-index: 9999;
+          background: rgba(15, 23, 42, 0.65);
+          backdrop-filter: blur(6px);
+          display: flex; align-items: center; justify-content: center;
+          padding: 16px; animation: omFade 0.18s ease-out;
+        }
+        @keyframes omFade { from { opacity: 0; } to { opacity: 1; } }
+        .om-card {
+          background: #fff; border-radius: 20px;
+          width: 100%; max-width: 410px; overflow: hidden;
+          box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3);
+          animation: omPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+          position: relative;
+        }
+        @keyframes omPop { from { transform: scale(0.96) translateY(8px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+        
+        .om-head-compact {
+          display: flex; align-items: center; gap: 14px;
+          padding: 18px 20px 14px;
+          border-bottom: 1px solid #f1f5f9;
+          position: relative;
+        }
+        .om-thumb-wrap {
+          width: 60px; height: 60px; border-radius: 12px;
+          overflow: hidden; flex-shrink: 0; background: #f8fafc;
+        }
+        .om-thumb {
+          width: 100%; height: 100%; object-fit: cover;
+        }
+        .om-thumb-placeholder {
+          width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+          background: linear-gradient(135deg, #fef9ec, #fdf3c8);
+        }
+        .om-head-info { flex: 1; min-width: 0; padding-right: 28px; }
+        .om-cat-badge {
+          display: inline-block; font-size: 10px; font-weight: 800;
+          letter-spacing: 1.2px; text-transform: uppercase; color: #c9970c;
+        }
+        .om-title {
+          font-size: 18px; font-weight: 800; color: #111827;
+          margin: 2px 0 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .om-unit-price {
+          font-size: 12px; font-weight: 600; color: #6b7280;
+        }
+        .om-close-btn {
+          position: absolute; top: 16px; right: 16px;
+          width: 28px; height: 28px; border-radius: 50%;
+          background: #f1f5f9; border: none; color: #64748b;
+          cursor: pointer; display: flex; align-items: center; justify-content: center;
+          transition: all 0.15s ease;
+        }
+        .om-close-btn:hover { background: #e2e8f0; color: #0f172a; }
+
+        .om-body { padding: 16px 20px 20px; }
+        .om-desc {
+          font-size: 13px; color: #64748b; line-height: 1.45;
+          margin: 0 0 14px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        
+        .om-field-group { margin-bottom: 12px; }
+        .om-label {
+          font-size: 10px; font-weight: 800; text-transform: uppercase;
+          letter-spacing: 1px; color: #64748b; margin-bottom: 5px; display: block;
+        }
+        .om-label-inline {
+          font-size: 12px; font-weight: 700; color: #334155;
+        }
+        .om-qty-row {
+          display: flex; align-items: center; justify-content: space-between; gap: 10px;
+          background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;
+          padding: 8px 14px;
+        }
+        .om-qty-controls { display: flex; align-items: center; gap: 10px; }
+        .om-qty-btn {
+          width: 28px; height: 28px; border-radius: 8px;
+          border: 1px solid #cbd5e1; background: #fff; cursor: pointer;
+          display: flex; align-items: center; justify-content: center;
+          font-size: 14px; font-weight: 700; color: #1e293b;
+          transition: all 0.15s ease;
+        }
+        .om-qty-btn:hover:not(:disabled) { background: #f1f5f9; border-color: #94a3b8; }
+        .om-qty-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .om-qty-val { font-size: 15px; font-weight: 800; color: #0f172a; min-width: 14px; text-align: center; }
+        .om-price-total { font-size: 16px; font-weight: 800; color: #0f172a; }
+        
+        .om-input {
+          width: 100%; padding: 9px 13px; border-radius: 10px;
+          border: 1.5px solid #e2e8f0; font-size: 13px; color: #1e293b;
+          outline: none; transition: border-color 0.2s; box-sizing: border-box;
+          background: #fff;
+        }
+        .om-input:focus { border-color: #c9970c; }
+        
+        .om-pay-btn {
+          width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+          background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+          color: #fff; border: none; border-radius: 12px; padding: 13px 18px;
+          font-size: 14px; font-weight: 700; cursor: pointer;
+          box-shadow: 0 6px 18px -4px rgba(17, 24, 39, 0.3);
+          transition: all 0.2s ease; margin-top: 14px;
+        }
+        .om-pay-btn:hover:not(:disabled) {
+          background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+          transform: translateY(-1px);
+        }
+        .om-pay-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
         /* ══ Responsive ══ */
         @media (max-width: 1100px) {
           .rp-body { padding: 44px 32px 80px 48px; grid-template-columns: 1fr 270px; gap: 28px; }
@@ -532,6 +691,7 @@ const RestaurantPage = () => {
                         key={item._id || item.name}
                         item={item}
                         categoryName={category.name}
+                        onOrderClick={handleOpenOrder}
                       />
                     ))}
                   </div>
@@ -613,6 +773,115 @@ const RestaurantPage = () => {
 
         </div>
       </div>
+
+      {/* ════ ORDER & STRIPE PAYMENT MODAL (SMALL & SIMPLE) ════ */}
+      {selectedFood && (
+        <div className="om-backdrop" onClick={handleCloseOrder}>
+          <div className="om-card" onClick={e => e.stopPropagation()}>
+            {/* Header: Item Thumbnail + Title + Price */}
+            <div className="om-head-compact">
+              <div className="om-thumb-wrap">
+                {selectedFood.image && selectedFood.image !== 'default-food.jpg' ? (
+                  <img src={selectedFood.image} alt={selectedFood.name} className="om-thumb" />
+                ) : (
+                  <div className="om-thumb-placeholder">
+                    <Utensils size={24} color="#d4af37" />
+                  </div>
+                )}
+              </div>
+              <div className="om-head-info">
+                <span className="om-cat-badge">{selectedCatName || 'Dining Item'}</span>
+                <h3 className="om-title">{selectedFood.name}</h3>
+                <span className="om-unit-price">
+                  ETB {formatPrice(selectedFood.price)} / item
+                </span>
+              </div>
+              <button className="om-close-btn" onClick={handleCloseOrder} aria-label="Close modal">
+                <X size={15} />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="om-body">
+              {selectedFood.description && (
+                <p className="om-desc">{selectedFood.description}</p>
+              )}
+
+              {/* Quantity Stepper & Price */}
+              <div className="om-field-group">
+                <div className="om-qty-row">
+                  <span className="om-label-inline">Quantity</span>
+                  <div className="om-qty-controls">
+                    <button
+                      className="om-qty-btn"
+                      onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                      disabled={quantity <= 1 || isRedirecting}
+                    >
+                      <Minus size={13} />
+                    </button>
+                    <span className="om-qty-val">{quantity}</span>
+                    <button
+                      className="om-qty-btn"
+                      onClick={() => setQuantity(q => q + 1)}
+                      disabled={isRedirecting}
+                    >
+                      <Plus size={13} />
+                    </button>
+                  </div>
+                  <span className="om-price-total">
+                    ETB {formatPrice((Number(selectedFood.price) || 0) * quantity)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Location Input */}
+              <div className="om-field-group">
+                <label className="om-label">Table or Room Number (Optional)</label>
+                <input
+                  type="text"
+                  className="om-input"
+                  placeholder="e.g. Table 4 or Room 204"
+                  value={tableNumber}
+                  onChange={e => setTableNumber(e.target.value)}
+                  disabled={isRedirecting}
+                />
+              </div>
+
+              {/* Special Request Input */}
+              <div className="om-field-group">
+                <label className="om-label">Special Request (Optional)</label>
+                <input
+                  type="text"
+                  className="om-input"
+                  placeholder="e.g. Extra spicy, ice on side"
+                  value={specialNotes}
+                  onChange={e => setSpecialNotes(e.target.value)}
+                  disabled={isRedirecting}
+                />
+              </div>
+
+              {/* Stripe Payment Submit Button */}
+              <button
+                className="om-pay-btn"
+                onClick={handleProceedStripe}
+                disabled={isRedirecting}
+              >
+                {isRedirecting ? (
+                  <>
+                    <Loader2 size={16} className="spin" />
+                    <span>Connecting to Stripe…</span>
+                  </>
+                ) : (
+                  <>
+                    <CreditCard size={16} />
+                    <span>Pay with Stripe • ETB {formatPrice((Number(selectedFood.price) || 0) * quantity)}</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

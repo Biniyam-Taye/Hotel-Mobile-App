@@ -7,7 +7,7 @@ import { fetchPublicOffers } from '../services/offersApi';
 import { initiateStripeCheckout } from '../services/paymentApi';
 import { ScrollReveal, StaggerContainer, StaggerItem } from './common/ScrollReveal';
 
-const Offers = () => {
+const Offers = ({ limit = 3 }) => {
   const [offers, setOffers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
@@ -15,6 +15,8 @@ const Offers = () => {
   // Booking modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState(null);
+
+  const displayedOffers = limit ? offers.slice(0, limit) : offers;
 
   // ── Fetch live offers from backend ──────────────────────────────────────────
   useEffect(() => {
@@ -54,7 +56,7 @@ const Offers = () => {
         }
 
         .offers-container {
-          max-width: 1200px;
+          max-width: 1240px;
           margin: 0 auto;
         }
 
@@ -94,16 +96,17 @@ const Offers = () => {
 
         .offers-grid {
           display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 20px;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 28px;
+          align-items: stretch;
         }
 
         .offer-card {
           background: #ffffff;
-          border-radius: 18px;
+          border-radius: 20px;
           overflow: hidden;
-          box-shadow: 0 2px 16px rgba(0,0,0,0.07);
-          border: 1px solid rgba(0,0,0,0.06);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.03);
+          border: 1px solid rgba(212, 175, 55, 0.18);
           transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2),
                       box-shadow 0.4s ease, border-color 0.4s ease;
           display: flex;
@@ -115,9 +118,9 @@ const Offers = () => {
         }
 
         .offer-card:hover {
-          transform: translateY(-8px) scale(1.015);
-          box-shadow: 0 22px 44px rgba(0,0,0,0.12), 0 0 0 1px rgba(212, 175, 55, 0.15);
-          border-color: rgba(212, 175, 55, 0.35);
+          transform: translateY(-8px);
+          box-shadow: 0 22px 44px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(212, 175, 55, 0.25);
+          border-color: rgba(212, 175, 55, 0.45);
         }
 
         .offer-card::after {
@@ -127,7 +130,7 @@ const Offers = () => {
           left: 0;
           width: 0;
           height: 3px;
-          border-radius: 0 0 18px 18px;
+          border-radius: 0 0 20px 20px;
           background: linear-gradient(90deg, #d4af37, #f5d879);
           transition: width 0.42s cubic-bezier(0.25, 0.46, 0.45, 0.94);
           z-index: 3;
@@ -139,9 +142,9 @@ const Offers = () => {
 
         .offer-card .offer-image {
           position: relative;
-          height: 200px;
+          height: 220px;
           overflow: hidden;
-          background: #f3f4f6;
+          background: #111827;
           flex-shrink: 0;
         }
 
@@ -154,84 +157,95 @@ const Offers = () => {
         }
 
         .offer-card:hover .offer-image img {
-          transform: scale(1.08) rotate(1deg);
+          transform: scale(1.08);
         }
 
         .offer-card .offer-image .hover-vignette {
           position: absolute;
           inset: 0;
-          background: radial-gradient(circle, transparent 40%, rgba(212, 175, 55, 0.18) 100%);
-          opacity: 0;
+          background: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.35) 100%);
+          opacity: 0.6;
           z-index: 1;
           pointer-events: none;
-          transition: opacity 0.5s ease;
+          transition: opacity 0.4s ease;
         }
         .offer-card:hover .offer-image .hover-vignette {
-          opacity: 1;
+          opacity: 0.9;
         }
 
         .offer-card .offer-image .discount-badge {
           position: absolute;
-          top: 10px;
-          left: 10px;
-          background: #ef4444;
+          top: 14px;
+          left: 14px;
+          background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
           color: #ffffff;
-          padding: 4px 12px;
+          padding: 5px 14px;
           border-radius: 9999px;
           font-weight: 800;
-          font-size: 11.5px;
-          box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+          font-size: 12px;
+          letter-spacing: 0.5px;
+          box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
           z-index: 2;
           font-family: 'Montserrat', sans-serif;
         }
 
         .offer-card .offer-image .popular-badge {
           position: absolute;
-          top: 10px;
-          right: 10px;
+          top: 14px;
+          right: 14px;
           background: linear-gradient(135deg, #d4af37 0%, #f5d879 100%);
-          color: #3d2e00;
-          padding: 4px 10px;
+          color: #2a1f00;
+          padding: 5px 12px;
           border-radius: 9999px;
-          font-size: 9px;
-          font-weight: 900;
+          font-size: 10px;
+          font-weight: 800;
           text-transform: uppercase;
           letter-spacing: 1px;
-          box-shadow: 0 3px 10px rgba(212,175,55,0.50);
+          box-shadow: 0 4px 14px rgba(212,175,55,0.45);
           z-index: 2;
           font-family: 'Montserrat', sans-serif;
         }
 
         .offer-card .offer-details {
-          padding: 14px 16px 16px;
+          padding: 22px 20px 20px;
           flex: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          background: #ffffff;
+        }
+
+        .offer-card .offer-content-top {
           display: flex;
           flex-direction: column;
         }
 
         .offer-card .offer-details .offer-title {
           font-family: 'Montserrat', sans-serif;
-          font-size: 14px;
+          font-size: 17px;
           font-weight: 800;
-          color: #1a1a1a;
-          margin: 0 0 3px;
+          color: #111827;
+          margin: 0 0 6px;
+          line-height: 1.35;
+          min-height: 46px;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
           overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), color 0.4s ease;
+          transition: color 0.3s ease;
         }
         .offer-card:hover .offer-details .offer-title {
-          transform: translateX(4px);
-          color: #d4af37;
+          color: #b89228;
         }
 
         .offer-card .offer-details .offer-subtitle {
-          font-size: 10.5px;
+          font-size: 11px;
           color: #d4af37;
           font-weight: 700;
           text-transform: uppercase;
-          letter-spacing: 0.5px;
-          margin-bottom: 6px;
+          letter-spacing: 0.8px;
+          margin-bottom: 8px;
+          min-height: 16px;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
@@ -239,11 +253,11 @@ const Offers = () => {
 
         .offer-card .offer-details .offer-description {
           font-family: 'Poppins', sans-serif;
-          font-size: 12px;
+          font-size: 13px;
           color: #6b7280;
-          line-height: 1.5;
-          margin: 0 0 10px;
-          flex: 1;
+          line-height: 1.6;
+          margin: 0 0 16px;
+          min-height: 42px;
           display: -webkit-box;
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
@@ -253,25 +267,27 @@ const Offers = () => {
         .offer-card .offer-details .offer-footer {
           display: flex;
           flex-direction: column;
-          gap: 10px;
+          gap: 12px;
           margin-top: auto;
-          padding-top: 10px;
-          border-top: 1px solid #f1f5f9;
+          padding-top: 14px;
+          border-top: 1px solid #f3f4f6;
         }
 
         .offer-card .offer-details .offer-footer .valid {
-          font-size: 11px;
+          font-size: 12px;
           color: #9ca3af;
           display: flex;
           align-items: center;
-          gap: 4px;
+          gap: 6px;
+          font-weight: 500;
           font-family: 'Poppins', sans-serif;
+          min-height: 18px;
         }
 
         .offer-actions {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 8px;
+          gap: 10px;
           width: 100%;
         }
 
@@ -279,14 +295,14 @@ const Offers = () => {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 5px;
-          padding: 8px 6px;
-          border: 1.5px solid #d1d5db;
-          background: transparent;
-          color: #4b5563;
+          gap: 6px;
+          padding: 10px 12px;
+          border: 1.5px solid #e5e7eb;
+          background: #ffffff;
+          color: #374151;
           border-radius: 9999px;
           font-weight: 600;
-          font-size: 11.5px;
+          font-size: 12.5px;
           cursor: pointer;
           transition: all 0.25s ease;
           text-decoration: none;
@@ -295,24 +311,36 @@ const Offers = () => {
           box-sizing: border-box;
         }
 
+        .btn-view-details:hover {
+          border-color: #d4af37;
+          color: #b89228;
+          background: rgba(212, 175, 55, 0.05);
+        }
+
         .btn-book-offer {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 5px;
-          padding: 8px 6px;
+          gap: 6px;
+          padding: 10px 12px;
           background: linear-gradient(135deg, #c9a227 0%, #e8c848 55%, #c9a227 100%);
           background-size: 200% auto;
           color: #1a1a1a;
           border: none;
           border-radius: 9999px;
           font-weight: 700;
-          font-size: 11.5px;
+          font-size: 12.5px;
           cursor: pointer;
           font-family: 'Poppins', sans-serif;
           white-space: nowrap;
           box-sizing: border-box;
-          box-shadow: 0 3px 12px rgba(212,175,55,0.32);
+          box-shadow: 0 4px 14px rgba(212,175,55,0.35);
+          transition: all 0.3s ease;
+        }
+
+        .btn-book-offer:hover {
+          background-position: right center;
+          box-shadow: 0 6px 20px rgba(212,175,55,0.5);
         }
 
         /* ── EXPLORE ALL OFFERS BUTTON DESIGN ── */
@@ -366,10 +394,10 @@ const Offers = () => {
           color: #d4af37 !important;
         }
 
-        @media (max-width: 1199px) {
+        @media (max-width: 1024px) {
           .offers-grid {
             grid-template-columns: repeat(2, 1fr);
-            gap: 18px;
+            gap: 22px;
           }
         }
 
@@ -379,10 +407,10 @@ const Offers = () => {
           }
           .offers-grid {
             grid-template-columns: 1fr;
-            gap: 16px;
+            gap: 20px;
           }
           .offers-header h2 {
-            font-size: 28px;
+            font-size: 30px;
           }
         }
 
@@ -525,7 +553,7 @@ const Offers = () => {
           ) : (
             <>
               <StaggerContainer staggerChildren={0.12} className="offers-grid">
-                {offers.map((offer) => (
+                {displayedOffers.map((offer) => (
                   <StaggerItem key={offer.id} variant="fade-up">
                     <div className="offer-card">
                       <div className="offer-image">
@@ -547,25 +575,29 @@ const Offers = () => {
                       </div>
 
                       <div className="offer-details">
-                        <h3 className="offer-title">{offer.title}</h3>
-                        {offer.subtitle && (
-                          <div className="offer-subtitle">{offer.subtitle}</div>
-                        )}
-                        <p className="offer-description">{offer.description}</p>
+                        <div className="offer-content-top">
+                          <h3 className="offer-title">{offer.title}</h3>
+                          <div className="offer-subtitle">{offer.subtitle || '\u00A0'}</div>
+                          <p className="offer-description">{offer.description}</p>
+                        </div>
 
                         <div className="offer-footer">
-                          {offer.validUntil && (
-                            <span className="valid">
-                              <Clock size={12} /> Valid until {offer.validUntil}
-                            </span>
-                          )}
+                          <span className="valid">
+                            {offer.validUntil ? (
+                              <>
+                                <Clock size={13} /> Valid until {offer.validUntil}
+                              </>
+                            ) : (
+                              '\u00A0'
+                            )}
+                          </span>
                           <div className="offer-actions">
-                            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                               <Link to={`/offers/${offer.id}`} className="btn-view-details">
                                 Details <ArrowRight size={13} />
                               </Link>
                             </motion.div>
-                            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
