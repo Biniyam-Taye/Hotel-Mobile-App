@@ -3,14 +3,15 @@ const ApiResponse = require('../utils/apiResponse');
 const servService = require('../services/service.service');
 const { uploadSingle } = require('../utils/cloudinary');
 
-// --- Service Controllers ---
+const applyUploadedImage = async (file, folder) => {
+  if (!file) return {};
+  const result = await uploadSingle(file.buffer, folder);
+  return { image: result.url, imagePublicId: result.publicId };
+};
+
 const createService = asyncHandler(async (req, res) => {
-  let image;
-  if (req.file) {
-    const result = await uploadSingle(req.file.buffer, 'services');
-    image = result.url;
-  }
-  const service = await servService.createService({ ...req.body, image });
+  const imageData = await applyUploadedImage(req.file, 'services/hotel');
+  const service = await servService.createService({ ...req.body, ...imageData, section: req.body.section || 'hotel_service' });
   res.status(201).json(new ApiResponse(201, { service }, 'Service created'));
 });
 
@@ -19,18 +20,19 @@ const getServices = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, result));
 });
 
+const getPublicHotelServices = asyncHandler(async (req, res) => {
+  const services = await servService.getPublicHotelServices();
+  res.status(200).json(new ApiResponse(200, { services }));
+});
+
 const getService = asyncHandler(async (req, res) => {
   const service = await servService.getServiceById(req.params.id);
   res.status(200).json(new ApiResponse(200, { service }));
 });
 
 const updateService = asyncHandler(async (req, res) => {
-  let data = { ...req.body };
-  if (req.file) {
-    const result = await uploadSingle(req.file.buffer, 'services');
-    data.image = result.url;
-  }
-  const service = await servService.updateService(req.params.id, data);
+  const imageData = await applyUploadedImage(req.file, 'services/hotel');
+  const service = await servService.updateService(req.params.id, { ...req.body, ...imageData });
   res.status(200).json(new ApiResponse(200, { service }, 'Service updated'));
 });
 
@@ -39,7 +41,6 @@ const deleteService = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, null, 'Service deleted'));
 });
 
-// --- Service Booking Controllers ---
 const createBooking = asyncHandler(async (req, res) => {
   const booking = await servService.createBooking(req.user.id, req.body);
   res.status(201).json(new ApiResponse(201, { booking }, 'Service booked successfully'));
@@ -61,6 +62,14 @@ const updateBookingStatus = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
-  createService, getServices, getService, updateService, deleteService,
-  createBooking, getBookings, getBooking, updateBookingStatus,
+  createService,
+  getServices,
+  getPublicHotelServices,
+  getService,
+  updateService,
+  deleteService,
+  createBooking,
+  getBookings,
+  getBooking,
+  updateBookingStatus,
 };

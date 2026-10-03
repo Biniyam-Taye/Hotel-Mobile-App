@@ -5,16 +5,16 @@ const paymentSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.ObjectId,
       ref: 'User',
-      required: true,
+      required: false,
     },
     relatedType: {
       type: String,
-      enum: ['Booking', 'FoodOrder', 'ServiceBooking'],
-      required: true,
+      enum: ['Booking', 'FoodOrder', 'ServiceBooking', 'Event', 'Facility', 'Offer'],
+      default: 'Booking',
     },
     relatedId: {
       type: mongoose.Schema.ObjectId,
-      required: true,
+      required: false,
       refPath: 'relatedType',
     },
     amount: {
@@ -25,10 +25,15 @@ const paymentSchema = new mongoose.Schema(
       type: String,
       default: 'usd',
     },
+    stripeCheckoutSessionId: {
+      type: String,
+      sparse: true,
+      index: true,
+    },
     stripePaymentIntentId: {
       type: String,
-      required: true,
-      unique: true,
+      sparse: true,
+      index: true,
     },
     status: {
       type: String,
@@ -36,7 +41,17 @@ const paymentSchema = new mongoose.Schema(
       default: 'pending',
     },
     paymentMethod: {
-      type: String, // e.g. 'card'
+      type: String,
+      default: 'card',
+    },
+    customerEmail: {
+      type: String,
+    },
+    customerName: {
+      type: String,
+    },
+    description: {
+      type: String,
     },
   },
   {
@@ -44,9 +59,9 @@ const paymentSchema = new mongoose.Schema(
   }
 );
 
-// Add Indexes for performance optimization
 paymentSchema.index({ user: 1 });
 paymentSchema.index({ relatedType: 1, relatedId: 1 });
 paymentSchema.index({ status: 1 });
 
 module.exports = mongoose.model('Payment', paymentSchema);
+

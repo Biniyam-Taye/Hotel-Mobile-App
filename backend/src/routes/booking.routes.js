@@ -18,7 +18,7 @@ router.use(protect);
 router
   .route('/')
   .post(validate(bookingValidation.createBooking), createBooking)
-  .get(authorize('admin'), getAllBookings);
+  .get(authorize('admin', 'manager'), getAllBookings);
 
 router.get('/my', getMyBookings);
 
@@ -28,6 +28,6 @@ router
 
 router
   .route('/:id/status')
-  .put(authorize('admin'), validate(bookingValidation.updateBookingStatus), updateBookingStatus);
+  .put(authorize('admin', 'manager'), validate(bookingValidation.updateBookingStatus), updateBookingStatus);
 
 module.exports = router;

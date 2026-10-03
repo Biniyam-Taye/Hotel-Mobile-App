@@ -2,11 +2,17 @@ const ApiError = require('../utils/apiError');
 
 const validate = (schema) => (req, res, next) => {
   try {
-    schema.parse({
+    const parsed = schema.parse({
       body: req.body,
       query: req.query,
       params: req.params,
     });
+    
+    // Assign validated and coerced data back to req objects
+    if (parsed.body) req.body = parsed.body;
+    if (parsed.query) req.query = parsed.query;
+    if (parsed.params) req.params = parsed.params;
+    
     next();
   } catch (error) {
     // Zod v4 uses error.issues; fall back to error.errors for older versions
@@ -21,3 +27,4 @@ const validate = (schema) => (req, res, next) => {
 };
 
 module.exports = validate;
+

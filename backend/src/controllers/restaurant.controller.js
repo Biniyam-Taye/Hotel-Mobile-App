@@ -3,14 +3,16 @@ const ApiResponse = require('../utils/apiResponse');
 const restService = require('../services/restaurant.service');
 const { uploadSingle } = require('../utils/cloudinary');
 
+const applyUploadedImage = async (file, folder) => {
+  if (!file) return {};
+  const result = await uploadSingle(file.buffer, folder);
+  return { image: result.url, imagePublicId: result.publicId };
+};
+
 // --- Category Controllers ---
 const createCategory = asyncHandler(async (req, res) => {
-  let image;
-  if (req.file) {
-    const result = await uploadSingle(req.file.buffer, 'restaurant/categories');
-    image = result.url;
-  }
-  const category = await restService.createCategory({ ...req.body, image });
+  const imageData = await applyUploadedImage(req.file, 'restaurant/categories');
+  const category = await restService.createCategory({ ...req.body, ...imageData });
   res.status(201).json(new ApiResponse(201, { category }, 'Category created'));
 });
 
@@ -19,13 +21,14 @@ const getCategories = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, result));
 });
 
+const getCategory = asyncHandler(async (req, res) => {
+  const category = await restService.getCategoryById(req.params.id);
+  res.status(200).json(new ApiResponse(200, { category }));
+});
+
 const updateCategory = asyncHandler(async (req, res) => {
-  let data = { ...req.body };
-  if (req.file) {
-    const result = await uploadSingle(req.file.buffer, 'restaurant/categories');
-    data.image = result.url;
-  }
-  const category = await restService.updateCategory(req.params.id, data);
+  const imageData = await applyUploadedImage(req.file, 'restaurant/categories');
+  const category = await restService.updateCategory(req.params.id, { ...req.body, ...imageData });
   res.status(200).json(new ApiResponse(200, { category }, 'Category updated'));
 });
 
@@ -36,12 +39,8 @@ const deleteCategory = asyncHandler(async (req, res) => {
 
 // --- Food Item Controllers ---
 const createFoodItem = asyncHandler(async (req, res) => {
-  let image;
-  if (req.file) {
-    const result = await uploadSingle(req.file.buffer, 'restaurant/food');
-    image = result.url;
-  }
-  const food = await restService.createFoodItem({ ...req.body, image });
+  const imageData = await applyUploadedImage(req.file, 'restaurant/food');
+  const food = await restService.createFoodItem({ ...req.body, ...imageData });
   res.status(201).json(new ApiResponse(201, { food }, 'Food item created'));
 });
 
@@ -56,18 +55,19 @@ const getFoodItem = asyncHandler(async (req, res) => {
 });
 
 const updateFoodItem = asyncHandler(async (req, res) => {
-  let data = { ...req.body };
-  if (req.file) {
-    const result = await uploadSingle(req.file.buffer, 'restaurant/food');
-    data.image = result.url;
-  }
-  const food = await restService.updateFoodItem(req.params.id, data);
+  const imageData = await applyUploadedImage(req.file, 'restaurant/food');
+  const food = await restService.updateFoodItem(req.params.id, { ...req.body, ...imageData });
   res.status(200).json(new ApiResponse(200, { food }, 'Food item updated'));
 });
 
 const deleteFoodItem = asyncHandler(async (req, res) => {
   await restService.deleteFoodItem(req.params.id);
   res.status(200).json(new ApiResponse(200, null, 'Food item deleted'));
+});
+
+const getPublicMenu = asyncHandler(async (req, res) => {
+  const menu = await restService.getPublicMenu();
+  res.status(200).json(new ApiResponse(200, { menu }));
 });
 
 // --- Food Order Controllers ---
@@ -92,7 +92,19 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
-  createCategory, getCategories, updateCategory, deleteCategory,
-  createFoodItem, getFoodItems, getFoodItem, updateFoodItem, deleteFoodItem,
-  createOrder, getOrders, getOrder, updateOrderStatus,
+  createCategory,
+  getCategories,
+  getCategory,
+  updateCategory,
+  deleteCategory,
+  createFoodItem,
+  getFoodItems,
+  getFoodItem,
+  updateFoodItem,
+  deleteFoodItem,
+  getPublicMenu,
+  createOrder,
+  getOrders,
+  getOrder,
+  updateOrderStatus,
 };

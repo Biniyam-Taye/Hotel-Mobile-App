@@ -2,14 +2,19 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
-const mongoSanitize = require('express-mongo-sanitize');
 const errorHandler = require('./middlewares/error.middleware');
+
+const path = require('path');
 
 const app = express();
 
 // Global Middlewares
-app.use(helmet()); // Security headers
-app.use(cors()); // Enable CORS for React/Flutter clients
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+app.use(cors());
+
+// Serve uploaded files statically for instant browser preview
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+
 // Stripe Webhook must be parsed as raw body before express.json()
 app.post(
   '/api/v1/payments/webhook',
@@ -17,10 +22,9 @@ app.post(
   require('./controllers/payment.controller').handleWebhook
 );
 
-app.use(express.json()); // Parse JSON payloads
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded payloads
-app.use(mongoSanitize()); // Prevent NoSQL injection
-app.use(morgan('dev')); // HTTP request logger
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(morgan('dev'));
 
 // Health Check Route
 app.get('/api/v1/health', (req, res) => {
@@ -30,23 +34,33 @@ app.get('/api/v1/health', (req, res) => {
 // API Routes
 const userRoutes = require('./routes/user.routes');
 const roomRoutes = require('./routes/room.routes');
+const roomCategoryRoutes = require('./routes/roomCategory.routes');
 const bookingRoutes = require('./routes/booking.routes');
 const restaurantRoutes = require('./routes/restaurant.routes');
 const serviceRoutes = require('./routes/service.routes');
+const facilityRoutes = require('./routes/facility.routes');
+const eventRoutes = require('./routes/event.routes');
 const promotionRoutes = require('./routes/promotion.routes');
 const engagementRoutes = require('./routes/engagement.routes');
 const paymentRoutes = require('./routes/payment.routes');
 const dashboardRoutes = require('./routes/dashboard.routes');
+const messageRoutes = require('./routes/message.routes');
+const reportRoutes  = require('./routes/report.routes');
 
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/rooms', roomRoutes);
+app.use('/api/v1/room-categories', roomCategoryRoutes);
 app.use('/api/v1/bookings', bookingRoutes);
 app.use('/api/v1/restaurant', restaurantRoutes);
 app.use('/api/v1/services', serviceRoutes);
+app.use('/api/v1/facilities', facilityRoutes);
+app.use('/api/v1/events', eventRoutes);
 app.use('/api/v1/promotions', promotionRoutes);
 app.use('/api/v1/engagement', engagementRoutes);
 app.use('/api/v1/payments', paymentRoutes);
 app.use('/api/v1/dashboard', dashboardRoutes);
+app.use('/api/v1/messages', messageRoutes);
+app.use('/api/v1/reports',  reportRoutes);
 
 // Handle unknown routes
 app.use((req, res, next) => {

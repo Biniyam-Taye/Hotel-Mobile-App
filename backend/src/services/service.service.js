@@ -2,43 +2,95 @@ const Service = require('../models/service.model');
 const ServiceBooking = require('../models/serviceBooking.model');
 const ApiError = require('../utils/apiError');
 const queryBuilder = require('../utils/queryBuilder');
+const { deleteImage } = require('../utils/cloudinary');
 const { sendNotification } = require('./engagement.service');
 
-// --- Services (Admin & Listing) ---
-const createService = async (data) => await Service.create(data);
-const getServices = async (query) => await queryBuilder(Service, query, ['name', 'description']);
+const normalizeServiceInput = (data) => {
+  const payload = { ...data };
+
+  if (payload.title && !payload.name) {
+    payload.name = payload.title;
+  }
+  delete payload.title;
+
+  if (payload.status !== undefined) {
+    payload.isAvailable = payload.status === 'Active' || payload.status === true;
+    delete payload.status;
+  }
+
+  return payload;
+};
+
+const createService = async (data) => {
+  const payload = normalizeServiceInput(data);
+  return Service.create(payload);
+};
+
+const getServices = async (query) => {
+  const filter = { ...query };
+
+  if (filter.status === 'Active') filter.isAvailable = true;
+  if (filter.status === 'Inactive') filter.isAvailable = false;
+  delete filter.status;
+
+  if (filter.section) {
+    filter.section = filter.section;
+  }
+
+  return queryBuilder(Service, filter, ['name', 'description', 'pricingNote']);
+};
+
+const getPublicHotelServices = async () => {
+  return Service.find({ section: 'hotel_service', isAvailable: true })
+    .select('name description pricingNote price image badge icon category duration createdAt')
+    .sort('-createdAt');
+};
+
 const getServiceById = async (id) => {
   const service = await Service.findById(id);
   if (!service) throw new ApiError(404, 'Service not found');
   return service;
 };
+
 const updateService = async (id, data) => {
-  const service = await Service.findByIdAndUpdate(id, data, { new: true });
+  const service = await Service.findById(id);
   if (!service) throw new ApiError(404, 'Service not found');
-  return service;
-};
-const deleteService = async (id) => {
-  const service = await Service.findByIdAndDelete(id);
-  if (!service) throw new ApiError(404, 'Service not found');
+
+  const payload = normalizeServiceInput(data);
+
+  if (payload.imagePublicId && service.imagePublicId && payload.imagePublicId !== service.imagePublicId) {
+    await deleteImage(service.imagePublicId);
+  }
+
+  Object.assign(service, payload);
+  await service.save();
   return service;
 };
 
-// --- Service Bookings ---
+const deleteService = async (id) => {
+  const service = await Service.findById(id);
+  if (!service) throw new ApiError(404, 'Service not found');
+
+  if (service.imagePublicId) {
+    await deleteImage(service.imagePublicId);
+  }
+
+  await service.deleteOne();
+  return service;
+};
+
 const createBooking = async (userId, data) => {
   const service = await Service.findById(data.service);
   if (!service) throw new ApiError(404, 'Service not found');
   if (!service.isAvailable) throw new ApiError(400, `${service.name} is currently unavailable`);
 
-  // Basic total calculation: just the base price of the service (can be extended with duration/quantity later)
-  const totalAmount = service.price;
+  const totalAmount = service.price || 0;
 
-  const newBooking = {
+  const booking = await ServiceBooking.create({
     ...data,
     user: userId,
     totalAmount,
-  };
-
-  const booking = await ServiceBooking.create(newBooking);
+  });
 
   sendNotification({
     userId,
@@ -46,7 +98,7 @@ const createBooking = async (userId, data) => {
     message: `Your booking for ${service.name} has been received.`,
     type: 'booking',
     relatedId: booking._id,
-  }).catch(err => console.error('Notification failed:', err));
+  }).catch((err) => console.error('Notification failed:', err));
 
   return booking;
 };
@@ -54,12 +106,12 @@ const createBooking = async (userId, data) => {
 const getBookings = async (query, userId, role) => {
   const q = { ...query };
   if (role !== 'admin') q.user = userId;
-  
+
   const result = await queryBuilder(ServiceBooking, q, ['status']);
   await ServiceBooking.populate(result.data, [
     { path: 'user', select: 'firstName lastName email' },
     { path: 'room', select: 'title' },
-    { path: 'service', select: 'name image price category' }
+    { path: 'service', select: 'name image price category pricingNote' },
   ]);
   return result;
 };
@@ -68,7 +120,7 @@ const getBookingById = async (id, userId, role) => {
   const booking = await ServiceBooking.findById(id)
     .populate('user', 'firstName lastName email')
     .populate('room', 'title')
-    .populate('service', 'name image price category');
+    .populate('service', 'name image price category pricingNote');
 
   if (!booking) throw new ApiError(404, 'Service booking not found');
   if (role !== 'admin' && booking.user._id.toString() !== userId) {
@@ -84,6 +136,14 @@ const updateBookingStatus = async (id, status) => {
 };
 
 module.exports = {
-  createService, getServices, getServiceById, updateService, deleteService,
-  createBooking, getBookings, getBookingById, updateBookingStatus,
+  createService,
+  getServices,
+  getPublicHotelServices,
+  getServiceById,
+  updateService,
+  deleteService,
+  createBooking,
+  getBookings,
+  getBookingById,
+  updateBookingStatus,
 };

@@ -1,0 +1,236 @@
+/* Admin Login Page Styles */
+
+@keyframes adminFadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes blobFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%       { transform: translate(20px, -15px) scale(1.05); }
+}
+
+/* Full-screen overlay */
+.admin-auth-wrapper {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at 20% 30%, #1a0a00 0%, #0d0d0d 60%, #110808 100%);
+  overflow: hidden;
+  z-index: 9999;
+  padding: 1.5rem;
+}
+
+/* Decorative blobs */
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.25;
+  animation: blobFloat 8s ease-in-out infinite;
+  pointer-events: none;
+}
+.blob-1 {
+  width: 420px;
+  height: 420px;
+  background: #fa5a2a;
+  top: -100px;
+  left: -100px;
+  animation-duration: 9s;
+}
+.blob-2 {
+  width: 320px;
+  height: 320px;
+  background: #ff8c5a;
+  bottom: -80px;
+  right: -60px;
+  animation-duration: 11s;
+  animation-direction: reverse;
+}
+
+/* Card */
+.admin-auth-card {
+  position: relative;
+  width: 100%;
+  max-width: 430px;
+  background: rgba(20, 14, 10, 0.85);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(250, 90, 42, 0.2);
+  border-radius: 1.5rem;
+  padding: 2.75rem 2.5rem;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.03);
+  animation: adminFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Header */
+.admin-auth-header {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.admin-auth-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 1rem;
+  background: rgba(250, 90, 42, 0.12);
+  border: 1px solid rgba(250, 90, 42, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem;
+}
+
+.admin-auth-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.025em;
+  margin-bottom: 0.4rem;
+}
+
+.admin-auth-subtitle {
+  font-size: 0.9rem;
+  color: #9ca3af;
+}
+
+/* Credentials hint */
+.admin-credentials-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(250, 90, 42, 0.08);
+  border: 1px solid rgba(250, 90, 42, 0.2);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.8rem;
+  color: #fdba74;
+  margin-bottom: 1.5rem;
+}
+.admin-credentials-hint strong { color: #fb923c; }
+
+/* Error alert */
+.admin-auth-error {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #fca5a5;
+  border-radius: 0.625rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+/* Form */
+.admin-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.admin-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.admin-form-group label {
+  font-size: 0.775rem;
+  font-weight: 600;
+  color: #d1d5db;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.admin-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.admin-input-icon {
+  position: absolute;
+  left: 1rem;
+  color: #6b7280;
+  pointer-events: none;
+  transition: color 0.2s;
+}
+
+.admin-input-wrap input {
+  width: 100%;
+  padding: 0.875rem 1rem 0.875rem 2.75rem;
+  background: rgba(31, 20, 12, 0.6);
+  border: 1px solid rgba(250, 90, 42, 0.15);
+  border-radius: 0.625rem;
+  color: #f3f4f6;
+  font-size: 0.95rem;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.admin-input-wrap input::placeholder { color: #4b5563; }
+
+.admin-input-wrap input:focus {
+  border-color: rgba(250, 90, 42, 0.55);
+  background: rgba(40, 26, 14, 0.7);
+  box-shadow: 0 0 0 3px rgba(250, 90, 42, 0.12);
+}
+.admin-input-wrap input:focus + .admin-input-icon,
+.admin-input-wrap:focus-within .admin-input-icon {
+  color: #fa5a2a;
+}
+
+/* Submit button */
+.admin-auth-btn {
+  margin-top: 0.5rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.95rem;
+  background: linear-gradient(135deg, #fa5a2a, #ff8c5a);
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s;
+  box-shadow: 0 4px 20px rgba(250, 90, 42, 0.4);
+}
+
+.admin-auth-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(250, 90, 42, 0.5);
+}
+
+.admin-auth-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Spinner */
+.admin-btn-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Footer note */
+.admin-auth-footer {
+  text-align: center;
+  margin-top: 1.75rem;
+  font-size: 0.75rem;
+  color: #4b5563;
+}

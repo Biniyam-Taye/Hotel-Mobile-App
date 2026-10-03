@@ -7,7 +7,7 @@ const register = z.object({
     email: z.string().email(),
     password: z.string().min(6),
     phone: z.string().max(20).optional(),
-    role: z.enum(['customer', 'admin']).optional(), // Usually wouldn't allow passing role in production registration, but keeping it flexible here
+    role: z.enum(['customer', 'admin', 'manager']).optional(), // Usually wouldn't allow passing role in production registration, but keeping it flexible here
   }),
 });
 
